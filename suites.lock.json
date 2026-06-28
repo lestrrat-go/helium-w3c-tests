@@ -1,0 +1,22 @@
+{
+  "suites": {
+    "qt3": {
+      "type": "git",
+      "repo": "https://github.com/w3c/qt3tests.git",
+      "commit": "83993587711dbd5c18ed846385ec37d079d6e492",
+      "sourceDir": "sources/qt3"
+    },
+    "xslt30": {
+      "type": "git",
+      "repo": "https://github.com/w3c/xslt30-test.git",
+      "commit": "6f8fd9e966ae74a251a2604abef9d904c7bc5c9b",
+      "sourceDir": "sources/xslt30"
+    },
+    "xsd11": {
+      "type": "manual",
+      "url": "https://www.w3.org/XML/2004/xml-schema-test-suite/",
+      "commit": "",
+      "sourceDir": "sources/xsd11"
+    }
+  }
+}
