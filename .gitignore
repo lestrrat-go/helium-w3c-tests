@@ -1,3 +1,4 @@
 /.tmp/
 /sources/*/
 /go.work
+/testdata/xsd11/

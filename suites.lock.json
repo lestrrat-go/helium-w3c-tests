@@ -13,9 +13,9 @@
       "sourceDir": "sources/xslt30"
     },
     "xsd11": {
-      "type": "manual",
-      "url": "https://www.w3.org/XML/2004/xml-schema-test-suite/",
-      "commit": "",
+      "type": "git",
+      "repo": "https://github.com/w3c/xsdtests.git",
+      "commit": "7bc3365c652a322f3d762021b3879eb92dae7e30",
       "sourceDir": "sources/xsd11"
     }
   }

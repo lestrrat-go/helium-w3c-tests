@@ -60,7 +60,7 @@ Agent-consumed guidance. Keep terse. Update when repo workflow or suite policy c
 - Skip QT3 tests requiring XSD 1.0-only behavior.
 - XSLT 3.0 targets Basic XSLT Processor conformance.
 - Do not implement or unskip XSLT 1.0/2.0 backwards compatibility tests.
-- XSD suite is manual-source until W3C XSD 1.1 assets are installed under `sources/xsd11`.
+- XSD suite is pinned to w3c/xsdtests (git). `fetch xsd11` clones `sources/xsd11` and copies the XSD-1.1 fixtures into `testdata/xsd11` (gitignored); generated tests skip when fixtures are absent.
 
 ## Expectations
 
