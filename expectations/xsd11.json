@@ -35,8 +35,6 @@
     "ibmMeta/assertion.testSet/d4_3_15v23": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/assertion.testSet",
     "ibmMeta/conditionalInclusion.testSet/s4_2_2ii01": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/conditionalInclusion.testSet",
     "ibmMeta/conditionalInclusion.testSet/s4_2_2v01": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/conditionalInclusion.testSet",
-    "ibmMeta/constraintsOnAttribute.testSet/s3_2_3ii01": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/constraintsOnAttribute.testSet",
-    "ibmMeta/constraintsOnAttribute.testSet/s3_2_3ii02": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/constraintsOnAttribute.testSet",
     "ibmMeta/constraintsOnAttribute.testSet/s3_2_3ii04": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/constraintsOnAttribute.testSet",
     "ibmMeta/constraintsOnAttribute.testSet/s3_2_3ii05": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/constraintsOnAttribute.testSet",
     "ibmMeta/constraintsOnAttribute.testSet/s3_2_3si01": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/constraintsOnAttribute.testSet",
@@ -44,7 +42,6 @@
     "ibmMeta/constraintsOnAttribute.testSet/s3_2_3si04": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/constraintsOnAttribute.testSet",
     "ibmMeta/constraintsOnAttribute.testSet/s3_2_3si07": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/constraintsOnAttribute.testSet",
     "ibmMeta/constraintsOnAttribute.testSet/s3_2_3si08": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/constraintsOnAttribute.testSet",
-    "ibmMeta/constraintsOnAttribute.testSet/s3_2_3v01": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/constraintsOnAttribute.testSet",
     "ibmMeta/constraintsOnAttribute.testSet/s3_2_3v04": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/constraintsOnAttribute.testSet",
     "ibmMeta/defaultAttributesApply.testSet/s3_4_2_4ii06": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/defaultAttributesApply.testSet",
     "ibmMeta/defaultAttributesApply.testSet/s3_4_2_4ii07": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/defaultAttributesApply.testSet",
@@ -53,7 +50,6 @@
     "ibmMeta/defaultAttributesApply.testSet/s3_4_2_4v01": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/defaultAttributesApply.testSet",
     "ibmMeta/defaultAttributesApply.testSet/s3_4_2_4v03": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/defaultAttributesApply.testSet",
     "ibmMeta/defaultAttributesApply.testSet/s3_4_2_4v13": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/defaultAttributesApply.testSet",
-    "ibmMeta/edcWildcard.testSet/s3_8_6v01": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/edcWildcard.testSet",
     "ibmMeta/idIDREF.testSet/s3_3_4ii02": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/idIDREF.testSet",
     "ibmMeta/idIDREF.testSet/s3_3_4ii04": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/idIDREF.testSet",
     "ibmMeta/idIDREF.testSet/s3_3_4ii06": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/idIDREF.testSet",
@@ -98,7 +94,6 @@
     "ibmMeta/substitutionGroup.testSet/s2_2_2si02": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/substitutionGroup.testSet",
     "ibmMeta/substitutionGroup.testSet/s2_2_2v01": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/substitutionGroup.testSet",
     "ibmMeta/substitutionGroup.testSet/s2_2_2v02": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/substitutionGroup.testSet",
-    "ibmMeta/targetNamespace.testSet/targetNamespace_005": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/targetNamespace.testSet",
     "ibmMeta/typeAlternatives.testSet/s3_12ii06": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/typeAlternatives.testSet",
     "ibmMeta/typeAlternatives.testSet/s3_12si03": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/typeAlternatives.testSet",
     "ibmMeta/typeAlternatives.testSet/s3_12v01": "XSD 1.1 conformance gap (baseline 2026-06-28): ibmMeta/typeAlternatives.testSet",
@@ -422,11 +417,7 @@
     "saxonMeta/Wild.testSet/wild101": "XSD 1.1 conformance gap (baseline 2026-06-28): saxonMeta/Wild.testSet",
     "saxonMeta/Wild.testSet/wild102": "XSD 1.1 conformance gap (baseline 2026-06-28): saxonMeta/Wild.testSet",
     "saxonMeta/Wild.testSet/wild103": "XSD 1.1 conformance gap (baseline 2026-06-28): saxonMeta/Wild.testSet",
-    "saxonMeta/Wild.testSet/wild104": "XSD 1.1 conformance gap (baseline 2026-06-28): saxonMeta/Wild.testSet",
-    "wgMeta/IRI.testSet/iri-001": "XSD 1.1 conformance gap (baseline 2026-06-28): wgMeta/IRI.testSet",
-    "wgMeta/substitution-groups.testSet/sg-and-defined-Sibling-1": "XSD 1.1 conformance gap (baseline 2026-06-28): wgMeta/substitution-groups.testSet",
-    "wgMeta/substitution-groups.testSet/sg-and-defined-Sibling-2": "XSD 1.1 conformance gap (baseline 2026-06-28): wgMeta/substitution-groups.testSet",
-    "wgMeta/substitution-groups.testSet/sg-and-defined-Sibling-3": "XSD 1.1 conformance gap (baseline 2026-06-28): wgMeta/substitution-groups.testSet"
+    "saxonMeta/Wild.testSet/wild104": "XSD 1.1 conformance gap (baseline 2026-06-28): saxonMeta/Wild.testSet"
   },
   "xfail": {}
 }
