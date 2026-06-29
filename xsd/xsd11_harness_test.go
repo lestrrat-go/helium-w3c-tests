@@ -98,7 +98,9 @@ func runXSTS11Case(t *testing.T, testdataRoot string, c xstsCase) {
 		t.Fatalf("%s: read schema %s: %v", c.ID, c.SchemaRel, err)
 	}
 
-	doc, perr := helium.NewParser().Parse(t.Context(), schemaSrc)
+	doc, perr := helium.NewParser().
+		BaseURI(c.SchemaRel).
+		Parse(t.Context(), schemaSrc)
 
 	var schema *xsd.Schema
 	var cerr error
