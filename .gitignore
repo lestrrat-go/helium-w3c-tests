@@ -2,3 +2,4 @@
 /sources/*/
 /go.work
 /testdata/xsd11/
+/test-results/

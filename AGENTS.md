@@ -20,6 +20,7 @@ Agent-consumed guidance. Keep terse. Update when repo workflow or suite policy c
 | Path | Purpose |
 |------|---------|
 | `cmd/w3cgen/` | fetch/generate/verify CLI |
+| `cmd/w3ctest/` | conformance test runner; writes JUnit XML |
 | `internal/generator/` | shared lock, fetch, catalog, write support |
 | `internal/suites/qt3/` | QT3/XPath 3.1 generator policy |
 | `internal/suites/xslt30/` | XSLT 3.0 generator policy |
@@ -37,6 +38,9 @@ Agent-consumed guidance. Keep terse. Update when repo workflow or suite policy c
 - Generate tests: `go run ./cmd/w3cgen generate all`
 - Verify generated files: `go run ./cmd/w3cgen verify all`
 - Run tests: `go test ./...`
+- Run XSD 1.1 conformance with JUnit XML: `go run ./cmd/w3ctest xsd11`
+- Default JUnit result path: `test-results/xsd11-junit.xml`; override with `-out FILE`.
+- JUnit report contains conformance subtests only (`TestXSD11W3C/<case ID>`); manifest checks are excluded; skipped cases carry reason in `<skipped message>`.
 - Source trees may be absent → generated manifest tests should skip, not fail.
 
 ## Go Workspace
