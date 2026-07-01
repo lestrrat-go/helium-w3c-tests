@@ -93,16 +93,49 @@ func TestXSD11W3C(t *testing.T) {
 			if reason := exp.Skip[c.ID]; reason != "" {
 				t.Skip(reason)
 			}
-			runXSTS11Case(t, testdataRoot, c)
+			xreason, isXFail := exp.XFail[c.ID]
+			o := &caseOutcome{t: t, xfail: isXFail}
+			runXSTS11Case(t, o, testdataRoot, c)
+			if !isXFail {
+				return
+			}
+			// Expected-failure case: it passes the suite when it fails the
+			// conformance check (the known gap), and fails loudly when it
+			// unexpectedly passes — that means helium was fixed and the entry
+			// should be removed from expectations/xsd11.json.
+			if len(o.fails) == 0 {
+				t.Errorf("XFAIL %s unexpectedly PASSED — helium now conforms; remove it from expectations xfail (%s)", c.ID, xreason)
+				return
+			}
+			t.Logf("xfail (%s): %s", xreason, strings.Join(o.fails, "; "))
 		})
 	}
 }
 
-func runXSTS11Case(t *testing.T, testdataRoot string, c xstsCase) {
+// caseOutcome routes a case's conformance-signal assertions. For an ordinary
+// case, errorf forwards to t.Errorf. For an xfail case it collects the messages
+// so TestXSD11W3C can invert them (a collected failure is the expected outcome).
+// Infrastructure problems (missing/unreadable fixtures) stay on t directly via
+// t.Skipf/t.Fatalf and are never inverted.
+type caseOutcome struct {
+	t     *testing.T
+	xfail bool
+	fails []string
+}
+
+func (o *caseOutcome) errorf(format string, args ...any) {
+	if o.xfail {
+		o.fails = append(o.fails, fmt.Sprintf(format, args...))
+		return
+	}
+	o.t.Errorf(format, args...)
+}
+
+func runXSTS11Case(t *testing.T, o *caseOutcome, testdataRoot string, c xstsCase) {
 	t.Helper()
 	defer func() {
 		if r := recover(); r != nil {
-			t.Errorf("%s: panic: %v", c.ID, r)
+			o.errorf("%s: panic: %v", c.ID, r)
 		}
 	}()
 
@@ -157,7 +190,7 @@ func runXSTS11Case(t *testing.T, testdataRoot string, c xstsCase) {
 
 	gotSchemaValid := cerr == nil
 	if gotSchemaValid != c.SchemaValid {
-		t.Errorf("%s: schema validity: expected %t, got %t (err=%v)",
+		o.errorf("%s: schema validity: expected %t, got %t (err=%v)",
 			c.ID, c.SchemaValid, gotSchemaValid, cerr)
 	}
 	if !gotSchemaValid || schema == nil {
@@ -185,7 +218,7 @@ func runXSTS11Case(t *testing.T, testdataRoot string, c xstsCase) {
 		}
 		gotValid := verr == nil
 		if gotValid != inst.Valid {
-			t.Errorf("%s/%s: instance validity: expected %t, got %t (err=%v)",
+			o.errorf("%s/%s: instance validity: expected %t, got %t (err=%v)",
 				c.ID, inst.Name, inst.Valid, gotValid, verr)
 		}
 	}

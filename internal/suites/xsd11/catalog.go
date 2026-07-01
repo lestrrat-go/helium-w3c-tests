@@ -131,7 +131,7 @@ func readCases(sourceRoot string) (byContributor map[string][]genCase, contribut
 		contributor := contributorName(href)
 
 		for _, g := range ts.TestGroups {
-			if !is11(g.Version, ts.Version) {
+			if !applies11(g, ts.Version) {
 				continue
 			}
 			gc, ok, berr := buildCase(sourceRoot, href, tsDir, g)
@@ -169,6 +169,38 @@ func contributorName(href string) string {
 
 func is11(groupVersion, setVersion string) bool {
 	return groupVersion == "1.1" || setVersion == "1.1"
+}
+
+// applies11 reports whether a test group is XSD-1.1-applicable. A group counts
+// when it is explicitly tagged 1.1 at the group or testSet level (is11) OR when
+// it is a dual-version group carrying an <expected version="1.1"> result — the
+// convention several contributors (notably Microsoft and Sun) use for a single
+// group whose validity differs between 1.0 and 1.1. pickValidity already selects
+// the 1.1 expectation for such a group, so including it runs the 1.1 semantics
+// against the correct expected result.
+func applies11(g testGroup, setVersion string) bool {
+	if is11(g.Version, setVersion) {
+		return true
+	}
+	if g.SchemaTest != nil && hasExpected11(g.SchemaTest.Expected) {
+		return true
+	}
+	for i := range g.InstanceTest {
+		if hasExpected11(g.InstanceTest[i].Expected) {
+			return true
+		}
+	}
+	return false
+}
+
+// hasExpected11 reports whether any expected result is explicitly for XSD 1.1.
+func hasExpected11(exps []expected) bool {
+	for i := range exps {
+		if exps[i].Version == "1.1" {
+			return true
+		}
+	}
+	return false
 }
 
 // pickValidity selects the version-aware expected validity. Returns (valid, ok).
