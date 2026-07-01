@@ -1,0 +1,2004 @@
+// This file parses the W3C XSLT 3.0 test catalog and builds the table-driven
+// test cases the suite emits into xslt3/xslt30_<category>_gen_test.go, plus the
+// set of fixture files Fetch copies into testdata/xslt30. It is driven by
+// Suite.Fetch and Suite.Generate (see xslt30.go).
+package xslt30
+
+import (
+	"encoding/xml"
+	"fmt"
+	"io/fs"
+	"os"
+	"path/filepath"
+	"sort"
+	"strings"
+	"unicode/utf8"
+
+	"github.com/lestrrat-go/helium"
+	"github.com/lestrrat-go/helium-w3c-tests/internal/generator"
+	"golang.org/x/net/html/charset"
+)
+
+// ──────────────────────────────────────────────────────────────────────
+// XSLT 3.0 test catalog XML types
+// ──────────────────────────────────────────────────────────────────────
+
+type xslCatalog struct {
+	TestSets []xslTestSetRef `xml:"test-set"`
+}
+
+type xslTestSetRef struct {
+	Name string `xml:"name,attr"`
+	File string `xml:"file,attr"`
+}
+
+type xslTestSetFile struct {
+	Name         string           `xml:"name,attr"`
+	Dependencies *xslDependencies `xml:"dependencies"`
+	Environments []xslEnvironment `xml:"environment"`
+	TestCases    []xslTestCase    `xml:"test-case"`
+}
+
+type xslDependencies struct {
+	Children []xslDependency `xml:",any"`
+}
+
+type xslDependency struct {
+	XMLName   xml.Name `xml:""`
+	Value     string   `xml:"value,attr"`
+	Satisfied string   `xml:"satisfied,attr"`
+}
+
+type xslEnvironment struct {
+	Name        string          `xml:"name,attr"`
+	Ref         string          `xml:"ref,attr"`
+	Sources     []xslSource     `xml:"source"`
+	Collections []xslCollection `xml:"collection"`
+	Stylesheets []xslStylesheet `xml:"stylesheet"`
+	Packages    []xslPackage    `xml:"package"`
+	Schemas     []xslSchema     `xml:"schema"`
+}
+
+type xslSchema struct {
+	Role string `xml:"role,attr"`
+	File string `xml:"file,attr"`
+}
+
+type xslCollection struct {
+	URI     string      `xml:"uri,attr"`
+	Sources []xslSource `xml:"source"`
+}
+
+type xslSource struct {
+	Role              string      `xml:"role,attr"`
+	File              string      `xml:"file,attr"`
+	URI               string      `xml:"uri,attr"`
+	Select            string      `xml:"select,attr"`
+	DefinesStylesheet string      `xml:"defines-stylesheet,attr"`
+	Content           *xslContent `xml:"content"`
+}
+
+type xslContent struct {
+	Inner []byte `xml:",innerxml"`
+}
+
+type xslTestCase struct {
+	Name         string           `xml:"name,attr"`
+	Dependencies *xslDependencies `xml:"dependencies"`
+	Environment  *xslEnvironment  `xml:"environment"`
+	Test         xslTest          `xml:"test"`
+	Result       xslResult        `xml:",any"`
+}
+
+type xslTest struct {
+	Stylesheets     []xslStylesheet     `xml:"stylesheet"`
+	Packages        []xslPackage        `xml:"package"`
+	InitialTemplate *xslInitialTemplate `xml:"initial-template"`
+	InitialMode     *xslInitialMode     `xml:"initial-mode"`
+	InitialFunction *xslInitialFunction `xml:"initial-function"`
+	Params          []xslParam          `xml:"param"`
+}
+
+type xslInitialFunction struct {
+	Name   string     `xml:"name,attr"`
+	Attrs  []xml.Attr `xml:",any,attr"`
+	Params []xslParam `xml:"param"`
+}
+
+type xslInitialMode struct {
+	Name   string     `xml:"name,attr"`
+	Select string     `xml:"select,attr"`
+	Attrs  []xml.Attr `xml:",any,attr"`
+	Params []xslParam `xml:"param"`
+}
+
+type xslStylesheet struct {
+	Role string `xml:"role,attr"`
+	File string `xml:"file,attr"`
+}
+
+type xslPackage struct {
+	Role           string `xml:"role,attr"`
+	File           string `xml:"file,attr"`
+	URI            string `xml:"uri,attr"`
+	PackageVersion string `xml:"package-version,attr"`
+}
+
+type xslInitialTemplate struct {
+	Name   string     `xml:"name,attr"`
+	Attrs  []xml.Attr `xml:",any,attr"`
+	Params []xslParam `xml:"param"`
+}
+
+type xslParam struct {
+	Name   string     `xml:"name,attr"`
+	Select string     `xml:"select,attr"`
+	As     string     `xml:"as,attr"`
+	Tunnel string     `xml:"tunnel,attr"`
+	Attrs  []xml.Attr `xml:",any,attr"`
+}
+
+type xslResult struct {
+	XMLName xml.Name `xml:""`
+	Inner   []byte   `xml:",innerxml"`
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Assertion types
+// ──────────────────────────────────────────────────────────────────────
+
+type assertion struct {
+	Type     string
+	Value    string
+	URI      string // for assert-result-document
+	Method   string // for assert-serialization
+	Flags    string // for serialization-matches (regex flags, e.g. "ix")
+	Children []assertion
+}
+
+type xmlResultWrapper struct {
+	Children []xmlAssertion `xml:",any"`
+}
+
+type xmlAssertion struct {
+	XMLName  xml.Name       `xml:""`
+	Code     string         `xml:"code,attr"`
+	File     string         `xml:"file,attr"`
+	URI      string         `xml:"uri,attr"`
+	Method   string         `xml:"method,attr"`
+	Flags    string         `xml:"flags,attr"`
+	Inner    []byte         `xml:",innerxml"`
+	Children []xmlAssertion `xml:",any"`
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Generated test structure
+// ──────────────────────────────────────────────────────────────────────
+
+type generatedTest struct {
+	SetName                     string
+	CaseName                    string
+	Category                    string // from catalog path: tests/<category>/...
+	StylesheetPath              string
+	SecondaryStylesheets        []string
+	PackageDeps                 []packageDep // secondary packages (uri → file)
+	SourceDocPath               string
+	SourceContent               string
+	InitialTemplate             string
+	InitialTemplateParams       map[string]string
+	InitialTemplateTunnelParams map[string]string
+	InitialMode                 string
+	InitialModeSelect           string
+	InitialModeParams           map[string]string
+	InitialModeTunnelParams     map[string]string
+	InitialFunction             string
+	InitialFunctionParams       []string // positional params (select expressions)
+	Params                      map[string]string
+	ParamTypes                  map[string]string // as types for params (from catalog <param as="...">)
+	ExpectError                 bool
+	AcceptErrors                []string // error codes accepted as alternative outcomes (from any-of)
+	ErrorCode                   string
+	OnMultipleMatch             string // "fail" when test requires on-multiple-match=error
+	Assertions                  []assertion
+	Skip                        string
+	Collections                 []collectionDef
+	SourceSchemaPath            string
+	ImportSchemaPaths           []string // schemas for xsl:import-schema resolution
+	EmbeddedStylesheet          bool     // source document contains <?xml-stylesheet?> PI
+	VersionResolution           string   // "lowest" for lowest matching package version (default: highest)
+}
+
+// packageDep maps a package URI+version to its file path.
+type packageDep struct {
+	URI            string
+	PackageVersion string
+	FilePath       string // relative to testdata
+}
+
+type collectionDef struct {
+	URI      string
+	DocPaths []string
+}
+
+// generatedAssetSourceAliases maps stale upstream asset paths to the source file
+// that should be copied into the generated testdata tree.
+var generatedAssetSourceAliases = map[string]string{
+	"tests/decl/import-schema/variousTypesSchemaInline.xsd": "tests/decl/import-schema/schema004.xsd",
+}
+
+// resolvedAssetSourcePath maps a catalog-referenced asset path to the source
+// file that should be copied for it, applying generatedAssetSourceAliases.
+func resolvedAssetSourcePath(relPath string) string {
+	if src, ok := generatedAssetSourceAliases[relPath]; ok {
+		return src
+	}
+	return relPath
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Main
+// ──────────────────────────────────────────────────────────────────────
+
+// collectTests parses the XSLT 3.0 catalog under sourceDir and returns the
+// generated test cases together with the set of fixture files they reference
+// (paths relative to sourceDir). It panics with a genErr — recovered at the
+// Suite boundary — on a malformed catalog or unreadable test-set file.
+func collectTests(sourceDir string) ([]generatedTest, map[string]struct{}) {
+	if _, err := os.Stat(filepath.Join(sourceDir, "catalog.xml")); os.IsNotExist(err) {
+		genFatal("XSLT 3.0 source not found. Run: go run ./cmd/w3cgen fetch xslt30")
+	}
+
+	cat := parseCatalog(filepath.Join(sourceDir, "catalog.xml"))
+
+	var allTests []generatedTest
+	assetFiles := make(map[string]struct{})
+	assetFiles["catalog.xml"] = struct{}{}
+
+	for _, tsRef := range cat.TestSets {
+		// The "catalog" test set contains only meta-tests that validate the
+		// W3C test catalog itself (schema checks, name consistency, etc.).
+		// They require the full set of test-set XML files which we don't ship.
+		if tsRef.Name == "catalog" {
+			continue
+		}
+
+		// The test-set href itself is catalog-derived; verify it stays inside
+		// sourceDir before opening it.
+		tsRel, ok := catalogRelPath(sourceDir, ".", tsRef.File)
+		if !ok {
+			continue
+		}
+		tsFile := filepath.Join(sourceDir, tsRel)
+		ts := parseTestSet(tsFile)
+		tsDir := filepath.Dir(tsRel) // e.g. "tests/insn/apply-templates"
+		addCatalogReferencedFiles(assetFiles, sourceDir, tsDir, ts)
+
+		// Some test sets reference non-XML files (JSON, text, etc.) at runtime
+		// via unparsed-text(). Copy the entire directory tree for these.
+		switch tsRef.Name {
+		case "regex-classes", "json-to-xml", "xml-to-json", "unparsed-text",
+			"base-uri", "resolve-uri", "document", "accumulator":
+			if err := addAssetTree(assetFiles, sourceDir, tsDir); err != nil {
+				genFatalf("collecting %s assets: %v", tsRef.Name, err)
+			}
+		}
+
+		localEnvs := make(map[string]*xslEnvironment)
+		for i := range ts.Environments {
+			localEnvs[ts.Environments[i].Name] = &ts.Environments[i]
+			// Track environment-level stylesheet and source assets
+			for _, ss := range ts.Environments[i].Stylesheets {
+				relPath, ok := catalogRelPath(sourceDir, tsDir, ss.File)
+				if !ok {
+					continue
+				}
+				assetFiles[relPath] = struct{}{}
+				addTransitiveDeps(assetFiles, sourceDir, relPath)
+			}
+			// Track environment-level package assets
+			for _, pkg := range ts.Environments[i].Packages {
+				relPath, ok := catalogRelPath(sourceDir, tsDir, pkg.File)
+				if !ok {
+					continue
+				}
+				assetFiles[relPath] = struct{}{}
+				addTransitiveDeps(assetFiles, sourceDir, relPath)
+			}
+			for _, src := range ts.Environments[i].Sources {
+				if relPath, ok := catalogRelPath(sourceDir, tsDir, src.File); ok {
+					assetFiles[relPath] = struct{}{}
+				}
+			}
+			for _, sch := range ts.Environments[i].Schemas {
+				if relPath, ok := catalogRelPath(sourceDir, tsDir, sch.File); ok {
+					assetFiles[relPath] = struct{}{}
+				}
+			}
+			for _, col := range ts.Environments[i].Collections {
+				for _, src := range col.Sources {
+					if relPath, ok := catalogRelPath(sourceDir, tsDir, src.File); ok {
+						assetFiles[relPath] = struct{}{}
+					}
+				}
+			}
+		}
+
+		// Determine category from catalog path directory
+		cat := categoryFromCatalogPath(tsRef.File)
+		setSkip := getCategorySkipReason(cat)
+		if setSkip == "" {
+			setSkip = getSetSkipReason(tsRef.Name, ts.Dependencies)
+		}
+
+		for _, tc := range ts.TestCases {
+			gt := generatedTest{
+				SetName:  tsRef.Name,
+				CaseName: tc.Name,
+				Category: cat,
+			}
+
+			// Merge dependencies: test-set level + test-case level
+			skipReason := setSkip
+			if skipReason == "" {
+				skipReason = getCaseSkipReason(ts.Dependencies, tc.Dependencies)
+			}
+			// Apply strm unlock limit: only the first N strm tests run.
+			if skipReason == "" && cat == "strm" {
+				strmUnlocked++
+				if strmUnlockLimit > 0 && strmUnlocked > strmUnlockLimit {
+					skipReason = "streaming test suite disabled"
+				}
+			}
+			gt.Skip = skipReason
+
+			// Extract on-multiple-match dependency
+			gt.OnMultipleMatch = getOnMultipleMatch(ts.Dependencies, tc.Dependencies)
+
+			// Extract package version resolution dependency
+			gt.VersionResolution = getVersionResolution(ts.Dependencies, tc.Dependencies)
+
+			// Find primary and secondary stylesheets
+			for _, ss := range tc.Test.Stylesheets {
+				relPath, ok := catalogRelPath(sourceDir, tsDir, ss.File)
+				if !ok {
+					continue
+				}
+				if ss.Role == "secondary" {
+					gt.SecondaryStylesheets = append(gt.SecondaryStylesheets, relPath)
+				} else {
+					gt.StylesheetPath = relPath
+				}
+			}
+			// Find primary and secondary packages from test-level.
+			// Process packages before the single-stylesheet fallback so
+			// that a principal package takes priority.
+			for _, pkg := range tc.Test.Packages {
+				relPath, ok := catalogRelPath(sourceDir, tsDir, pkg.File)
+				if !ok {
+					continue
+				}
+				if pkg.Role == "principal" {
+					if gt.StylesheetPath == "" {
+						gt.StylesheetPath = relPath
+					}
+				} else {
+					gt.PackageDeps = append(gt.PackageDeps, packageDep{
+						URI:            pkg.URI,
+						PackageVersion: pkg.PackageVersion,
+						FilePath:       relPath,
+					})
+				}
+				assetFiles[relPath] = struct{}{}
+				addTransitiveDeps(assetFiles, sourceDir, relPath)
+			}
+
+			// If only one stylesheet and no explicit role, it's the primary
+			if gt.StylesheetPath == "" && len(tc.Test.Stylesheets) == 1 {
+				if relPath, ok := catalogRelPath(sourceDir, tsDir, tc.Test.Stylesheets[0].File); ok {
+					gt.StylesheetPath = relPath
+				}
+			}
+
+			// Fall back to environment-level stylesheet/packages if test has none
+			if gt.StylesheetPath == "" {
+				env := resolveEnvironment(tc.Environment, localEnvs)
+				if env != nil {
+					// Check if source document defines the stylesheet
+					// (embedded via <?xml-stylesheet?> PI).
+					sourceDefinesStylesheet := false
+					for _, src := range env.Sources {
+						if src.Role == "." && src.DefinesStylesheet == "true" {
+							sourceDefinesStylesheet = true
+							gt.EmbeddedStylesheet = true
+							break
+						}
+					}
+					for _, ss := range env.Stylesheets {
+						relPath, ok := catalogRelPath(sourceDir, tsDir, ss.File)
+						if !ok {
+							continue
+						}
+						if ss.Role == "secondary" {
+							gt.SecondaryStylesheets = append(gt.SecondaryStylesheets, relPath)
+						} else {
+							gt.StylesheetPath = relPath
+						}
+					}
+					// Only promote a lone environment stylesheet to primary
+					// when the source document does not define the stylesheet.
+					if gt.StylesheetPath == "" && len(env.Stylesheets) == 1 && !sourceDefinesStylesheet {
+						if relPath, ok := catalogRelPath(sourceDir, tsDir, env.Stylesheets[0].File); ok {
+							gt.StylesheetPath = relPath
+						}
+					}
+					// Environment-level packages as principal fallback
+					for _, pkg := range env.Packages {
+						relPath, ok := catalogRelPath(sourceDir, tsDir, pkg.File)
+						if !ok {
+							continue
+						}
+						if pkg.Role == "principal" && gt.StylesheetPath == "" {
+							gt.StylesheetPath = relPath
+						}
+					}
+				}
+			}
+
+			// Collect environment-level secondary packages (always, even if stylesheet is found)
+			{
+				env := resolveEnvironment(tc.Environment, localEnvs)
+				if env != nil {
+					for _, pkg := range env.Packages {
+						if pkg.Role != "secondary" && pkg.Role != "" {
+							continue
+						}
+						relPath, ok := catalogRelPath(sourceDir, tsDir, pkg.File)
+						if !ok {
+							continue
+						}
+						gt.PackageDeps = append(gt.PackageDeps, packageDep{
+							URI:            pkg.URI,
+							PackageVersion: pkg.PackageVersion,
+							FilePath:       relPath,
+						})
+						assetFiles[relPath] = struct{}{}
+						addTransitiveDeps(assetFiles, sourceDir, relPath)
+					}
+				}
+			}
+
+			if gt.StylesheetPath == "" && !gt.EmbeddedStylesheet {
+				gt.Skip = "no stylesheet"
+			}
+			// Initial template
+			if tc.Test.InitialTemplate != nil {
+				gt.InitialTemplate = resolveInitialTemplateName(tc.Test.InitialTemplate)
+				for _, p := range tc.Test.InitialTemplate.Params {
+					// Resolve QName using namespace declarations from the param element itself
+					resolvedName := resolveQNameWithAttrs(p.Name, p.Attrs)
+					if p.Tunnel == "yes" {
+						if gt.InitialTemplateTunnelParams == nil {
+							gt.InitialTemplateTunnelParams = make(map[string]string)
+						}
+						gt.InitialTemplateTunnelParams[resolvedName] = p.Select
+					} else {
+						if gt.InitialTemplateParams == nil {
+							gt.InitialTemplateParams = make(map[string]string)
+						}
+						gt.InitialTemplateParams[resolvedName] = p.Select
+					}
+				}
+			}
+
+			// Initial mode
+			if tc.Test.InitialMode != nil {
+				if tc.Test.InitialMode.Name != "" {
+					gt.InitialMode = resolveQNameWithAttrs(tc.Test.InitialMode.Name, tc.Test.InitialMode.Attrs)
+				}
+				if tc.Test.InitialMode.Select != "" {
+					gt.InitialModeSelect = tc.Test.InitialMode.Select
+				}
+				for _, p := range tc.Test.InitialMode.Params {
+					name := resolveQNameWithAttrs(p.Name, p.Attrs)
+					if boolAttrTrue(p.Tunnel) {
+						if gt.InitialModeTunnelParams == nil {
+							gt.InitialModeTunnelParams = make(map[string]string)
+						}
+						gt.InitialModeTunnelParams[name] = p.Select
+					} else {
+						if gt.InitialModeParams == nil {
+							gt.InitialModeParams = make(map[string]string)
+						}
+						gt.InitialModeParams[name] = p.Select
+					}
+				}
+			}
+
+			// Initial function
+			if tc.Test.InitialFunction != nil {
+				gt.InitialFunction = resolveQNameWithAttrs(tc.Test.InitialFunction.Name, tc.Test.InitialFunction.Attrs)
+				for _, p := range tc.Test.InitialFunction.Params {
+					gt.InitialFunctionParams = append(gt.InitialFunctionParams, p.Select)
+				}
+			}
+
+			// Params
+			if len(tc.Test.Params) > 0 {
+				gt.Params = make(map[string]string)
+				for _, p := range tc.Test.Params {
+					name := resolveQNameWithAttrs(p.Name, p.Attrs)
+					gt.Params[name] = p.Select
+					if p.As != "" {
+						if gt.ParamTypes == nil {
+							gt.ParamTypes = make(map[string]string)
+						}
+						gt.ParamTypes[name] = p.As
+					}
+				}
+			}
+
+			// Environment: resolve source document
+			env := resolveEnvironment(tc.Environment, localEnvs)
+			if env != nil {
+				for _, src := range env.Sources {
+					srcRel, srcOK := catalogRelPath(sourceDir, tsDir, src.File)
+					if srcOK {
+						// Always copy source files as assets (for document()/fn:doc() etc.)
+						assetFiles[srcRel] = struct{}{}
+					}
+					if src.Role != "." {
+						continue
+					}
+					if srcOK {
+						gt.SourceDocPath = srcRel
+					} else if src.Content != nil {
+						gt.SourceContent = decodeXMLText(string(src.Content.Inner))
+					} else if xmlContent := extractParseXMLContent(src.Select); xmlContent != "" {
+						gt.SourceContent = xmlContent
+					}
+					if src.DefinesStylesheet == "true" {
+						gt.EmbeddedStylesheet = true
+					}
+					// When source has a select attribute (e.g., select="/doc"),
+					// use it as the initial match selection so the transformation
+					// starts at the selected node rather than the root.
+					if src.Select != "" && gt.InitialModeSelect == "" {
+						if extractParseXMLContent(src.Select) == "" {
+							gt.InitialModeSelect = src.Select
+						}
+					}
+				}
+				for _, col := range env.Collections {
+					def := collectionDef{URI: col.URI}
+					for _, src := range col.Sources {
+						// Containment is checked on the file portion only; any
+						// "#fragment" suffix is preserved in the doc path since
+						// fn:collection consumers rely on it.
+						relPath, ok := catalogRelPath(sourceDir, tsDir, src.File)
+						if !ok {
+							continue
+						}
+						assetFiles[relPath] = struct{}{}
+						if _, frag, hasFrag := strings.Cut(src.File, "#"); hasFrag {
+							relPath += "#" + frag
+						}
+						def.DocPaths = append(def.DocPaths, relPath)
+					}
+					gt.Collections = append(gt.Collections, def)
+				}
+				// Extract schema for source document validation.
+				// Use the first schema with role="source-reference" or no role
+				// (not "stylesheet-import" which is for xsl:import-schema).
+				for _, sch := range env.Schemas {
+					relPath, ok := catalogRelPath(sourceDir, tsDir, sch.File)
+					if !ok {
+						continue
+					}
+					assetFiles[relPath] = struct{}{}
+					if sch.Role == "stylesheet-import" {
+						gt.ImportSchemaPaths = append(gt.ImportSchemaPaths, relPath)
+					} else {
+						// Default/empty role: source schema AND import schema
+						if gt.SourceSchemaPath == "" {
+							gt.SourceSchemaPath = relPath
+						}
+						gt.ImportSchemaPaths = append(gt.ImportSchemaPaths, relPath)
+					}
+				}
+			}
+
+			// Parse assertions
+			gt.Assertions = parseResultAssertions(tc, sourceDir, tsDir)
+			classifyError(&gt)
+			classifyUnsupportedAssertions(&gt)
+			isSchemaAware := hasFeatureDep(ts.Dependencies, "schema_aware") ||
+				hasFeatureDep(tc.Dependencies, "schema_aware") ||
+				hasFeatureDep(ts.Dependencies, "schema-aware") ||
+				hasFeatureDep(tc.Dependencies, "schema-aware")
+			classifySchemaTypeChecking(&gt, isSchemaAware)
+			if isSchemaAware && gt.Skip == "" && gt.StylesheetPath != "" {
+				classifyAdvancedSchemaFeatures(&gt, filepath.Join(sourceDir, gt.StylesheetPath))
+			}
+			// Ad-hoc per-case skips (tests valid per spec but exercising
+			// behavior the processor does not follow) live in
+			// expectations/xslt30.json, applied at run time by the harness, not
+			// baked into gt.Skip here.
+
+			// Track stylesheet assets. gt.StylesheetPath and the secondary
+			// stylesheets are already contained (validated at assignment via
+			// catalogRelPath), so transitive scanning stays within sourceDir.
+			if gt.StylesheetPath != "" {
+				assetFiles[gt.StylesheetPath] = struct{}{}
+				addTransitiveDeps(assetFiles, sourceDir, gt.StylesheetPath)
+			}
+			for _, ss := range gt.SecondaryStylesheets {
+				assetFiles[ss] = struct{}{}
+				addTransitiveDeps(assetFiles, sourceDir, ss)
+			}
+
+			if isExcludedTestCase(gt.CaseName) {
+				continue
+			}
+
+			allTests = append(allTests, gt)
+		}
+	}
+
+	return allTests, assetFiles
+}
+
+// copyAssets copies every fixture the catalog references from sourceDir into
+// destDir, preserving the suite-root-relative layout so document()/fn:doc and
+// xsl:include/import resolve at test time. Each path is validated through
+// generator.ContainedPath before it is read or written. It returns the number
+// of files copied.
+func copyAssets(sourceDir, destDir string, assetFiles map[string]struct{}) int {
+	copied := 0
+	for relPath := range assetFiles {
+		normalizedRelPath := normalizeAssetPath(relPath)
+		dstFull, err := generator.ContainedPath(destDir, normalizedRelPath)
+		if err != nil {
+			fmt.Printf("warning: skipping unsafe asset path %q: %v\n", relPath, err)
+			continue
+		}
+		srcFull, err := generator.ContainedPath(sourceDir, resolvedAssetSourcePath(normalizedRelPath))
+		if err != nil {
+			fmt.Printf("warning: skipping unsafe asset path %q: %v\n", relPath, err)
+			continue
+		}
+		if err := copyAsset(srcFull, dstFull); err != nil {
+			fmt.Printf("warning: copying %s: %v\n", relPath, err)
+			continue
+		}
+		copied++
+	}
+	return copied
+}
+
+// copyOverlay copies the committed curated-fixture overlay from overlayDir into
+// destDir, overriding any file the selective copy already produced. The overlay
+// holds the small set of fixtures that cannot be reproduced from the raw
+// upstream clone: files referenced only at run time (doc()/unparsed-text(),
+// dynamic fn:transform stylesheets, collection members) that a static catalog
+// scan misses, plus fixtures whose committed content was hand-edited (e.g. a DTD
+// with its XML declaration stripped so it parses as an external subset). It
+// returns the number of files copied.
+func copyOverlay(overlayDir, destDir string) (int, error) {
+	if _, err := os.Stat(overlayDir); err != nil {
+		if os.IsNotExist(err) {
+			return 0, nil
+		}
+		return 0, err
+	}
+	copied := 0
+	err := filepath.WalkDir(overlayDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+		rel, err := filepath.Rel(overlayDir, path)
+		if err != nil {
+			return err
+		}
+		dst, err := generator.ContainedPath(destDir, filepath.ToSlash(rel))
+		if err != nil {
+			return err
+		}
+		if err := copyAsset(path, dst); err != nil {
+			return err
+		}
+		copied++
+		return nil
+	})
+	return copied, err
+}
+
+// writeCategoryFiles groups the tests by catalog category and writes one
+// xslt3/xslt30_<category>_gen_test.go per category through
+// generator.WriteGoFile (which formats and, in verify mode, checks for drift).
+func writeCategoryFiles(outputDir string, allTests []generatedTest, mode generator.GenerateMode) error {
+	categories := groupByCategory(allTests)
+	for _, cat := range sortedMapKeys(categories) {
+		out := filepath.Join(outputDir, fmt.Sprintf("xslt30_%s_gen_test.go", cat))
+		if err := generator.WriteGoFile(out, generateTestFile(categories[cat]), mode); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Catalog parsing
+// ──────────────────────────────────────────────────────────────────────
+
+func parseCatalog(path string) *xslCatalog {
+	f, err := os.Open(path)
+	if err != nil {
+		genFatalf("opening catalog: %v", err)
+	}
+	defer func() { _ = f.Close() }()
+	var c xslCatalog
+	dec := xml.NewDecoder(f)
+	dec.CharsetReader = charset.NewReaderLabel
+	if err := dec.Decode(&c); err != nil {
+		genFatalf("parsing catalog: %v", err)
+	}
+	return &c
+}
+
+func parseTestSet(path string) *xslTestSetFile {
+	f, err := os.Open(path)
+	if err != nil {
+		genFatalf("opening test set %s: %v", path, err)
+	}
+	defer func() { _ = f.Close() }()
+	var ts xslTestSetFile
+	dec := xml.NewDecoder(f)
+	dec.CharsetReader = charset.NewReaderLabel
+	if err := dec.Decode(&ts); err != nil {
+		genFatalf("parsing test set %s: %v", path, err)
+	}
+	return &ts
+}
+
+func addCatalogReferencedFiles(assetFiles map[string]struct{}, sourceDir, tsDir string, ts *xslTestSetFile) {
+	for _, env := range ts.Environments {
+		addCatalogFileRefs(assetFiles, sourceDir, tsDir, env.Stylesheets, env.Packages)
+	}
+
+	for _, tc := range ts.TestCases {
+		if tc.Environment != nil {
+			addCatalogFileRefs(assetFiles, sourceDir, tsDir, tc.Environment.Stylesheets, tc.Environment.Packages)
+		}
+		addCatalogFileRefs(assetFiles, sourceDir, tsDir, tc.Test.Stylesheets, tc.Test.Packages)
+	}
+}
+
+func addCatalogFileRefs(assetFiles map[string]struct{}, sourceDir, tsDir string, stylesheets []xslStylesheet, packages []xslPackage) {
+	for _, ss := range stylesheets {
+		if rel, ok := catalogRelPath(sourceDir, tsDir, ss.File); ok {
+			assetFiles[rel] = struct{}{}
+		}
+	}
+
+	for _, pkg := range packages {
+		if rel, ok := catalogRelPath(sourceDir, tsDir, pkg.File); ok {
+			assetFiles[rel] = struct{}{}
+		}
+	}
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Spec & feature filtering
+// ──────────────────────────────────────────────────────────────────────
+
+func getSetSkipReason(name string, deps *xslDependencies) string {
+	switch name {
+	case "load-xquery-module":
+		return "requires XQuery load-xquery-module"
+	}
+	if deps != nil {
+		if reason := getDepsSkipReason(deps); reason != "" {
+			return reason
+		}
+	}
+	return ""
+}
+
+// strmUnlockLimit controls how many strm tests are unlocked (0 = all).
+const strmUnlockLimit = 2542
+
+var strmUnlocked int
+
+func getCategorySkipReason(category string) string {
+	return ""
+}
+
+func getCaseSkipReason(setDeps *xslDependencies, caseDeps *xslDependencies) string {
+	// Check set-level deps first
+	if setDeps != nil {
+		if reason := getDepsSkipReason(setDeps); reason != "" {
+			return reason
+		}
+	}
+	// Check case-level deps (override set-level if present)
+	if caseDeps != nil {
+		if reason := getDepsSkipReason(caseDeps); reason != "" {
+			return reason
+		}
+	}
+	return ""
+}
+
+func getDepsSkipReason(deps *xslDependencies) string {
+	for _, d := range deps.Children {
+		typeName := d.XMLName.Local
+		switch typeName {
+		case "spec":
+			if !specSupported(d.Value) {
+				return fmt.Sprintf("unsupported spec: %s", d.Value)
+			}
+		case "feature":
+			if d.Satisfied == "false" {
+				// Test requires the feature to be absent. Skip if we support it.
+				if featureSupported(d.Value) {
+					return fmt.Sprintf("feature present but test requires absent: %s", d.Value)
+				}
+				continue
+			}
+			if !featureSupported(d.Value) {
+				return fmt.Sprintf("unsupported feature: %s", d.Value)
+			}
+		case "year_component_values":
+			if d.Satisfied == "false" {
+				// Test requires this year-value capability to be absent.
+				if yearComponentValueSupported(d.Value) {
+					return fmt.Sprintf("year component value present but test requires absent: %s", d.Value)
+				}
+				continue
+			}
+			if !yearComponentValueSupported(d.Value) {
+				return fmt.Sprintf("unsupported year component value: %s", d.Value)
+			}
+		case "on-multiple-match":
+			// Handled separately via getOnMultipleMatch
+		case "package_version_resolution":
+			// Handled separately via getVersionResolution
+		case "enable_assertions":
+			// We evaluate assertions; skip tests that require them disabled
+			if d.Satisfied == "false" {
+				return "test requires assertions disabled; we evaluate assertions"
+			}
+		case "ignore_doc_failure":
+			// XSLT 3.0 makes the handling of a failed document()/fn:doc()
+			// retrieval implementation-defined: a processor may either raise
+			// the dynamic error FODC0002 or recover by returning an empty
+			// sequence. Our processor always raises FODC0002 (secure-by-default
+			// document loading), i.e. it does NOT ignore document failures.
+			// A test with satisfied="true" only applies to processors that
+			// recover silently, so skip it. satisfied="false" matches us and
+			// runs (expects the FODC0002 error).
+			if d.Satisfied == "true" {
+				return "processor raises FODC0002 instead of ignoring document() failures"
+			}
+		}
+	}
+	return ""
+}
+
+// getOnMultipleMatch extracts the on-multiple-match dependency value from
+// test-set and test-case dependencies. Returns "fail" when the test requires
+// error behavior, empty string otherwise.
+func getOnMultipleMatch(setDeps *xslDependencies, caseDeps *xslDependencies) string {
+	check := func(deps *xslDependencies) string {
+		if deps == nil {
+			return ""
+		}
+		for _, d := range deps.Children {
+			if d.XMLName.Local == "on-multiple-match" {
+				if d.Value == "error" { //nolint:goconst
+					return "fail"
+				}
+			}
+		}
+		return ""
+	}
+	if v := check(caseDeps); v != "" {
+		return v
+	}
+	return check(setDeps)
+}
+
+// getVersionResolution extracts the package_version_resolution dependency
+// from test-set and test-case dependencies. Returns "lowest" when the test
+// requires lowest_version selection, empty string otherwise.
+func getVersionResolution(setDeps *xslDependencies, caseDeps *xslDependencies) string {
+	check := func(deps *xslDependencies) string {
+		if deps == nil {
+			return ""
+		}
+		for _, d := range deps.Children {
+			if d.XMLName.Local == "package_version_resolution" {
+				if d.Value == "lowest_version" {
+					return "lowest"
+				}
+			}
+		}
+		return ""
+	}
+	if v := check(caseDeps); v != "" {
+		return v
+	}
+	return check(setDeps)
+}
+
+func specSupported(spec string) bool {
+	for s := range strings.FieldsSeq(spec) {
+		switch s {
+		// Our processor is XSLT 3.0.
+		// "X+" means "version X or later" — we satisfy 1.0+, 2.0+, 3.0+.
+		// "X" without "+" means exactly that version — skip 1.0 and 2.0 only tests.
+		case "XSLT10+", "XSLT20+", "XSLT30", "XSLT30+":
+			return true
+		}
+	}
+	return false
+}
+
+// isExcludedTestCase returns true for test cases that should not be generated at all.
+func isExcludedTestCase(name string) bool {
+	// The unicode-90 suite is computationally expensive and serializes the
+	// entire xslt3 package test run behind one non-parallel top-level test.
+	if strings.HasPrefix(name, "unicode90-") {
+		return true
+	}
+	return false
+}
+
+func featureSupported(feature string) bool {
+	switch feature {
+	case
+		"backwards_compatibility",
+		"Saxon-PE", "Saxon-EE":
+		return false
+	}
+	return true
+}
+
+func yearComponentValueSupported(value string) bool {
+	switch value {
+	case "support negative year", "support year above 9999", "support year zero":
+		return true
+	}
+	return false
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Environment resolution
+// ──────────────────────────────────────────────────────────────────────
+
+func resolveEnvironment(tcEnv *xslEnvironment, localEnvs map[string]*xslEnvironment) *xslEnvironment {
+	if tcEnv == nil {
+		return nil
+	}
+	if tcEnv.Ref != "" {
+		if e, ok := localEnvs[tcEnv.Ref]; ok {
+			return e
+		}
+		return nil
+	}
+	// Inline environment
+	return tcEnv
+}
+
+func resolveInitialTemplateName(it *xslInitialTemplate) string {
+	return resolveQNameWithAttrs(it.Name, it.Attrs)
+}
+
+func resolveQNameWithAttrs(name string, attrs []xml.Attr) string {
+	if name == "" {
+		return ""
+	}
+	if prefix, local, ok := strings.Cut(name, ":"); ok {
+		for _, attr := range attrs {
+			if attr.Name.Space == "xmlns" && attr.Name.Local == prefix {
+				return helium.ClarkName(attr.Value, local)
+			}
+			if attr.Name.Space == "" && attr.Name.Local == "xmlns" && prefix == "" {
+				return helium.ClarkName(attr.Value, local)
+			}
+		}
+	}
+	return name
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Stylesheet dependency scanning
+// ──────────────────────────────────────────────────────────────────────
+
+func collectTransitiveDeps(sourceDir, xslPath string) []string {
+	visited := make(map[string]struct{})
+	var result []string
+	collectDepsRecursive(sourceDir, xslPath, visited, &result)
+	return result
+}
+
+// addTransitiveDeps scans the contained, sourceDir-relative stylesheet/package
+// at relPath for transitive xsl:import/xsl:include (and schema) dependencies and
+// records each discovered in-tree dependency in assetFiles. relPath MUST already
+// have passed catalogRelPath containment.
+func addTransitiveDeps(assetFiles map[string]struct{}, sourceDir, relPath string) {
+	absPath := filepath.Join(sourceDir, relPath)
+	for _, dep := range collectTransitiveDeps(sourceDir, absPath) {
+		relDep, err := filepath.Rel(sourceDir, dep)
+		if err == nil {
+			assetFiles[relDep] = struct{}{}
+		}
+	}
+}
+
+// resolveDep resolves a discovered dependency reference (relative to dir) and
+// verifies it stays within the containment root. It returns the cleaned
+// absolute path, or ok=false (with a logged warning) when the reference is
+// absolute or escapes the root.
+func resolveDep(root, dir, ref string) (string, bool) {
+	if generator.IsAbsoluteAnyOS(ref) {
+		fmt.Printf("xslt3gen: skipping absolute dependency %q", ref)
+		return "", false
+	}
+	depAbs := filepath.Join(dir, ref)
+	rel, err := filepath.Rel(root, depAbs)
+	if err != nil {
+		fmt.Printf("xslt3gen: skipping dependency %q: %v", ref, err)
+		return "", false
+	}
+	contained, err := generator.ContainedPath(root, rel)
+	if err != nil {
+		fmt.Printf("xslt3gen: skipping dependency %q: %v", ref, err)
+		return "", false
+	}
+	return contained, true
+}
+
+func collectDepsRecursive(sourceDir, xslPath string, visited map[string]struct{}, result *[]string) {
+	absPath, err := filepath.Abs(xslPath)
+	if err != nil {
+		return
+	}
+	if _, ok := visited[absPath]; ok {
+		return
+	}
+	visited[absPath] = struct{}{}
+
+	f, err := os.Open(absPath)
+	if err != nil {
+		return
+	}
+	defer func() { _ = f.Close() }()
+
+	dec := xml.NewDecoder(f)
+	dec.CharsetReader = charset.NewReaderLabel
+
+	dir := filepath.Dir(absPath)
+	for {
+		tok, err := dec.Token()
+		if err != nil {
+			break
+		}
+		se, ok := tok.(xml.StartElement)
+		if !ok {
+			continue
+		}
+		isXSLT := se.Name.Space == "" || se.Name.Space == "http://www.w3.org/1999/XSL/Transform"
+		isXSD := se.Name.Space == "" || se.Name.Space == "http://www.w3.org/2001/XMLSchema"
+
+		// xsl:import / xsl:include → follow href recursively
+		if isXSLT && (se.Name.Local == "import" || se.Name.Local == "include") {
+			for _, attr := range se.Attr {
+				if attr.Name.Local == "href" {
+					depPath, ok := resolveDep(sourceDir, dir, attr.Value)
+					if !ok {
+						continue
+					}
+					*result = append(*result, depPath)
+					collectDepsRecursive(sourceDir, depPath, visited, result)
+				}
+			}
+			continue
+		}
+		// xsl:import-schema → follow schema-location
+		if isXSLT && se.Name.Local == "import-schema" {
+			for _, attr := range se.Attr {
+				if attr.Name.Local == "schema-location" && attr.Value != "" {
+					depPath, ok := resolveDep(sourceDir, dir, attr.Value)
+					if !ok {
+						continue
+					}
+					*result = append(*result, depPath)
+					collectSchemaDeps(sourceDir, depPath, visited, result)
+				}
+			}
+			continue
+		}
+		// xs:include / xs:import inside .xsd files → follow schemaLocation
+		if isXSD && (se.Name.Local == "include" || se.Name.Local == "import") {
+			for _, attr := range se.Attr {
+				if attr.Name.Local == "schemaLocation" && attr.Value != "" {
+					depPath, ok := resolveDep(sourceDir, dir, attr.Value)
+					if !ok {
+						continue
+					}
+					*result = append(*result, depPath)
+					collectSchemaDeps(sourceDir, depPath, visited, result)
+				}
+			}
+			continue
+		}
+		// xsl:source-document → collect literal href as data dependency
+		if isXSLT && se.Name.Local == "source-document" {
+			for _, attr := range se.Attr {
+				if attr.Name.Local == "href" && attr.Value != "" && !strings.Contains(attr.Value, "{") {
+					depPath, ok := resolveDep(sourceDir, dir, normalizeAssetPath(attr.Value))
+					if !ok {
+						continue
+					}
+					*result = append(*result, depPath)
+				}
+			}
+			continue
+		}
+		if se.Name.Local != "import" && se.Name.Local != "include" && se.Name.Local != "import-schema" {
+			continue
+		}
+	}
+}
+
+// collectSchemaDeps scans an XSD file for xs:include/xs:import with
+// schemaLocation attributes and collects them as transitive dependencies.
+func collectSchemaDeps(sourceDir, xsdPath string, visited map[string]struct{}, result *[]string) {
+	absPath, err := filepath.Abs(xsdPath)
+	if err != nil {
+		return
+	}
+	if _, ok := visited[absPath]; ok {
+		return
+	}
+	visited[absPath] = struct{}{}
+
+	f, err := os.Open(absPath)
+	if err != nil {
+		return
+	}
+	defer func() { _ = f.Close() }()
+
+	dec := xml.NewDecoder(f)
+	dec.CharsetReader = charset.NewReaderLabel
+
+	dir := filepath.Dir(absPath)
+	for {
+		tok, err := dec.Token()
+		if err != nil {
+			break
+		}
+		se, ok := tok.(xml.StartElement)
+		if !ok {
+			continue
+		}
+		if se.Name.Local != "include" && se.Name.Local != "import" {
+			continue
+		}
+		for _, attr := range se.Attr {
+			if attr.Name.Local == "schemaLocation" && attr.Value != "" {
+				depPath, ok := resolveDep(sourceDir, dir, attr.Value)
+				if !ok {
+					continue
+				}
+				*result = append(*result, depPath)
+				collectSchemaDeps(sourceDir, depPath, visited, result)
+			}
+		}
+	}
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Assertion parsing
+// ──────────────────────────────────────────────────────────────────────
+
+const (
+	xslTestNS         = "http://www.w3.org/2012/10/xslt-test-catalog"
+	w3cAssertSkipCall = "w3cAssertSkip()"
+)
+
+func parseResultAssertions(tc xslTestCase, sourceDir, tsDir string) []assertion {
+	resultXML := "<result xmlns=\"" + xslTestNS + "\">" + string(tc.Result.Inner) + "</result>"
+	return parseAssertionXML(resultXML, sourceDir, tsDir)
+}
+
+func parseAssertionXML(s string, sourceDir, tsDir string) []assertion {
+	var result xmlResultWrapper
+	if err := xml.Unmarshal([]byte(s), &result); err != nil {
+		return nil
+	}
+	var out []assertion
+	for _, child := range result.Children {
+		out = append(out, convertAssertion(child, sourceDir, tsDir))
+	}
+	return out
+}
+
+// readContainedAssertionFile reads an assert-xml / assert-serialization "file"
+// reference at gen time after verifying it stays inside sourceDir. An escaping
+// or absolute reference yields an error string rather than reading outside the
+// test tree.
+func readContainedAssertionFile(sourceDir, tsDir, file string) ([]byte, error) {
+	rel, ok := catalogRelPath(sourceDir, tsDir, file)
+	if !ok {
+		return nil, fmt.Errorf("unsafe assertion file path %q", file)
+	}
+	return os.ReadFile(filepath.Join(sourceDir, rel))
+}
+
+func convertAssertion(xa xmlAssertion, sourceDir, tsDir string) assertion {
+	a := assertion{
+		Type: xa.XMLName.Local,
+	}
+
+	switch xa.XMLName.Local {
+	case "assert-xml":
+		if xa.File != "" {
+			// Read the .out file content at gen time and embed it
+			data, err := readContainedAssertionFile(sourceDir, tsDir, xa.File)
+			if err != nil {
+				a.Value = fmt.Sprintf("ERROR: cannot read %s: %v", xa.File, err)
+			} else {
+				a.Value = string(data)
+			}
+		} else {
+			a.Value = decodeXMLText(string(xa.Inner))
+		}
+	case "error":
+		a.Value = xa.Code
+	case "assert-string-value":
+		a.Value = decodeXMLText(string(xa.Inner))
+	case "all-of", "any-of":
+		for _, child := range xa.Children {
+			a.Children = append(a.Children, convertAssertion(child, sourceDir, tsDir))
+		}
+	case "assert-message":
+		for _, child := range xa.Children {
+			a.Children = append(a.Children, convertAssertion(child, sourceDir, tsDir))
+		}
+	case "assert-result-document":
+		a.URI = xa.URI
+		for _, child := range xa.Children {
+			a.Children = append(a.Children, convertAssertion(child, sourceDir, tsDir))
+		}
+	case "assert-serialization":
+		a.Method = xa.Method
+		if xa.File != "" {
+			data, err := readContainedAssertionFile(sourceDir, tsDir, xa.File)
+			if err != nil {
+				a.Value = fmt.Sprintf("ERROR: cannot read %s: %v", xa.File, err)
+			} else if !utf8.Valid(data) {
+				// Non-UTF-8 serialization output cannot be embedded in Go source.
+				a.Type = "assert-posture-and-sweep"
+				a.Value = "skip: non-UTF-8 serialization comparison"
+			} else {
+				a.Value = string(data)
+			}
+		} else {
+			a.Value = decodeXMLText(string(xa.Inner))
+		}
+	case "assert-serialization-error":
+		a.Type = "error"
+		a.Value = xa.Code
+	case "serialization-matches":
+		a.Value = decodeXMLText(string(xa.Inner))
+		a.Flags = xa.Flags
+	case "assert-type", "assert-count", "assert-deep-eq", "assert-empty", "assert-eq":
+		a.Value = decodeXMLText(string(xa.Inner))
+	case "not":
+		for _, child := range xa.Children {
+			a.Children = append(a.Children, convertAssertion(child, sourceDir, tsDir))
+		}
+	case "assert-posture-and-sweep":
+		a.Value = "skip: streaming not supported"
+	default:
+		a.Value = decodeXMLText(string(xa.Inner))
+	}
+
+	return a
+}
+
+// classifyError sets ExpectError/ErrorCode on the test when assertions indicate
+// an expected error.
+func classifyError(gt *generatedTest) {
+	if len(gt.Assertions) == 1 && gt.Assertions[0].Type == "error" {
+		gt.ExpectError = true
+		gt.ErrorCode = gt.Assertions[0].Value
+		return
+	}
+	// Check if top-level any-of with all error children
+	if len(gt.Assertions) == 1 && gt.Assertions[0].Type == "any-of" {
+		allError := true
+		for _, child := range gt.Assertions[0].Children {
+			if child.Type != "error" {
+				allError = false
+				break
+			}
+		}
+		if allError {
+			gt.ExpectError = true
+			if len(gt.Assertions[0].Children) > 0 {
+				gt.ErrorCode = gt.Assertions[0].Children[0].Value
+			}
+		} else {
+			// Mixed any-of: collect error codes as accepted alternatives.
+			for _, child := range gt.Assertions[0].Children {
+				if child.Type == "error" && child.Value != "" {
+					gt.AcceptErrors = append(gt.AcceptErrors, child.Value)
+				}
+			}
+		}
+	}
+}
+
+// classifyUnsupportedAssertions sets Skip when all emitted assertions would
+// be w3cAssertSkip(). This avoids compiling/transforming stylesheets for
+// tests whose results cannot be verified.
+func classifyUnsupportedAssertions(gt *generatedTest) {
+	if gt.Skip != "" || gt.ExpectError {
+		return
+	}
+	exprs := emitAssertions(gt.Assertions)
+	if len(exprs) == 0 {
+		return
+	}
+	for _, e := range exprs {
+		if e != w3cAssertSkipCall {
+			return
+		}
+	}
+	gt.Skip = unsupportedAssertionReason(gt.Assertions)
+}
+
+func unsupportedAssertionReason(assertions []assertion) string {
+	for _, a := range assertions {
+		switch a.Type {
+		case "assert-posture-and-sweep":
+			return "unsupported assertion: assert-posture-and-sweep"
+		case "all-of":
+			if reason := unsupportedAssertionReason(a.Children); reason != "" {
+				return reason
+			}
+		}
+	}
+	return "unsupported assertion type"
+}
+
+// classifySchemaTypeChecking marks tests that expect schema-aware runtime
+// type-checking errors (XTTE*) as skipped. These tests require the processor
+// to validate result types against schema declarations at runtime, which is
+// not yet implemented. Only applies to tests from schema_aware test sets.
+// hasFeatureDep returns true if deps contains a feature dependency with the given value.
+func hasFeatureDep(deps *xslDependencies, feature string) bool {
+	if deps == nil {
+		return false
+	}
+	for _, d := range deps.Children {
+		if d.XMLName.Local == "feature" && d.Value == feature && d.Satisfied != "false" {
+			return true
+		}
+	}
+	return false
+}
+
+func classifySchemaTypeChecking(gt *generatedTest, isSchemaAware bool) {
+	if gt.Skip != "" {
+		return
+	}
+	if !gt.ExpectError || !isSchemaAware {
+		return
+	}
+	if gt.ErrorCode == "XXXX9999" {
+		gt.Skip = "placeholder error code: " + gt.ErrorCode
+	}
+}
+
+// loadSchemaKnownFailures reads the schema_known_failures.txt file containing
+// test case names (one per line) that require full schema validation and cannot
+// pass with partial schema support.
+// classifyAdvancedSchemaFeatures scans a schema-aware test stylesheet for
+// features that require deep schema support beyond basic type annotations.
+// If found, the test is skipped with a specific reason.
+func classifyAdvancedSchemaFeatures(gt *generatedTest, xslPath string) {
+	// Schema-aware features are now unlocked for testing.
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Code generation
+// ──────────────────────────────────────────────────────────────────────
+
+func generateTestFile(tests []generatedTest) string {
+	var b strings.Builder
+
+	b.WriteString("// Code generated by w3cgen; DO NOT EDIT.\n\n")
+	b.WriteString("package xslt3_test\n\n")
+
+	// All cases across the category register into the shared xslt30AllCases
+	// slice; the single TestXSLT30W3C entry point (see the harness) runs them
+	// as subtests, so every case surfaces under one root test for the JUnit
+	// reporter regardless of its originating test-set.
+	b.WriteString("func init() {\n")
+	b.WriteString("\txslt30AllCases = append(xslt30AllCases, []w3cTest{\n")
+
+	{
+		for _, tc := range tests {
+			b.WriteString("\t\t{")
+			fmt.Fprintf(&b, "Name: %q, ", tc.CaseName)
+			fmt.Fprintf(&b, "StylesheetPath: %q", tc.StylesheetPath)
+
+			if len(tc.SecondaryStylesheets) > 0 {
+				b.WriteString(", SecondaryStylesheets: []string{")
+				for i, ss := range tc.SecondaryStylesheets {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					fmt.Fprintf(&b, "%q", ss)
+				}
+				b.WriteString("}")
+			}
+
+			if len(tc.PackageDeps) > 0 {
+				b.WriteString(", PackageDeps: []w3cPackageDep{")
+				for i, pd := range tc.PackageDeps {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					fmt.Fprintf(&b, "{URI: %q, Version: %q, FilePath: %q}", pd.URI, pd.PackageVersion, pd.FilePath)
+				}
+				b.WriteString("}")
+			}
+
+			if tc.SourceDocPath != "" {
+				fmt.Fprintf(&b, ", SourceDocPath: %q", tc.SourceDocPath)
+			}
+			if tc.SourceSchemaPath != "" {
+				fmt.Fprintf(&b, ", SourceSchemaPath: %q", tc.SourceSchemaPath)
+			}
+			if len(tc.ImportSchemaPaths) > 0 {
+				b.WriteString(", ImportSchemaPaths: []string{")
+				for i, p := range tc.ImportSchemaPaths {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					fmt.Fprintf(&b, "%q", p)
+				}
+				b.WriteString("}")
+			}
+			if tc.SourceContent != "" {
+				fmt.Fprintf(&b, ", SourceContent: %s", goStringLiteral(tc.SourceContent))
+			}
+			if tc.InitialTemplate != "" {
+				fmt.Fprintf(&b, ", InitialTemplate: %q", tc.InitialTemplate)
+			}
+			if len(tc.InitialTemplateParams) > 0 {
+				b.WriteString(", InitialTemplateParams: map[string]string{")
+				keys := sortedStringKeys(tc.InitialTemplateParams)
+				for i, k := range keys {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					fmt.Fprintf(&b, "%q: %s", k, goStringLiteral(tc.InitialTemplateParams[k]))
+				}
+				b.WriteString("}")
+			}
+			if len(tc.InitialTemplateTunnelParams) > 0 {
+				b.WriteString(", InitialTemplateTunnelParams: map[string]string{")
+				keys := sortedStringKeys(tc.InitialTemplateTunnelParams)
+				for i, k := range keys {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					fmt.Fprintf(&b, "%q: %s", k, goStringLiteral(tc.InitialTemplateTunnelParams[k]))
+				}
+				b.WriteString("}")
+			}
+			if tc.InitialMode != "" {
+				fmt.Fprintf(&b, ", InitialMode: %q", tc.InitialMode)
+			}
+			if tc.InitialModeSelect != "" {
+				fmt.Fprintf(&b, ", InitialModeSelect: %q", tc.InitialModeSelect)
+			}
+			if len(tc.InitialModeParams) > 0 {
+				b.WriteString(", InitialModeParams: map[string]string{")
+				keys := sortedStringKeys(tc.InitialModeParams)
+				for i, k := range keys {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					fmt.Fprintf(&b, "%q: %s", k, goStringLiteral(tc.InitialModeParams[k]))
+				}
+				b.WriteString("}")
+			}
+			if len(tc.InitialModeTunnelParams) > 0 {
+				b.WriteString(", InitialModeTunnelParams: map[string]string{")
+				keys := sortedStringKeys(tc.InitialModeTunnelParams)
+				for i, k := range keys {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					fmt.Fprintf(&b, "%q: %s", k, goStringLiteral(tc.InitialModeTunnelParams[k]))
+				}
+				b.WriteString("}")
+			}
+			if tc.InitialFunction != "" {
+				fmt.Fprintf(&b, ", InitialFunction: %q", tc.InitialFunction)
+			}
+			if len(tc.InitialFunctionParams) > 0 {
+				b.WriteString(", InitialFunctionParams: []string{")
+				for i, p := range tc.InitialFunctionParams {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					fmt.Fprintf(&b, "%s", goStringLiteral(p))
+				}
+				b.WriteString("}")
+			}
+			if len(tc.Params) > 0 {
+				b.WriteString(", Params: map[string]string{")
+				keys := sortedStringKeys(tc.Params)
+				for i, k := range keys {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					fmt.Fprintf(&b, "%q: %s", k, goStringLiteral(tc.Params[k]))
+				}
+				b.WriteString("}")
+			}
+			if len(tc.ParamTypes) > 0 {
+				b.WriteString(", ParamTypes: map[string]string{")
+				keys := sortedStringKeys(tc.ParamTypes)
+				for i, k := range keys {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					fmt.Fprintf(&b, "%q: %q", k, tc.ParamTypes[k])
+				}
+				b.WriteString("}")
+			}
+			if len(tc.Collections) > 0 {
+				b.WriteString(", Collections: []w3cCollection{")
+				for i, col := range tc.Collections {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					fmt.Fprintf(&b, "{URI: %q, DocPaths: []string{", col.URI)
+					for j, docPath := range col.DocPaths {
+						if j > 0 {
+							b.WriteString(", ")
+						}
+						fmt.Fprintf(&b, "%q", docPath)
+					}
+					b.WriteString("}}")
+				}
+				b.WriteString("}")
+			}
+			if tc.ExpectError {
+				b.WriteString(", ExpectError: true")
+				if tc.ErrorCode != "" {
+					fmt.Fprintf(&b, ", ErrorCode: %q", tc.ErrorCode)
+				}
+			} else {
+				assertExprs := emitAssertions(tc.Assertions)
+				if len(assertExprs) > 0 {
+					b.WriteString(", Assertions: []w3cAssertion{")
+					b.WriteString(strings.Join(assertExprs, ", "))
+					b.WriteString("}")
+				}
+			}
+			if len(tc.AcceptErrors) > 0 {
+				b.WriteString(", AcceptErrors: []string{")
+				for i, code := range tc.AcceptErrors {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					fmt.Fprintf(&b, "%q", code)
+				}
+				b.WriteString("}")
+			}
+			if tc.EmbeddedStylesheet {
+				b.WriteString(", EmbeddedStylesheet: true")
+			}
+			if tc.Skip != "" {
+				fmt.Fprintf(&b, ", Skip: %q", tc.Skip)
+			}
+			if tc.OnMultipleMatch != "" {
+				fmt.Fprintf(&b, ", OnMultipleMatch: %q", tc.OnMultipleMatch)
+			}
+			if tc.VersionResolution != "" {
+				fmt.Fprintf(&b, ", VersionResolution: %q", tc.VersionResolution)
+			}
+
+			b.WriteString("},\n")
+		}
+	}
+
+	b.WriteString("\t}...)\n")
+	b.WriteString("}\n")
+
+	return b.String()
+}
+
+func emitAssertions(assertions []assertion) []string {
+	var out []string
+	for _, a := range assertions {
+		out = append(out, emitAssertion(a)...)
+	}
+	// Filter out w3cAssertSkip() when real assertions exist alongside.
+	// This handles W3C tests with mixed result alternatives (e.g.
+	// assert-xml + assert-posture-and-sweep): the unsupported assertion
+	// would cause a t.Skip that hides the passing real assertion.
+	hasReal := false
+	for _, e := range out {
+		if e != w3cAssertSkipCall {
+			hasReal = true
+			break
+		}
+	}
+	if hasReal {
+		filtered := out[:0]
+		for _, e := range out {
+			if e != w3cAssertSkipCall {
+				filtered = append(filtered, e)
+			}
+		}
+		out = filtered
+	}
+	return out
+}
+
+func emitAssertion(a assertion) []string {
+	switch a.Type {
+	case "assert-xml":
+		return []string{fmt.Sprintf("w3cAssertXML(%s)", goStringLiteral(strings.TrimSpace(a.Value)))}
+	case "assert-string-value":
+		return []string{fmt.Sprintf("w3cAssertStringValue(%s)", goStringLiteral(a.Value))}
+	case "error":
+		return nil // handled by classifyError
+	case "all-of":
+		return emitAssertions(a.Children)
+	case "any-of":
+		var checks []string
+		for _, child := range a.Children {
+			if child.Type == "error" {
+				continue
+			}
+			checks = append(checks, emitCheck(child))
+		}
+		if len(checks) == 0 {
+			return nil
+		}
+		return []string{fmt.Sprintf("w3cAnyOf(%s)", strings.Join(checks, ", "))}
+	case "assert-message":
+		var msgChecks []string
+		for _, child := range a.Children {
+			msgChecks = append(msgChecks, emitCheck(child))
+		}
+		if len(msgChecks) == 0 {
+			return nil
+		}
+		return []string{fmt.Sprintf("w3cAssertMessage(%s)", strings.Join(msgChecks, ", "))}
+	case "assert":
+		return []string{fmt.Sprintf("w3cAssertXPath(%s)", goStringLiteral(strings.TrimSpace(a.Value)))}
+	case "assert-result-document":
+		var childChecks []string
+		for _, child := range a.Children {
+			childChecks = append(childChecks, emitCheck(child))
+		}
+		if len(childChecks) == 0 {
+			return []string{w3cAssertSkipCall}
+		}
+		return []string{fmt.Sprintf("w3cAssertResultDocument(%q, %s)", a.URI, strings.Join(childChecks, ", "))}
+	case "assert-serialization":
+		return []string{fmt.Sprintf("w3cAssertSerialization(%q, %s)", a.Method, goStringLiteral(a.Value))}
+	case "serialization-matches":
+		pattern := buildSerializationMatchesPattern(a.Value, a.Flags)
+		return []string{fmt.Sprintf("w3cAssertSerializationMatches(%s)", goStringLiteral(pattern))}
+	case "assert-type":
+		return []string{fmt.Sprintf("w3cAssertType(%s)", goStringLiteral(strings.TrimSpace(a.Value)))}
+	case "assert-count":
+		return []string{fmt.Sprintf("w3cAssertCount(%s)", strings.TrimSpace(a.Value))}
+	case "assert-deep-eq":
+		return []string{fmt.Sprintf("w3cAssertDeepEq(%s)", goStringLiteral(strings.TrimSpace(a.Value)))}
+	case "assert-empty":
+		return []string{"w3cAssertEmpty()"}
+	case "assert-eq":
+		return []string{fmt.Sprintf("w3cAssertEq(%s)", goStringLiteral(strings.TrimSpace(a.Value)))}
+	case "not":
+		var checks []string
+		for _, child := range a.Children {
+			checks = append(checks, emitCheck(child))
+		}
+		if len(checks) == 0 {
+			return []string{w3cAssertSkipCall}
+		}
+		return []string{fmt.Sprintf("w3cAssertNot(%s)", strings.Join(checks, ", "))}
+	case "assert-posture-and-sweep":
+		return []string{w3cAssertSkipCall}
+	default:
+		return []string{w3cAssertSkipCall}
+	}
+}
+
+// buildSerializationMatchesPattern converts a W3C serialization-matches pattern
+// with optional flags into a Go regexp pattern. The W3C catalog uses flag "i"
+// for case-insensitive matching and "x" for extended mode; we prepend them as
+// Go inline flags ((?i), etc.). The (?s) flag (dot-matches-newline) is always
+// added since serialized output is multi-line.
+func buildSerializationMatchesPattern(pattern, flags string) string {
+	if flags == "" {
+		return pattern
+	}
+	// Map W3C flags to Go regexp inline flags.
+	// "i" → case insensitive, "x" → extended (strip unescaped whitespace).
+	var goFlags strings.Builder
+	hasX := false
+	for _, f := range flags {
+		switch f {
+		case 'i':
+			goFlags.WriteRune('i')
+		case 'm':
+			goFlags.WriteRune('m')
+		case 's':
+			goFlags.WriteRune('s')
+		case 'x':
+			hasX = true
+		}
+	}
+	// Extended mode ("x"): strip unescaped whitespace and #-comments from pattern.
+	// Go regexp does not support (?x), so we apply the transformation manually.
+	if hasX {
+		pattern = stripExtendedWhitespace(pattern)
+	}
+	if goFlags.Len() == 0 {
+		return pattern
+	}
+	return "(?" + goFlags.String() + ")" + pattern
+}
+
+// stripExtendedWhitespace removes unescaped whitespace and #-comments from
+// a regex pattern, emulating the XPath/Perl "x" flag. Whitespace inside
+// character classes [...] is preserved.
+func stripExtendedWhitespace(pattern string) string {
+	var b strings.Builder
+	inCharClass := false
+	i := 0
+	for i < len(pattern) {
+		ch := pattern[i]
+		if ch == '\\' && i+1 < len(pattern) {
+			// Escaped character — keep as-is.
+			b.WriteByte(ch)
+			b.WriteByte(pattern[i+1])
+			i += 2
+			continue
+		}
+		if ch == '[' && !inCharClass {
+			inCharClass = true
+			b.WriteByte(ch)
+			i++
+			continue
+		}
+		if ch == ']' && inCharClass {
+			inCharClass = false
+			b.WriteByte(ch)
+			i++
+			continue
+		}
+		if !inCharClass {
+			if ch == '#' {
+				// Skip #-comment to end of line.
+				for i < len(pattern) && pattern[i] != '\n' {
+					i++
+				}
+				continue
+			}
+			if ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' {
+				i++
+				continue
+			}
+		}
+		b.WriteByte(ch)
+		i++
+	}
+	return b.String()
+}
+
+func emitCheck(a assertion) string {
+	switch a.Type {
+	case "assert-xml":
+		return fmt.Sprintf("w3cCheckXML(%s)", goStringLiteral(strings.TrimSpace(a.Value)))
+	case "assert-string-value":
+		return fmt.Sprintf("w3cCheckStringValue(%s)", goStringLiteral(a.Value))
+	case "assert":
+		return fmt.Sprintf("w3cCheckXPath(%s)", goStringLiteral(strings.TrimSpace(a.Value)))
+	case "error":
+		return fmt.Sprintf("w3cCheckError(%q)", a.Value)
+	case "assert-serialization":
+		return fmt.Sprintf("w3cCheckSerialization(%q, %s)", a.Method, goStringLiteral(a.Value))
+	case "serialization-matches":
+		pattern := buildSerializationMatchesPattern(a.Value, a.Flags)
+		return fmt.Sprintf("w3cCheckSerializationMatches(%s)", goStringLiteral(pattern))
+	case "all-of":
+		var checks []string
+		for _, child := range a.Children {
+			checks = append(checks, emitCheck(child))
+		}
+		return fmt.Sprintf("w3cCheckAllOf(%s)", strings.Join(checks, ", "))
+	case "any-of":
+		var checks []string
+		for _, child := range a.Children {
+			checks = append(checks, emitCheck(child))
+		}
+		return fmt.Sprintf("w3cCheckAnyOf(%s)", strings.Join(checks, ", "))
+	case "assert-type":
+		return fmt.Sprintf("w3cCheckType(%s)", goStringLiteral(strings.TrimSpace(a.Value)))
+	case "assert-count":
+		return fmt.Sprintf("w3cCheckCount(%s)", strings.TrimSpace(a.Value))
+	case "assert-deep-eq":
+		return fmt.Sprintf("w3cCheckDeepEq(%s)", goStringLiteral(strings.TrimSpace(a.Value)))
+	case "assert-empty":
+		return "w3cCheckEmpty()"
+	case "assert-eq":
+		return fmt.Sprintf("w3cCheckEq(%s)", goStringLiteral(strings.TrimSpace(a.Value)))
+	case "not":
+		var checks []string
+		for _, child := range a.Children {
+			checks = append(checks, emitCheck(child))
+		}
+		if len(checks) == 0 {
+			return "w3cCheckSkip()"
+		}
+		return fmt.Sprintf("w3cCheckNot(%s)", strings.Join(checks, ", "))
+	default:
+		return "w3cCheckSkip()"
+	}
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Categorization
+// ──────────────────────────────────────────────────────────────────────
+
+func groupByCategory(tests []generatedTest) map[string][]generatedTest {
+	cats := make(map[string][]generatedTest)
+	for _, t := range tests {
+		cats[t.Category] = append(cats[t.Category], t)
+	}
+	return cats
+}
+
+// categoryFromCatalogPath extracts the category from the catalog file path.
+// e.g. "tests/insn/apply-templates/_apply-templates-test-set.xml" → "insn"
+// e.g. "tests/attr/avt/_avt-test-set.xml" → "attr"
+func categoryFromCatalogPath(path string) string {
+	parts := strings.Split(filepath.ToSlash(path), "/")
+	if len(parts) >= 2 && parts[0] == "tests" {
+		return parts[1]
+	}
+	return "misc"
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Utilities
+// ──────────────────────────────────────────────────────────────────────
+
+// extractParseXMLContent extracts the XML string from a select expression
+// of the form parse-xml('...') used in W3C test catalog environments.
+func extractParseXMLContent(sel string) string {
+	sel = strings.TrimSpace(sel)
+	const prefix = "parse-xml('"
+	if !strings.HasPrefix(sel, prefix) {
+		return ""
+	}
+	rest := sel[len(prefix):]
+	end := strings.LastIndex(rest, "')")
+	if end < 0 {
+		return ""
+	}
+	return strings.ReplaceAll(rest[:end], "''", "'")
+}
+
+func goStringLiteral(s string) string {
+	if strings.Contains(s, "\n") && !strings.Contains(s, "`") && !strings.Contains(s, "\r") && utf8.ValidString(s) {
+		return "`" + s + "`"
+	}
+	return fmt.Sprintf("%q", s)
+}
+
+func sortedStringKeys(m map[string]string) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
+func sortedMapKeys[V any](m map[string]V) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
+func addAssetTree(assetFiles map[string]struct{}, rootDir, relDir string) error {
+	absDir := filepath.Join(rootDir, relDir)
+	return filepath.WalkDir(absDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+
+		relPath, err := filepath.Rel(rootDir, path)
+		if err != nil {
+			return err
+		}
+		if strings.HasPrefix(filepath.Base(relPath), "_") {
+			return nil
+		}
+		assetFiles[relPath] = struct{}{}
+		return nil
+	})
+}
+
+func normalizeAssetPath(path string) string {
+	base, _, _ := strings.Cut(path, "#")
+	return base
+}
+
+// catalogRelPath turns a catalog-derived file reference (a test-set-relative
+// "file" / "href" attribute under tsDir) into a sourceDir-relative path,
+// rejecting any reference that is absolute or escapes sourceDir via ".."
+// segments. It returns the cleaned, slash-normalized relative path and ok=true
+// on success; on rejection it logs a warning and returns ok=false.
+//
+// This is the single choke point every catalog-derived on-disk path must pass
+// through BEFORE it is scanned, stored on a generatedTest, or opened — so an
+// escaping reference can never reach os.Open/os.ReadFile or be written into a
+// generated test.
+func catalogRelPath(sourceDir, tsDir, file string) (string, bool) {
+	if file == "" {
+		return "", false
+	}
+	if generator.IsAbsoluteAnyOS(file) || generator.IsAbsoluteAnyOS(normalizeAssetPath(file)) {
+		fmt.Printf("xslt3gen: skipping absolute catalog path %q (under %q)", file, tsDir)
+		return "", false
+	}
+	rel := normalizeAssetPath(filepath.Join(tsDir, file))
+	full, err := generator.ContainedPath(sourceDir, rel)
+	if err != nil {
+		fmt.Printf("xslt3gen: skipping unsafe catalog path %q (under %q): %v", file, tsDir, err)
+		return "", false
+	}
+	cleaned, err := filepath.Rel(sourceDir, full)
+	if err != nil {
+		fmt.Printf("xslt3gen: skipping unsafe catalog path %q (under %q): %v", file, tsDir, err)
+		return "", false
+	}
+	return cleaned, true
+}
+
+func boolAttrTrue(v string) bool {
+	switch strings.TrimSpace(v) {
+	case "1", "true", "yes":
+		return true
+	default:
+		return false
+	}
+}

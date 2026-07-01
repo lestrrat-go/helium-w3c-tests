@@ -1,5 +1,7 @@
 /.tmp/
 /sources/*/
 /go.work
+/go.work.sum
 /testdata/xsd11/
+/testdata/xslt30/
 /test-results/

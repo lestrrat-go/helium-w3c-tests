@@ -61,23 +61,33 @@ Run tests:
 go test ./...
 ```
 
-Run XSD 1.1 conformance tests and write JUnit XML results:
+Run a suite's conformance tests and write JUnit XML results:
 
 ```sh
 go run ./cmd/w3ctest xsd11
+go run ./cmd/w3ctest xslt30
 ```
 
-The default result file is `test-results/xsd11-junit.xml`. Override it with
-`-out`:
+Each suite writes to `test-results/<suite>-junit.xml` by default. Override it
+with `-out`:
 
 ```sh
-go run ./cmd/w3ctest -out /tmp/xsd11-junit.xml xsd11
+go run ./cmd/w3ctest -out /tmp/xslt30-junit.xml xslt30
 ```
 
 The JUnit report contains conformance results only: one testcase per
-`TestXSD11W3C/<case ID>` subtest. The manifest availability check is excluded.
-Skipped conformance cases include the skip reason in the JUnit `<skipped>`
-message.
+`TestXSD11W3C/<case ID>` (or `TestXSLT30W3C/<case name>`) subtest. The manifest
+availability check is excluded. Skipped conformance cases include the skip
+reason in the JUnit `<skipped>` message.
+
+Per-case skips for tests that are valid per spec but exercise behavior the
+processor does not follow live in `expectations/<suite>.json`; structural
+spec/feature/streaming gating is computed at generation time.
+
+The XSLT 3.0 suite copies catalog-referenced fixtures out of the gitignored
+`sources/xslt30` clone into `testdata/xslt30`, then overlays the committed
+`fixtures/xslt30` tree — a small curated set (files referenced only at run time,
+plus hand-edited fixtures) that a static catalog scan cannot reproduce.
 
 ## Current State
 
