@@ -2626,6 +2626,15 @@ var xstsSaxonCases = []xstsCase{
 		SchemaValid: false,
 	},
 	{
+		ID:          "saxonMeta/VC.testSet/vc001",
+		SchemaRel:   "saxonData/VC/vc001.xsd",
+		SchemaValid: true,
+		Instances: []xstsInstance{
+			{Name: "vc001.v1.xml", Rel: "saxonData/VC/vc001.v1.xml", Valid: true},
+			{Name: "vc001.n1.xml", Rel: "saxonData/VC/vc001.n1.xml", Valid: false},
+		},
+	},
+	{
 		ID:          "saxonMeta/VC.testSet/vc003",
 		SchemaRel:   "saxonData/VC/vc003.xsd",
 		SchemaValid: true,
@@ -2746,6 +2755,15 @@ var xstsSaxonCases = []xstsCase{
 		SchemaValid: true,
 		Instances: []xstsInstance{
 			{Name: "vc023.v1.xml", Rel: "saxonData/VC/vc010.v1.xml", Valid: true},
+		},
+	},
+	{
+		ID:          "saxonMeta/VC.testSet/vc024-11",
+		SchemaRel:   "saxonData/VC/vc024.xsd",
+		SchemaValid: true,
+		Instances: []xstsInstance{
+			{Name: "vc024.v1.xml", Rel: "saxonData/VC/vc001.v1.xml", Valid: true},
+			{Name: "vc024.n1.xml", Rel: "saxonData/VC/vc001.n1.xml", Valid: false},
 		},
 	},
 	{

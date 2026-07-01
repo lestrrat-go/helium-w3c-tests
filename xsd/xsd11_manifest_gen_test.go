@@ -18,8 +18,8 @@ const w3cPinnedCommit = "7bc3365c652a322f3d762021b3879eb92dae7e30"
 const w3cSourceDir = "sources/xsd11"
 const w3cCatalogPath = "sources/xsd11/suite.xml"
 const w3cCatalogTestSets = 93
-const w3cCatalogTestCases = 967
-const w3cRunnableTestCases = 967
+const w3cCatalogTestCases = 1049
+const w3cRunnableTestCases = 1049
 const w3cSkippedTestCases = 0
 const w3cExcludedTestCases = 0
 

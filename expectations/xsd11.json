@@ -1,4 +1,28 @@
 {
   "skip": {},
-  "xfail": {}
+  "xfail": {
+    "msMeta/Additional_w3c.xml/addB118": "helium XSD 1.1 gap (Additional): valid 1.1 schema wrongly rejected",
+    "msMeta/AttributeGroup_w3c.xml/attgC010": "helium XSD 1.1 gap (AttributeGroup): valid 1.1 schema wrongly rejected",
+    "msMeta/AttributeGroup_w3c.xml/attgC020": "helium XSD 1.1 gap (AttributeGroup): valid 1.1 schema wrongly rejected",
+    "msMeta/AttributeGroup_w3c.xml/attgC031": "helium XSD 1.1 gap (AttributeGroup): valid 1.1 schema wrongly rejected",
+    "msMeta/AttributeGroup_w3c.xml/attgD015": "helium XSD 1.1 gap (AttributeGroup): valid 1.1 schema wrongly rejected",
+    "msMeta/Attribute_w3c.xml/attKb009": "helium XSD 1.1 gap (Attribute): invalid 1.1 schema wrongly accepted",
+    "msMeta/Attribute_w3c.xml/attKc009": "helium XSD 1.1 gap (Attribute): invalid 1.1 schema wrongly accepted",
+    "msMeta/Attribute_w3c.xml/attP029": "helium XSD 1.1 gap (Attribute): invalid 1.1 schema wrongly accepted",
+    "msMeta/Attribute_w3c.xml/attP031": "helium XSD 1.1 gap (Attribute): invalid 1.1 schema wrongly accepted",
+    "msMeta/DataTypes_w3c.xml/anyURI_a001_1336": "helium XSD 1.1 gap (DataTypes): valid 1.1 schema wrongly rejected",
+    "msMeta/ModelGroups_w3c.xml/mgO001": "helium XSD 1.1 gap (ModelGroups): valid 1.1 schema wrongly rejected",
+    "msMeta/ModelGroups_w3c.xml/mgO018": "helium XSD 1.1 gap (ModelGroups): valid 1.1 schema wrongly rejected",
+    "msMeta/Particles_w3c.xml/particlesHa161": "helium XSD 1.1 gap (Particles): valid 1.1 schema wrongly rejected",
+    "msMeta/Particles_w3c.xml/particlesHb008": "helium XSD 1.1 gap (Particles): valid 1.1 schema wrongly rejected",
+    "msMeta/Particles_w3c.xml/particlesHb011": "helium XSD 1.1 gap (Particles): valid 1.1 schema wrongly rejected",
+    "msMeta/Particles_w3c.xml/particlesZ001": "helium XSD 1.1 gap (Particles): valid 1.1 schema wrongly rejected",
+    "msMeta/Particles_w3c.xml/particlesZ028": "helium XSD 1.1 gap (Particles): valid 1.1 schema wrongly rejected",
+    "msMeta/Regex_w3c.xml/reK88": "helium XSD 1.1 gap (Regex): valid 1.1 schema wrongly rejected",
+    "msMeta/Regex_w3c.xml/reZ006i": "helium XSD 1.1 gap (Regex): valid 1.1 schema wrongly rejected",
+    "msMeta/SimpleType_w3c.xml/stE053": "helium XSD 1.1 gap (SimpleType): invalid 1.1 schema wrongly accepted",
+    "msMeta/SimpleType_w3c.xml/stZ007": "helium XSD 1.1 gap (SimpleType): invalid 1.1 schema wrongly accepted",
+    "msMeta/SimpleType_w3c.xml/stZ047": "helium XSD 1.1 gap (SimpleType): invalid 1.1 schema wrongly accepted",
+    "msMeta/SimpleType_w3c.xml/stZ055": "helium XSD 1.1 gap (SimpleType): invalid 1.1 schema wrongly accepted"
+  }
 }
