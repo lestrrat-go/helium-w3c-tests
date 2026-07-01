@@ -28,6 +28,13 @@ type suiteConfig struct {
 }
 
 var suites = map[string]suiteConfig{
+	"qt3": {
+		pkg:        "./xpath3",
+		rootTest:   "TestQT3W3C",
+		runPattern: "^TestQT3W3C$",
+		junitSuite: "qt3-conformance",
+		defaultOut: "test-results/qt3-junit.xml",
+	},
 	"xsd11": {
 		pkg:            "./xsd",
 		rootTest:       "TestXSD11W3C",
