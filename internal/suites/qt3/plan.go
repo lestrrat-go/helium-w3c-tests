@@ -23,8 +23,15 @@ func readCatalogPlan(root string, suiteLock generator.SuiteLock) (info generator
 		return info, nil
 	}
 
+	// generator.ReadCatalogInfo's findCatalog does a lexical walk and can pick a
+	// nested data fixture named catalog.xml (QT3 ships app/Walmsley/catalog.xml,
+	// which sorts before the real one). The FOTS test catalog is always the
+	// top-level file, and collectTests uses it directly — so use it here too and
+	// correct the reported CatalogPath, otherwise the manifest counts come from a
+	// non-catalog data file and read as zero.
 	sourcePath := filepath.Join(root, filepath.FromSlash(suiteLock.SourceDir))
-	cat := parseCatalog(filepath.Join(root, filepath.FromSlash(info.CatalogPath)))
+	info.CatalogPath = filepath.ToSlash(filepath.Join(suiteLock.SourceDir, "catalog.xml"))
+	cat := parseCatalog(filepath.Join(sourcePath, "catalog.xml"))
 
 	globalEnvs := make(map[string]*environment)
 	for i := range cat.Environments {

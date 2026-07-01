@@ -189,6 +189,14 @@ func qt3SingleRune(s string) rune {
 
 func qt3RunTests(t *testing.T, tests []qt3Test) {
 	t.Helper()
+	// testdata/qt3ts is gitignored; on a fresh checkout without a fetch the
+	// fixtures are absent. Skip gracefully instead of failing on a missing
+	// document, so `go test ./xpath3/` before a fetch skips rather than fails.
+	// This covers every caller, including the hand-written collection /
+	// source-document tests that run cases directly.
+	if _, err := os.Stat(filepath.Join(qt3TestDataDir(), "catalog.xml")); os.IsNotExist(err) {
+		t.Skipf("fixtures not fetched; run go run ./cmd/w3cgen fetch qt3")
+	}
 	// Register resource mappings into the shared server
 	for _, tc := range tests {
 		if len(tc.ResourceMap) > 0 {
@@ -312,7 +320,7 @@ func qt3DefaultBaseURI(tc qt3Test) string {
 		return "http://www.w3.org/fots/fn/"
 	}
 	if qt3NeedsRelativeUnparsedTextBaseURI(tc.XPath) && (tc.NeedsHTTP || len(tc.ResourceMap) > 0) {
-		// Relative QT3 unparsed-text fixtures live under testdata/qt3ts/testdata/fn/.
+		// Relative QT3 unparsed-text fixtures live under testdata/qt3ts/fn/.
 		return "http://www.w3.org/fots/fn/"
 	}
 	if qt3NeedsRelativeParseJSONFixtureBaseURI(tc.XPath) {

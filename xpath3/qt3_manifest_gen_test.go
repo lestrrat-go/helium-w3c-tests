@@ -16,12 +16,12 @@ const w3cSourceRepo = "https://github.com/w3c/qt3tests.git"
 const w3cSourceURL = ""
 const w3cPinnedCommit = "83993587711dbd5c18ed846385ec37d079d6e492"
 const w3cSourceDir = "sources/qt3"
-const w3cCatalogPath = "sources/qt3/app/Walmsley/catalog.xml"
-const w3cCatalogTestSets = 0
-const w3cCatalogTestCases = 0
-const w3cRunnableTestCases = 0
-const w3cSkippedTestCases = 0
-const w3cExcludedTestCases = 0
+const w3cCatalogPath = "sources/qt3/catalog.xml"
+const w3cCatalogTestSets = 428
+const w3cCatalogTestCases = 31821
+const w3cRunnableTestCases = 21987
+const w3cSkippedTestCases = 486
+const w3cExcludedTestCases = 9348
 
 func TestQT3W3CManifestAvailable(t *testing.T) {
 	t.Parallel()

@@ -33,12 +33,7 @@ const (
 var qt3AllCases []qt3Test
 
 func TestQT3W3C(t *testing.T) {
-	// testdata/qt3ts is gitignored; on a fresh checkout without a fetch the
-	// fixtures are absent. Skip with a helpful message instead of failing every
-	// case, mirroring the other suites.
-	if _, err := os.Stat(filepath.Join(qt3TestDataDir(), "catalog.xml")); os.IsNotExist(err) {
-		t.Skipf("fixtures not fetched; run go run ./cmd/w3cgen fetch qt3")
-	}
+	// qt3RunTests skips when fixtures are unfetched.
 	qt3RunTests(t, qt3AllCases)
 }
 
@@ -93,7 +88,7 @@ func (r *qt3FileURIResolver) ResolveURI(uri string) (io.ReadCloser, error) {
 		}
 		target = p
 	case parsed.Scheme == "" || qt3IsWindowsDriveScheme(parsed):
-		if filepath.IsAbs(uri) || qt3IsWindowsAbsolute(uri) {
+		if filepath.IsAbs(uri) || qt3IsWindowsAbsolute(uri) || strings.HasPrefix(uri, "/") {
 			target = uri
 		} else {
 			target = filepath.Join(r.baseDir, uri)
