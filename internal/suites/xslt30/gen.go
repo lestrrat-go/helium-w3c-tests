@@ -254,6 +254,9 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]struct{}) {
 	assetFiles := make(map[string]struct{})
 	assetFiles["catalog.xml"] = struct{}{}
 
+	// Local so repeated collectTests calls in one process stay order-independent.
+	strmUnlocked := 0
+
 	for _, tsRef := range cat.TestSets {
 		// The "catalog" test set contains only meta-tests that validate the
 		// W3C test catalog itself (schema checks, name consistency, etc.).
@@ -810,8 +813,6 @@ func getSetSkipReason(name string, deps *xslDependencies) string {
 // strmUnlockLimit controls how many strm tests are unlocked (0 = all).
 const strmUnlockLimit = 2542
 
-var strmUnlocked int
-
 func getCategorySkipReason(category string) string {
 	return ""
 }
@@ -1219,7 +1220,10 @@ func parseResultAssertions(tc xslTestCase, sourceDir, tsDir string) []assertion 
 func parseAssertionXML(s string, sourceDir, tsDir string) []assertion {
 	var result xmlResultWrapper
 	if err := xml.Unmarshal([]byte(s), &result); err != nil {
-		return nil
+		// A malformed <result> would otherwise silently yield a case with no
+		// assertions that passes on any successful transform. Fail generation
+		// loudly instead.
+		genFatalf("parse result assertions %q: %v", s, err)
 	}
 	var out []assertion
 	for _, child := range result.Children {

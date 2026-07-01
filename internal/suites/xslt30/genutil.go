@@ -47,9 +47,12 @@ func copyAsset(src, dst string) error {
 	if err != nil {
 		return err
 	}
-	defer func() { _ = out.Close() }()
-	_, err = io.Copy(out, in)
-	return err
+	if _, err := io.Copy(out, in); err != nil {
+		_ = out.Close()
+		return err
+	}
+	// Return the close error too: a delayed write/flush failure only surfaces here.
+	return out.Close()
 }
 
 // decodeXMLText decodes XML character/entity references and CDATA sections in s

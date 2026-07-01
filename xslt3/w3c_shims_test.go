@@ -60,6 +60,15 @@ func (r *w3cFileURIResolver) ResolveURI(uri string) (io.ReadCloser, error) {
 	var target string
 	switch {
 	case parsed.Scheme == "file":
+		// Only local file URIs are supported: a non-empty, non-localhost host
+		// (e.g. "file://evil/path") would otherwise be silently dropped and the
+		// path treated as local. Opaque forms have no usable path.
+		if parsed.Host != "" && parsed.Host != "localhost" {
+			return nil, fmt.Errorf("non-local file URI host %q", parsed.Host)
+		}
+		if parsed.Path == "" {
+			return nil, fmt.Errorf("file URI has no path: %s", uri)
+		}
 		// POSIX: "file:///a/b" -> "/a/b". On Windows url.Path holds a leading
 		// slash before the drive letter; FromSlash keeps the native separators.
 		target = filepath.FromSlash(parsed.Path)
@@ -93,7 +102,9 @@ var (
 
 // w3cExpectationSkips returns the loaded skip map. XSLT30_EXPECTATIONS overrides
 // the default expectations/xslt30.json path (so parallel chunks can point at
-// their own copy). A missing or unreadable file yields an empty map.
+// their own copy). A missing file yields an empty map; a present-but-unreadable
+// or malformed file panics (a silent parse failure would disable every skip and
+// surface as confusing test failures).
 func w3cExpectationSkips() map[string]string {
 	w3cExpectationsOnce.Do(func() {
 		p := os.Getenv("XSLT30_EXPECTATIONS")
@@ -102,9 +113,14 @@ func w3cExpectationSkips() map[string]string {
 		}
 		data, err := os.ReadFile(p)
 		if err != nil {
-			return
+			if os.IsNotExist(err) {
+				return
+			}
+			panic(fmt.Sprintf("read expectations %s: %v", p, err))
 		}
-		_ = json.Unmarshal(data, &w3cExpectationsData)
+		if err := json.Unmarshal(data, &w3cExpectationsData); err != nil {
+			panic(fmt.Sprintf("parse expectations %s: %v", p, err))
+		}
 	})
 	return w3cExpectationsData.Skip
 }
