@@ -13,12 +13,31 @@ import (
 	"github.com/lestrrat-go/helium-w3c-tests/internal/junit"
 )
 
-const (
-	defaultOut      = "test-results/xsd11-junit.xml"
-	xsd11SuiteName  = "xsd11-conformance"
-	xsd11RootTest   = "TestXSD11W3C"
-	xsd11RunPattern = "^TestXSD11W3C$"
-)
+// suiteConfig describes how to run and report one conformance suite.
+type suiteConfig struct {
+	pkg        string // go test package path
+	rootTest   string // root test whose subtests are the cases
+	runPattern string // -run regexp
+	junitSuite string // <testsuite name> in the JUnit output
+	defaultOut string // default -out path
+}
+
+var suites = map[string]suiteConfig{
+	"xsd11": {
+		pkg:        "./xsd",
+		rootTest:   "TestXSD11W3C",
+		runPattern: "^TestXSD11W3C$",
+		junitSuite: "xsd11-conformance",
+		defaultOut: "test-results/xsd11-junit.xml",
+	},
+	"xslt30": {
+		pkg:        "./xslt3",
+		rootTest:   "TestXSLT30W3C",
+		runPattern: "^TestXSLT30W3C$",
+		junitSuite: "xslt30-conformance",
+		defaultOut: "test-results/xslt30-junit.xml",
+	},
+}
 
 func main() {
 	code, err := run(context.Background(), os.Args[1:])
@@ -30,12 +49,12 @@ func main() {
 
 func run(ctx context.Context, args []string) (int, error) {
 	fs := flag.NewFlagSet("w3ctest", flag.ContinueOnError)
-	out := fs.String("out", defaultOut, "JUnit XML output path")
+	out := fs.String("out", "", "JUnit XML output path (default: per-suite under test-results/)")
 	fs.SetOutput(os.Stderr)
 	fs.Usage = func() {
-		fmt.Fprintln(fs.Output(), "usage: w3ctest [-out FILE] xsd11 [go test flags...]")
+		fmt.Fprintln(fs.Output(), "usage: w3ctest [-out FILE] <suite> [go test flags...]")
 		fmt.Fprintln(fs.Output(), "")
-		fmt.Fprintf(fs.Output(), "default output: %s\n", defaultOut)
+		fmt.Fprintln(fs.Output(), "suites: xsd11 xslt30")
 	}
 	if err := fs.Parse(args); err != nil {
 		return 2, err
@@ -45,14 +64,18 @@ func run(ctx context.Context, args []string) (int, error) {
 		fs.Usage()
 		return 2, errors.New("missing suite")
 	}
-	if argv[0] != "xsd11" {
+	suite, ok := suites[argv[0]]
+	if !ok {
 		fs.Usage()
 		return 2, fmt.Errorf("unknown suite %q", argv[0])
 	}
+	if *out == "" {
+		*out = suite.defaultOut
+	}
 
-	testArgs := []string{"test", "-json", "-run", xsd11RunPattern}
+	testArgs := []string{"test", "-json", "-run", suite.runPattern}
 	testArgs = append(testArgs, argv[1:]...)
-	testArgs = append(testArgs, "./xsd")
+	testArgs = append(testArgs, suite.pkg)
 
 	var stdout bytes.Buffer
 	cmd := exec.CommandContext(ctx, "go", testArgs...)
@@ -68,8 +91,8 @@ func run(ctx context.Context, args []string) (int, error) {
 		return 1, createErr
 	}
 	convertErr := junit.ConvertGoTestJSON(bytes.NewReader(stdout.Bytes()), file, junit.Options{
-		SuiteName: xsd11SuiteName,
-		RootTest:  xsd11RootTest,
+		SuiteName: suite.junitSuite,
+		RootTest:  suite.rootTest,
 	})
 	closeErr := file.Close()
 	if convertErr != nil {
