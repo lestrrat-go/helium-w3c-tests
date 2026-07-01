@@ -36,6 +36,13 @@ func (s Suite) populateFixtures(root string, suiteLock generator.SuiteLock) (err
 	sourceRoot := filepath.Join(root, filepath.FromSlash(suiteLock.SourceDir))
 	destRoot := filepath.Join(root, "testdata", "xslt30")
 
+	// Start from a clean tree so a stale file from a previous fetch can never
+	// mask a missing-copy bug or keep the "a missing needed fixture fails
+	// loudly at test time" property honest.
+	if err := os.RemoveAll(destRoot); err != nil {
+		return err
+	}
+
 	_, assetFiles := collectTests(sourceRoot)
 	n := copyAssets(sourceRoot, destRoot, assetFiles)
 
