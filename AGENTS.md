@@ -39,7 +39,8 @@ Agent-consumed guidance. Keep terse. Update when repo workflow or suite policy c
 - Verify generated files: `go run ./cmd/w3cgen verify all`
 - Run tests: `go test ./...`
 - Run a suite's conformance with JUnit XML: `go run ./cmd/w3ctest xsd11` / `go run ./cmd/w3ctest xslt30`
-- Default JUnit result path: `test-results/<suite>-junit.xml`; override with `-out FILE`.
+- Default outputs: JUnit `test-results/<suite>-junit.xml` (override `-out FILE`) and summary markdown `test-results/<suite>-summary.md` (override `-summary FILE`). Point them at the helium repo to refresh its committed conformance evidence.
+- Summary rolls up pass/skip/fail + skip-reason breakdown, stamped with the pinned upstream commit + date (point-in-time snapshot; regenerate to refresh).
 - JUnit report contains conformance subtests only (`TestXSD11W3C/<case ID>`, `TestXSLT30W3C/<case name>`); manifest checks are excluded; skipped cases carry reason in `<skipped message>`.
 - Source trees may be absent → generated manifest tests should skip, not fail.
 
