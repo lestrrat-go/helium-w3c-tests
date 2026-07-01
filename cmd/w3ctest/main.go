@@ -29,11 +29,13 @@ type suiteConfig struct {
 
 var suites = map[string]suiteConfig{
 	"qt3": {
-		pkg:        "./xpath3",
-		rootTest:   "TestQT3W3C",
-		runPattern: "^TestQT3W3C$",
-		junitSuite: "qt3-conformance",
-		defaultOut: "test-results/qt3-junit.xml",
+		pkg:            "./xpath3",
+		rootTest:       "TestQT3W3C",
+		runPattern:     "^TestQT3W3C$",
+		junitSuite:     "qt3-conformance",
+		displayName:    "QT3 (XPath 3.1)",
+		defaultOut:     "test-results/qt3-junit.xml",
+		defaultSummary: "test-results/qt3-summary.md",
 	},
 	"xsd11": {
 		pkg:            "./xsd",
@@ -73,7 +75,7 @@ func run(ctx context.Context, args []string) (int, error) {
 	fs.Usage = func() {
 		fmt.Fprintln(fs.Output(), "usage: w3ctest [-out FILE] [-summary FILE] [-root DIR] <suite> [go test flags...]")
 		fmt.Fprintln(fs.Output(), "")
-		fmt.Fprintln(fs.Output(), "suites: xsd11 xslt30")
+		fmt.Fprintln(fs.Output(), "suites: qt3 xsd11 xslt30")
 	}
 	if err := fs.Parse(args); err != nil {
 		return 2, err
