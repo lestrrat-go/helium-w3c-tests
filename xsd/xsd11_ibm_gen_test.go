@@ -751,6 +751,10 @@ var xstsIbmCases = []xstsCase{
 		ID:          "ibmMeta/assertion.testSet/d4_3_15ii29",
 		SchemaRel:   "ibmData/instance_invalid/D4_3_15/d4_3_15ii29.xsd",
 		SchemaValid: true,
+		SchemaDocs: []string{
+			"ibmData/instance_invalid/D4_3_15/d4_3_15ii29.xsd",
+			"ibmData/instance_invalid/D4_3_15/d4_3_15ii29b.xsd",
+		},
 		Instances: []xstsInstance{
 			{Name: "d4_3_15ii29i", Rel: "ibmData/instance_invalid/D4_3_15/d4_3_15ii29.xml", Valid: false},
 		},
@@ -759,6 +763,10 @@ var xstsIbmCases = []xstsCase{
 		ID:          "ibmMeta/assertion.testSet/d4_3_15ii30",
 		SchemaRel:   "ibmData/instance_invalid/D4_3_15/d4_3_15ii30.xsd",
 		SchemaValid: true,
+		SchemaDocs: []string{
+			"ibmData/instance_invalid/D4_3_15/d4_3_15ii30.xsd",
+			"ibmData/instance_invalid/D4_3_15/d4_3_15ii30b.xsd",
+		},
 		Instances: []xstsInstance{
 			{Name: "d4_3_15ii30i", Rel: "ibmData/instance_invalid/D4_3_15/d4_3_15ii30.xml", Valid: false},
 		},
@@ -833,6 +841,10 @@ var xstsIbmCases = []xstsCase{
 		ID:          "ibmMeta/constraintsOnAttribute.testSet/s3_2_3ii02",
 		SchemaRel:   "ibmData/instance_invalid/S3_2_3/s3_2_3ii02.xsd",
 		SchemaValid: true,
+		SchemaDocs: []string{
+			"ibmData/instance_invalid/S3_2_3/s3_2_3ii02.xsd",
+			"ibmData/instance_invalid/S3_2_3/s3_2_3ii02b.xsd",
+		},
 		Instances: []xstsInstance{
 			{Name: "s3_2_3ii02i", Rel: "ibmData/instance_invalid/S3_2_3/s3_2_3ii02.xml", Valid: false},
 		},
@@ -1280,6 +1292,10 @@ var xstsIbmCases = []xstsCase{
 		ID:          "ibmMeta/defaultAttributesApply.testSet/s3_4_2_4ii01",
 		SchemaRel:   "ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii01.xsd",
 		SchemaValid: true,
+		SchemaDocs: []string{
+			"ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii01.xsd",
+			"ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii01b.xsd",
+		},
 		Instances: []xstsInstance{
 			{Name: "s3_4_2_4ii01i", Rel: "ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii01.xml", Valid: false},
 		},
@@ -1296,6 +1312,10 @@ var xstsIbmCases = []xstsCase{
 		ID:          "ibmMeta/defaultAttributesApply.testSet/s3_4_2_4ii03",
 		SchemaRel:   "ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii03.xsd",
 		SchemaValid: true,
+		SchemaDocs: []string{
+			"ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii03.xsd",
+			"ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii03b.xsd",
+		},
 		Instances: []xstsInstance{
 			{Name: "s3_4_2_4ii03i", Rel: "ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii03.xml", Valid: false},
 		},
@@ -1304,6 +1324,10 @@ var xstsIbmCases = []xstsCase{
 		ID:          "ibmMeta/defaultAttributesApply.testSet/s3_4_2_4ii05",
 		SchemaRel:   "ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii05.xsd",
 		SchemaValid: true,
+		SchemaDocs: []string{
+			"ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii05.xsd",
+			"ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii05b.xsd",
+		},
 		Instances: []xstsInstance{
 			{Name: "s3_4_2_4ii05i", Rel: "ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii05.xml", Valid: false},
 		},
@@ -1312,6 +1336,10 @@ var xstsIbmCases = []xstsCase{
 		ID:          "ibmMeta/defaultAttributesApply.testSet/s3_4_2_4ii06",
 		SchemaRel:   "ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii06.xsd",
 		SchemaValid: true,
+		SchemaDocs: []string{
+			"ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii06.xsd",
+			"ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii06b.xsd",
+		},
 		Instances: []xstsInstance{
 			{Name: "s3_4_2_4ii06i", Rel: "ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii06.xml", Valid: true},
 		},
@@ -1320,6 +1348,10 @@ var xstsIbmCases = []xstsCase{
 		ID:          "ibmMeta/defaultAttributesApply.testSet/s3_4_2_4ii07",
 		SchemaRel:   "ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii07.xsd",
 		SchemaValid: true,
+		SchemaDocs: []string{
+			"ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii07.xsd",
+			"ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii07b.xsd",
+		},
 		Instances: []xstsInstance{
 			{Name: "s3_4_2_4ii07i", Rel: "ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii07.xml", Valid: false},
 		},
@@ -1328,6 +1360,10 @@ var xstsIbmCases = []xstsCase{
 		ID:          "ibmMeta/defaultAttributesApply.testSet/s3_4_2_4ii08",
 		SchemaRel:   "ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii08.xsd",
 		SchemaValid: true,
+		SchemaDocs: []string{
+			"ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii08.xsd",
+			"ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii08b.xsd",
+		},
 		Instances: []xstsInstance{
 			{Name: "s3_4_2_4ii08i", Rel: "ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii08.xml", Valid: false},
 		},
@@ -1336,6 +1372,10 @@ var xstsIbmCases = []xstsCase{
 		ID:          "ibmMeta/defaultAttributesApply.testSet/s3_4_2_4ii09",
 		SchemaRel:   "ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii09.xsd",
 		SchemaValid: true,
+		SchemaDocs: []string{
+			"ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii09.xsd",
+			"ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii09b.xsd",
+		},
 		Instances: []xstsInstance{
 			{Name: "s3_4_2_4ii09i", Rel: "ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii09.xml", Valid: false},
 		},
@@ -1344,6 +1384,10 @@ var xstsIbmCases = []xstsCase{
 		ID:          "ibmMeta/defaultAttributesApply.testSet/s3_4_2_4ii10",
 		SchemaRel:   "ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii10.xsd",
 		SchemaValid: true,
+		SchemaDocs: []string{
+			"ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii10.xsd",
+			"ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii10b.xsd",
+		},
 		Instances: []xstsInstance{
 			{Name: "s3_4_2_4ii10i", Rel: "ibmData/instance_invalid/S3_4_2_4/s3_4_2_4ii10.xml", Valid: false},
 		},
@@ -3372,6 +3416,10 @@ var xstsIbmCases = []xstsCase{
 		ID:          "ibmMeta/xsImportReference.testSet/s4_2_6si01",
 		SchemaRel:   "ibmData/schema_invalid/S4_2_6/s4_2_6si01.xsd",
 		SchemaValid: false,
+		SchemaDocs: []string{
+			"ibmData/schema_invalid/S4_2_6/s4_2_6si01.xsd",
+			"ibmData/schema_invalid/S4_2_6/s4_2_6si01b.xsd",
+		},
 	},
 	{
 		ID:          "ibmMeta/yearMonthDuration.testSet/d3_4_26v01",

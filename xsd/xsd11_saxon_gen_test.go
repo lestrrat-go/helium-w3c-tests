@@ -2567,6 +2567,11 @@ var xstsSaxonCases = []xstsCase{
 		ID:          "saxonMeta/Subsgroup.testSet/subsgroup003",
 		SchemaRel:   "saxonData/Subsgroup/subsgroup003a.xsd",
 		SchemaValid: true,
+		SchemaDocs: []string{
+			"saxonData/Subsgroup/subsgroup003a.xsd",
+			"saxonData/Subsgroup/subsgroup003b.xsd",
+			"saxonData/Subsgroup/subsgroup003c.xsd",
+		},
 		Instances: []xstsInstance{
 			{Name: "subsgroup003.v1.xml", Rel: "saxonData/Subsgroup/subsgroup003.xml", Valid: true},
 		},

@@ -156,6 +156,15 @@ func casesSource(contributor string, cases []genCase) string {
 		fmt.Fprintf(&b, "\t\tID: %s,\n", strconv.Quote(c.ID))
 		fmt.Fprintf(&b, "\t\tSchemaRel: %s,\n", strconv.Quote(c.SchemaRel))
 		fmt.Fprintf(&b, "\t\tSchemaValid: %t,\n", c.SchemaValid)
+		// Emit the full document list only for multi-document schemaTests so
+		// single-document cases stay byte-identical to the pre-feature output.
+		if len(c.SchemaDocs) > 1 {
+			b.WriteString("\t\tSchemaDocs: []string{\n")
+			for _, d := range c.SchemaDocs {
+				fmt.Fprintf(&b, "\t\t\t%s,\n", strconv.Quote(d))
+			}
+			b.WriteString("\t\t},\n")
+		}
 		if len(c.Instances) > 0 {
 			b.WriteString("\t\tInstances: []xstsInstance{\n")
 			for _, in := range c.Instances {

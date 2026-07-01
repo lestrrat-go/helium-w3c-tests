@@ -1,6 +1,7 @@
 package xsd11
 
 import (
+	"encoding/binary"
 	"encoding/xml"
 	"fmt"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"unicode/utf16"
 
 	"github.com/lestrrat-go/helium-w3c-tests/internal/generator"
 )
@@ -66,7 +68,13 @@ type genCase struct {
 	ID          string
 	SchemaRel   string
 	SchemaValid bool
-	Instances   []genInstance
+	// SchemaDocs is the full list of schemaDocument rels declared by the
+	// schemaTest, in catalog order (SchemaRel is SchemaDocs[0]). When a
+	// schemaTest lists more than one document they together form a single
+	// schema and the harness compiles all of them; a single-document test
+	// leaves this at length 1 (or empty) and behaves exactly as before.
+	SchemaDocs []string
+	Instances  []genInstance
 	// FixtureRels is the union of every fixture file this case references
 	// (primary schema + transitive includes + instance documents), as clean
 	// suite-root-relative slash paths. Used by Fetch to copy fixtures; not
@@ -251,6 +259,12 @@ func buildCase(sourceRoot, href, tsDir string, g testGroup) (genCase, bool, erro
 		}
 		fixtures[rel] = true
 
+		// s3_2_3ii05.xsd (and other IBM fixtures) are UTF-16 encoded; the
+		// ASCII schemaLocationRe would find zero matches over the raw bytes
+		// and silently drop the transitive import. Transcode any BOM-marked
+		// UTF-16/UTF-8 content to plain UTF-8 first; ASCII/UTF-8 is unchanged.
+		data = decodeToUTF8(data)
+
 		dir := path.Dir(rel)
 		for _, m := range schemaLocationRe.FindAllSubmatch(data, -1) {
 			loc := string(m[1])
@@ -265,10 +279,16 @@ func buildCase(sourceRoot, href, tsDir string, g testGroup) (genCase, bool, erro
 		return genCase{}, false, nil
 	}
 
+	schemaDocs := make([]string, 0, len(g.SchemaTest.Documents))
+	for _, d := range g.SchemaTest.Documents {
+		schemaDocs = append(schemaDocs, resolveRel(tsDir, d.Href))
+	}
+
 	gc := genCase{
 		ID:          href + "/" + g.Name,
 		SchemaRel:   primaryRel,
 		SchemaValid: schemaValid,
+		SchemaDocs:  schemaDocs,
 	}
 
 	for _, it := range g.InstanceTest {
@@ -304,4 +324,31 @@ func buildCase(sourceRoot, href, tsDir string, g testGroup) (genCase, bool, erro
 
 func isAbsoluteURL(s string) bool {
 	return strings.HasPrefix(s, "http://") || strings.HasPrefix(s, "https://")
+}
+
+// decodeToUTF8 returns data transcoded to UTF-8 when it carries a UTF-16 LE/BE
+// or UTF-8 byte-order mark, and returns it unchanged otherwise. Only the BOM
+// forms are handled — that is what the XSTS fixtures use — so plain ASCII/UTF-8
+// content (the common case) passes through untouched.
+func decodeToUTF8(data []byte) []byte {
+	switch {
+	case len(data) >= 2 && data[0] == 0xFF && data[1] == 0xFE:
+		return utf16ToUTF8(data[2:], binary.LittleEndian)
+	case len(data) >= 2 && data[0] == 0xFE && data[1] == 0xFF:
+		return utf16ToUTF8(data[2:], binary.BigEndian)
+	case len(data) >= 3 && data[0] == 0xEF && data[1] == 0xBB && data[2] == 0xBF:
+		return data[3:]
+	default:
+		return data
+	}
+}
+
+// utf16ToUTF8 decodes UTF-16 code units (surrogate pairs included) in the given
+// byte order into a UTF-8 byte slice.
+func utf16ToUTF8(b []byte, order binary.ByteOrder) []byte {
+	units := make([]uint16, 0, len(b)/2)
+	for i := 0; i+1 < len(b); i += 2 {
+		units = append(units, order.Uint16(b[i:i+2]))
+	}
+	return []byte(string(utf16.Decode(units)))
 }
