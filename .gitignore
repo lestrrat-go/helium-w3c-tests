@@ -2,6 +2,7 @@
 /sources/*/
 /go.work
 /go.work.sum
+/testdata/qt3ts/
 /testdata/xsd11/
 /testdata/xslt30/
 /test-results/
