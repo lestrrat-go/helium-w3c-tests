@@ -655,27 +655,34 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]struct{}) {
 // xsl:include/import resolve at test time. Each path is validated through
 // generator.ContainedPath before it is read or written. It returns the number
 // of files copied.
-func copyAssets(sourceDir, destDir string, assetFiles map[string]struct{}) int {
+func copyAssets(sourceDir, destDir string, assetFiles map[string]struct{}) (int, error) {
 	copied := 0
 	for relPath := range assetFiles {
 		normalizedRelPath := normalizeAssetPath(relPath)
+		// A containment rejection is never expected for a valid catalog
+		// reference — treat it as fatal rather than silently dropping the asset.
 		dstFull, err := generator.ContainedPath(destDir, normalizedRelPath)
 		if err != nil {
-			fmt.Printf("warning: skipping unsafe asset path %q: %v\n", relPath, err)
-			continue
+			return copied, fmt.Errorf("unsafe asset dest %q: %w", relPath, err)
 		}
 		srcFull, err := generator.ContainedPath(sourceDir, resolvedAssetSourcePath(normalizedRelPath))
 		if err != nil {
-			fmt.Printf("warning: skipping unsafe asset path %q: %v\n", relPath, err)
-			continue
+			return copied, fmt.Errorf("unsafe asset source %q: %w", relPath, err)
 		}
 		if err := copyAsset(srcFull, dstFull); err != nil {
-			fmt.Printf("warning: copying %s: %v\n", relPath, err)
-			continue
+			// A catalog reference to a file absent upstream (e.g. an error-test
+			// fixture like no-existent.xsl) is expected — warn and continue. Any
+			// other copy failure (I/O, permissions, partial write) is fatal so a
+			// genuinely incomplete testdata tree never passes silently.
+			if os.IsNotExist(err) {
+				fmt.Printf("warning: catalog asset %q not present in source, skipping\n", relPath)
+				continue
+			}
+			return copied, fmt.Errorf("copy asset %q: %w", relPath, err)
 		}
 		copied++
 	}
-	return copied
+	return copied, nil
 }
 
 // copyOverlay copies the committed curated-fixture overlay from overlayDir into
@@ -1255,7 +1262,7 @@ func convertAssertion(xa xmlAssertion, sourceDir, tsDir string) assertion {
 			// Read the .out file content at gen time and embed it
 			data, err := readContainedAssertionFile(sourceDir, tsDir, xa.File)
 			if err != nil {
-				a.Value = fmt.Sprintf("ERROR: cannot read %s: %v", xa.File, err)
+				genFatalf("read assertion file %s: %v", xa.File, err)
 			} else {
 				a.Value = string(data)
 			}
@@ -1284,7 +1291,7 @@ func convertAssertion(xa xmlAssertion, sourceDir, tsDir string) assertion {
 		if xa.File != "" {
 			data, err := readContainedAssertionFile(sourceDir, tsDir, xa.File)
 			if err != nil {
-				a.Value = fmt.Sprintf("ERROR: cannot read %s: %v", xa.File, err)
+				genFatalf("read assertion file %s: %v", xa.File, err)
 			} else if !utf8.Valid(data) {
 				// Non-UTF-8 serialization output cannot be embedded in Go source.
 				a.Type = "assert-posture-and-sweep"

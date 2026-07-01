@@ -44,7 +44,10 @@ func (s Suite) populateFixtures(root string, suiteLock generator.SuiteLock) (err
 	}
 
 	_, assetFiles := collectTests(sourceRoot)
-	n := copyAssets(sourceRoot, destRoot, assetFiles)
+	n, err := copyAssets(sourceRoot, destRoot, assetFiles)
+	if err != nil {
+		return err
+	}
 
 	// Overlay the committed curated fixtures (runtime-only docs the catalog scan
 	// misses, plus hand-edited fixtures) on top of the reproducible source copy.

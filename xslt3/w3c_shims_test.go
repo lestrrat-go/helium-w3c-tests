@@ -22,6 +22,12 @@ var xslt30AllCases []w3cTest
 // suite. Running every case as a subtest of one root test keeps the JUnit
 // reporter (cmd/w3ctest) simple and mirrors the xsd11 suite's TestXSD11W3C.
 func TestXSLT30W3C(t *testing.T) {
+	// testdata/xslt30 is gitignored; on a fresh checkout without a fetch the
+	// fixtures are absent. Skip with a helpful message instead of failing every
+	// case on a missing stylesheet, mirroring the xsd11 suite.
+	if _, err := os.Stat(filepath.Join(w3cTestdataDir, "catalog.xml")); os.IsNotExist(err) {
+		t.Skipf("fixtures not fetched; run go run ./cmd/w3cgen fetch xslt30")
+	}
 	w3cRunTests(t, xslt30AllCases)
 }
 
