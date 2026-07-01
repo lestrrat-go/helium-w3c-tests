@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"runtime"
+	"strings"
 	"sync"
 	"testing"
 
@@ -66,20 +68,16 @@ func (r *w3cFileURIResolver) ResolveURI(uri string) (io.ReadCloser, error) {
 	var target string
 	switch {
 	case parsed.Scheme == "file":
-		// Only local file URIs are supported: a non-empty, non-localhost host
-		// (e.g. "file://evil/path") would otherwise be silently dropped and the
-		// path treated as local. Opaque forms have no usable path.
-		if parsed.Host != "" && parsed.Host != "localhost" {
-			return nil, fmt.Errorf("non-local file URI host %q", parsed.Host)
+		p, ferr := w3cFileURIToPath(parsed, uri)
+		if ferr != nil {
+			return nil, ferr
 		}
-		if parsed.Path == "" {
-			return nil, fmt.Errorf("file URI has no path: %s", uri)
-		}
-		// POSIX: "file:///a/b" -> "/a/b". On Windows url.Path holds a leading
-		// slash before the drive letter; FromSlash keeps the native separators.
-		target = filepath.FromSlash(parsed.Path)
-	case parsed.Scheme == "":
-		if filepath.IsAbs(uri) {
+		target = p
+	// A bare Windows absolute path ("C:\dir\x") is mis-parsed by url.Parse as
+	// scheme "c"; treat single-letter drive schemes (and the empty scheme) as
+	// local paths rather than rejecting them.
+	case parsed.Scheme == "" || w3cIsWindowsDriveScheme(parsed):
+		if filepath.IsAbs(uri) || w3cIsWindowsAbs(uri) {
 			target = uri
 		} else {
 			target = filepath.Join(r.baseDir, uri)
@@ -90,6 +88,46 @@ func (r *w3cFileURIResolver) ResolveURI(uri string) (io.ReadCloser, error) {
 
 	return os.Open(target) //nolint:gosec // harness reads test fixtures by path
 }
+
+// w3cFileURIToPath converts a parsed "file:" URI to a native path, mirroring the
+// upstream helium resolver's cross-platform semantics: reject non-local hosts,
+// opaque/empty paths, and UNC forms, and on Windows strip the leading slash
+// before a drive letter ("file:///C:/a" -> "C:\a").
+func w3cFileURIToPath(parsed *url.URL, uri string) (string, error) {
+	if parsed.Host != "" && !strings.EqualFold(parsed.Host, "localhost") {
+		return "", fmt.Errorf("non-local file URI host %q in %q", parsed.Host, uri)
+	}
+	if parsed.Opaque != "" || parsed.Path == "" {
+		return "", fmt.Errorf("invalid file URI %q: no local path", uri)
+	}
+	p := parsed.Path
+	// Reject UNC forms ("file:////server/share" -> "//server/share"), which
+	// FromSlash would turn into a remote \\server\share path on Windows.
+	if len(p) >= 2 && w3cIsPathSep(p[0]) && w3cIsPathSep(p[1]) {
+		return "", fmt.Errorf("UNC file URI %q is not a local path", uri)
+	}
+	if runtime.GOOS == "windows" && len(p) >= 3 && p[0] == '/' && w3cIsASCIILetter(p[1]) && p[2] == ':' {
+		p = p[1:]
+	}
+	return filepath.FromSlash(p), nil
+}
+
+func w3cIsWindowsDriveScheme(parsed *url.URL) bool {
+	return len(parsed.Scheme) == 1 && w3cIsASCIILetter(parsed.Scheme[0])
+}
+
+// w3cIsWindowsAbs reports whether p is a Windows drive-absolute path ("C:\..."
+// or "C:/...") regardless of host OS, so such a reference is kept absolute
+// rather than joined against baseDir.
+func w3cIsWindowsAbs(p string) bool {
+	return len(p) >= 3 && w3cIsASCIILetter(p[0]) && p[1] == ':' && w3cIsPathSep(p[2])
+}
+
+func w3cIsASCIILetter(b byte) bool {
+	return (b >= 'A' && b <= 'Z') || (b >= 'a' && b <= 'z')
+}
+
+func w3cIsPathSep(b byte) bool { return b == '/' || b == '\\' }
 
 // w3cExpectations holds per-case skip/xfail overrides for the XSLT 3.0 suite,
 // loaded from expectations/xslt30.json. Ad-hoc skips for tests that are valid
