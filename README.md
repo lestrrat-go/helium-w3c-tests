@@ -61,6 +61,24 @@ Run tests:
 go test ./...
 ```
 
+Run XSD 1.1 conformance tests and write JUnit XML results:
+
+```sh
+go run ./cmd/w3ctest xsd11
+```
+
+The default result file is `test-results/xsd11-junit.xml`. Override it with
+`-out`:
+
+```sh
+go run ./cmd/w3ctest -out /tmp/xsd11-junit.xml xsd11
+```
+
+The JUnit report contains conformance results only: one testcase per
+`TestXSD11W3C/<case ID>` subtest. The manifest availability check is excluded.
+Skipped conformance cases include the skip reason in the JUnit `<skipped>`
+message.
+
 ## Current State
 
 This is the infrastructure split. The suite plugins already produce executable

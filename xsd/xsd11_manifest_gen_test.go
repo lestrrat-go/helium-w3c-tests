@@ -11,15 +11,15 @@ import (
 
 const w3cSuiteName = "xsd11"
 const w3cDisplayName = "XSD 1.1"
-const w3cSourceKind = "manual"
-const w3cSourceRepo = ""
-const w3cSourceURL = "https://www.w3.org/XML/2004/xml-schema-test-suite/"
-const w3cPinnedCommit = ""
+const w3cSourceKind = "git"
+const w3cSourceRepo = "https://github.com/w3c/xsdtests.git"
+const w3cSourceURL = ""
+const w3cPinnedCommit = "7bc3365c652a322f3d762021b3879eb92dae7e30"
 const w3cSourceDir = "sources/xsd11"
-const w3cCatalogPath = ""
-const w3cCatalogTestSets = 0
-const w3cCatalogTestCases = 0
-const w3cRunnableTestCases = 0
+const w3cCatalogPath = "sources/xsd11/suite.xml"
+const w3cCatalogTestSets = 93
+const w3cCatalogTestCases = 967
+const w3cRunnableTestCases = 967
 const w3cSkippedTestCases = 0
 const w3cExcludedTestCases = 0
 
