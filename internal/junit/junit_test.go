@@ -40,6 +40,45 @@ func TestConvertGoTestJSONIncludesSkippedReason(t *testing.T) {
 	}
 }
 
+func TestConvertGoTestJSONOmitSystemOut(t *testing.T) {
+	events := strings.Join([]string{
+		`{"Action":"run","Package":"p","Test":"TestXSD11W3C"}`,
+		`{"Action":"run","Package":"p","Test":"TestXSD11W3C/set/case"}`,
+		`{"Action":"output","Package":"p","Test":"TestXSD11W3C/set/case","Output":"    harness_test.go:78: unsupported feature\n"}`,
+		`{"Action":"skip","Package":"p","Test":"TestXSD11W3C/set/case","Elapsed":0}`,
+		`{"Action":"pass","Package":"p","Test":"TestXSD11W3C","Elapsed":0}`,
+		``,
+	}, "\n")
+
+	var withOut bytes.Buffer
+	if err := ConvertGoTestJSON(strings.NewReader(events), &withOut, Options{
+		SuiteName: "s", RootTest: "TestXSD11W3C",
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(withOut.String(), "<system-out>") {
+		t.Fatalf("default should emit <system-out> in\n%s", withOut.String())
+	}
+
+	var slim bytes.Buffer
+	if err := ConvertGoTestJSON(strings.NewReader(events), &slim, Options{
+		SuiteName: "s", RootTest: "TestXSD11W3C", OmitSystemOut: true,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	xml := slim.String()
+	if strings.Contains(xml, "<system-out>") {
+		t.Fatalf("OmitSystemOut should drop <system-out> in\n%s", xml)
+	}
+	// Skip diagnostic must survive on the <skipped> element.
+	if !strings.Contains(xml, `<skipped message="unsupported feature">`) {
+		t.Fatalf("skip diagnostic must be preserved in\n%s", xml)
+	}
+	if !strings.Contains(xml, `skipped="1"`) {
+		t.Fatalf("skip count must be preserved in\n%s", xml)
+	}
+}
+
 func TestConvertGoTestJSONIncludesSetupFailure(t *testing.T) {
 	input := strings.NewReader(strings.Join([]string{
 		`{"ImportPath":"github.com/example/xsd_test [github.com/example/xsd.test]","Action":"build-output","Output":"# github.com/example/xsd_test [github.com/example/xsd.test]\n"}`,

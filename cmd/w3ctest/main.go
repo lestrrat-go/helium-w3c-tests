@@ -71,6 +71,7 @@ func run(ctx context.Context, args []string) (int, error) {
 	summaryOut := fs.String("summary", "", "conformance summary markdown path (default: per-suite under test-results/)")
 	root := fs.String("root", ".", "module root containing suites.lock.json")
 	heliumCommit := fs.String("helium-commit", "", "helium commit the suite ran against, recorded in the summary provenance")
+	noSystemOut := fs.Bool("no-system-out", false, "omit per-testcase <system-out> from the JUnit XML (failure/skip diagnostics are kept); shrinks large reports")
 	fs.SetOutput(os.Stderr)
 	fs.Usage = func() {
 		fmt.Fprintln(fs.Output(), "usage: w3ctest [-out FILE] [-summary FILE] [-root DIR] <suite> [go test flags...]")
@@ -116,8 +117,9 @@ func run(ctx context.Context, args []string) (int, error) {
 		return 1, createErr
 	}
 	convertErr := junit.ConvertGoTestJSON(bytes.NewReader(stdout.Bytes()), file, junit.Options{
-		SuiteName: suite.junitSuite,
-		RootTest:  suite.rootTest,
+		SuiteName:     suite.junitSuite,
+		RootTest:      suite.rootTest,
+		OmitSystemOut: *noSystemOut,
 	})
 	closeErr := file.Close()
 	if convertErr != nil {

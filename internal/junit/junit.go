@@ -13,6 +13,11 @@ import (
 type Options struct {
 	SuiteName string
 	RootTest  string
+	// OmitSystemOut drops the per-testcase <system-out> mirror of captured
+	// stdout. Failure/skip diagnostics are preserved on the <failure>/<skipped>
+	// elements, so the report stays machine-readable while shedding the bulk of
+	// a large suite's duplicated output (e.g. the ~13k-case xslt30 run).
+	OmitSystemOut bool
 }
 
 type event struct {
@@ -162,7 +167,7 @@ func ConvertGoTestJSON(r io.Reader, w io.Writer, opt Options) error {
 			msg := firstMeaningfulLine(output)
 			tc.Skipped = &skipped{Message: msg, Output: output}
 		}
-		if strings.TrimSpace(output) != "" {
+		if !opt.OmitSystemOut && strings.TrimSpace(output) != "" {
 			tc.SystemOut = &systemText{Output: output}
 		}
 		suite.Tests++
