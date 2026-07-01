@@ -1854,6 +1854,15 @@ func emitCheck(a assertion) string {
 			checks = append(checks, emitCheck(child))
 		}
 		return fmt.Sprintf("w3cCheckAnyOf(%s)", strings.Join(checks, ", "))
+	case "assert-message":
+		var checks []string
+		for _, child := range a.Children {
+			checks = append(checks, emitCheck(child))
+		}
+		if len(checks) == 0 {
+			return "w3cCheckSkip()"
+		}
+		return fmt.Sprintf("w3cCheckMessage(%s)", strings.Join(checks, ", "))
 	case "assert-type":
 		return fmt.Sprintf("w3cCheckType(%s)", goStringLiteral(strings.TrimSpace(a.Value)))
 	case "assert-count":

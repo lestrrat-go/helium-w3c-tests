@@ -733,6 +733,49 @@ func w3cCheckSkip() w3cCheck {
 	}}
 }
 
+// w3cCheckMessage adapts a nested <assert-message> (e.g. an alternative inside
+// an <any-of>) into a w3cCheck: it passes iff every child check is satisfied by
+// the xsl:message output. It mirrors w3cAssertMessage but returns a bool instead
+// of failing the test, so a message alternative is really checked rather than
+// treated as an always-true skip.
+func w3cCheckMessage(checks ...w3cCheck) w3cCheck {
+	return w3cCheck{fn: func(_ string, messages []string, resultDocs map[string]*helium.Document) bool {
+		combined := strings.Join(messages, "")
+		for _, chk := range checks {
+			if chk.rawFn != nil {
+				passed := false
+				for _, msg := range messages {
+					seq := xpath3.ItemSlice{xpath3.AtomicValue{TypeName: xpath3.TypeString, Value: msg}}
+					if chk.rawFn(seq) {
+						passed = true
+						break
+					}
+				}
+				if !passed {
+					return false
+				}
+				continue
+			}
+			if chk.fn(combined, messages, resultDocs) {
+				continue
+			}
+			// The combined string may not be well-formed XML (multiple messages);
+			// try each individual message before giving up.
+			passed := false
+			for _, msg := range messages {
+				if chk.fn(msg, messages, resultDocs) {
+					passed = true
+					break
+				}
+			}
+			if !passed {
+				return false
+			}
+		}
+		return true
+	}}
+}
+
 func w3cCheckSerialization(method string, expected string) w3cCheck {
 	return w3cCheck{fn: func(result string, _ []string, _ map[string]*helium.Document) bool {
 		return checkSerializationResult(method, result, expected)

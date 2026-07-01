@@ -1471,7 +1471,7 @@ Unicode codepoint collation:
     <item val="3"/>
     <item val="4"/>
     <item val="5"/>                
-</doc>`, Assertions: []w3cAssertion{w3cAnyOf(w3cCheckSkip())}, AcceptErrors: []string{"XTDE1260"}},
+</doc>`, Assertions: []w3cAssertion{w3cAnyOf(w3cCheckMessage(w3cCheckStringValue("Error not detected!")))}, AcceptErrors: []string{"XTDE1260"}},
 		{Name: "error-1260e", StylesheetPath: "tests/misc/error/error-1260e.xsl", SourceContent: `<doc>
   <element attribute="3"/>
 </doc>`, InitialTemplate: "main", ExpectError: true, ErrorCode: "XTDE1260"},
