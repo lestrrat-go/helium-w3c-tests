@@ -68,12 +68,18 @@ go run ./cmd/w3ctest xsd11
 go run ./cmd/w3ctest xslt30
 ```
 
-Each suite writes to `test-results/<suite>-junit.xml` by default. Override it
-with `-out`:
+Each run writes two files, both defaulting under `test-results/`: the JUnit XML
+(`<suite>-junit.xml`, override with `-out`) and a human-readable conformance
+**summary** (`<suite>-summary.md`, override with `-summary`). The summary rolls
+up pass/skip/fail counts and a skip-reason breakdown, stamped with the pinned
+upstream suite commit and the generation date:
 
 ```sh
-go run ./cmd/w3ctest -out /tmp/xslt30-junit.xml xslt30
+go run ./cmd/w3ctest -out /tmp/xslt30-junit.xml -summary /tmp/xslt30.md xslt30
 ```
+
+Point `-out`/`-summary` at the helium repo to refresh its committed conformance
+evidence (the summary is a point-in-time snapshot; regenerate to update it).
 
 The JUnit report contains conformance results only: one testcase per
 `TestXSD11W3C/<case ID>` (or `TestXSLT30W3C/<case name>`) subtest. The manifest
