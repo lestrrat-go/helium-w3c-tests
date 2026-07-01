@@ -1042,7 +1042,7 @@ func addTransitiveDeps(assetFiles map[string]struct{}, sourceDir, relPath string
 	for _, dep := range collectTransitiveDeps(sourceDir, absPath) {
 		relDep, err := filepath.Rel(sourceDir, dep)
 		if err == nil {
-			assetFiles[relDep] = struct{}{}
+			assetFiles[filepath.ToSlash(relDep)] = struct{}{}
 		}
 	}
 }
@@ -1963,7 +1963,7 @@ func addAssetTree(assetFiles map[string]struct{}, rootDir, relDir string) error 
 		if strings.HasPrefix(filepath.Base(relPath), "_") {
 			return nil
 		}
-		assetFiles[relPath] = struct{}{}
+		assetFiles[filepath.ToSlash(relPath)] = struct{}{}
 		return nil
 	})
 }
@@ -2002,7 +2002,9 @@ func catalogRelPath(sourceDir, tsDir, file string) (string, bool) {
 		fmt.Printf("xslt3gen: skipping unsafe catalog path %q (under %q): %v", file, tsDir, err)
 		return "", false
 	}
-	return cleaned, true
+	// Slash-normalize so generated tables and asset keys are byte-identical
+	// across platforms (a Windows regen must match the POSIX-committed files).
+	return filepath.ToSlash(cleaned), true
 }
 
 func boolAttrTrue(v string) bool {
