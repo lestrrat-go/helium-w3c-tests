@@ -60,6 +60,22 @@ func TestSummarizeRequiresRootTest(t *testing.T) {
 	}
 }
 
+// A build/compile failure produces package-level fail events with no case
+// events; the summary must surface it as a failure, not an empty clean suite.
+func TestSummarizeBuildFailure(t *testing.T) {
+	const buildFailJSON = `
+{"Action":"build-fail","Package":"example/pkg"}
+{"Action":"fail","Package":"example/pkg","Elapsed":0.1}
+`
+	s, err := Summarize(strings.NewReader(buildFailJSON), Options{SuiteName: "demo", RootTest: "TestSuite"})
+	if err != nil {
+		t.Fatalf("Summarize: %v", err)
+	}
+	if s.Failed != 1 || s.Total != 1 || s.Passed != 0 {
+		t.Errorf("build failure not surfaced: %+v", s)
+	}
+}
+
 func TestWriteSummaryMarkdown(t *testing.T) {
 	s := Summary{
 		Suite: "demo", Total: 5, Passed: 1, Skipped: 3, Failed: 1,

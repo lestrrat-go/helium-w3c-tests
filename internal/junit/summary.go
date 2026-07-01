@@ -37,6 +37,7 @@ func Summarize(r io.Reader, opt Options) (Summary, error) {
 	}
 	records := map[string]*rec{}
 	order := []string{}
+	packageFailed := false
 	dec := json.NewDecoder(r)
 	for {
 		var ev event
@@ -45,6 +46,14 @@ func Summarize(r io.Reader, opt Options) (Summary, error) {
 				break
 			}
 			return Summary{}, err
+		}
+		if ev.Test == "" {
+			// Package-level events: a build failure or a package fail with no
+			// case events (e.g. a compile error) must still surface as a failure.
+			if ev.Action == "build-fail" || ev.Action == "fail" {
+				packageFailed = true
+			}
+			continue
 		}
 		if !strings.HasPrefix(ev.Test, opt.RootTest+"/") {
 			continue
@@ -61,6 +70,15 @@ func Summarize(r io.Reader, opt Options) (Summary, error) {
 		case "output":
 			rc.output = append(rc.output, ev.Output)
 		}
+	}
+
+	// Mirror ConvertGoTestJSON: if the test binary never produced any case
+	// results but the package failed to build/run, record one synthetic failure
+	// so the committed evidence never silently reads as a clean, empty suite.
+	if len(order) == 0 && packageFailed {
+		s.Failed++
+		s.Total++
+		return s, nil
 	}
 
 	for _, name := range order {

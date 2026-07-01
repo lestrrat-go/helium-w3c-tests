@@ -61,6 +61,7 @@ func run(ctx context.Context, args []string) (int, error) {
 	out := fs.String("out", "", "JUnit XML output path (default: per-suite under test-results/)")
 	summaryOut := fs.String("summary", "", "conformance summary markdown path (default: per-suite under test-results/)")
 	root := fs.String("root", ".", "module root containing suites.lock.json")
+	heliumCommit := fs.String("helium-commit", "", "helium commit the suite ran against, recorded in the summary provenance")
 	fs.SetOutput(os.Stderr)
 	fs.Usage = func() {
 		fmt.Fprintln(fs.Output(), "usage: w3ctest [-out FILE] [-summary FILE] [-root DIR] <suite> [go test flags...]")
@@ -118,7 +119,7 @@ func run(ctx context.Context, args []string) (int, error) {
 	}
 	fmt.Fprintf(os.Stderr, "wrote JUnit results to %s\n", *out)
 
-	if sErr := writeSummary(*summaryOut, *root, suiteKey, suite, stdout.Bytes()); sErr != nil {
+	if sErr := writeSummary(*summaryOut, *root, *heliumCommit, suiteKey, suite, stdout.Bytes()); sErr != nil {
 		return 1, sErr
 	}
 
@@ -135,7 +136,7 @@ func run(ctx context.Context, args []string) (int, error) {
 // writeSummary rolls up the go-test-json output into a committed
 // conformance-evidence markdown report, stamping provenance (pinned upstream
 // commit from suites.lock, generation date) so the file stands alone.
-func writeSummary(path, root, suiteKey string, suite suiteConfig, jsonOut []byte) error {
+func writeSummary(path, root, heliumCommit, suiteKey string, suite suiteConfig, jsonOut []byte) error {
 	summary, err := junit.Summarize(bytes.NewReader(jsonOut), junit.Options{
 		SuiteName: suiteKey,
 		RootTest:  suite.rootTest,
@@ -144,8 +145,9 @@ func writeSummary(path, root, suiteKey string, suite suiteConfig, jsonOut []byte
 		return err
 	}
 	meta := junit.SummaryMeta{
-		DisplayName: suite.displayName,
-		GeneratedAt: time.Now().UTC().Format("2006-01-02"),
+		DisplayName:  suite.displayName,
+		HeliumCommit: heliumCommit,
+		GeneratedAt:  time.Now().UTC().Format("2006-01-02"),
 	}
 	if lock, lerr := generator.LoadLock(root); lerr == nil {
 		if sl, ok := lock.Suite(suiteKey); ok {
