@@ -238,7 +238,11 @@ func buildWrapperSchema(t *testing.T, testdataRoot string, c xstsCase) ([]byte, 
 	dir := path.Dir(c.SchemaRel)
 	var b strings.Builder
 	b.WriteString(`<?xml version="1.0" encoding="UTF-8"?>` + "\n")
-	b.WriteString(`<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">` + "\n")
+	// The wrapper carries its own targetNamespace so its no-@namespace
+	// imports (for no-targetNamespace constituent documents) stay valid under
+	// src-import.1.2, which forbids a no-namespace import inside a schema that
+	// itself has no targetNamespace.
+	b.WriteString(`<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:x-helium-w3c:multidoc-wrapper">` + "\n")
 	for _, rel := range c.SchemaDocs {
 		p := filepath.Join(testdataRoot, filepath.FromSlash(rel))
 		src, err := os.ReadFile(p)
