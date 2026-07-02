@@ -2,8 +2,6 @@
   "skip": {
     "analyze-string-090a": "implementation handles zero-length matches (XSLT 3.0)",
     "analyze-string-091a": "implementation handles zero-length matches (XSLT 3.0)",
-    "document-2401": "package-scoped strip-space: using package rules not on main stylesheet",
-    "document-2402": "package-scoped strip-space: using package rules not on main stylesheet",
     "select-7502a": "XSLT 2.0 test; XSLT 3.0 correctly accepts empty xsl:value-of",
     "format-number-069c": "XSLT 2.0 test; 3.0 processor recognizes exponent-separator",
     "format-number-070": "user-defined function shadows built-in format-number; arity mismatch",
