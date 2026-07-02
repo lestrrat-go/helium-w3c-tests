@@ -463,7 +463,7 @@ a:_underscore_
 		{Name: "avt-1203", StylesheetPath: "tests/attr/avt/avt-1203.xsl", SourceContent: `<photograph>
   <href>headquarters.jpg</href>
   <size width="300"/>
-</photograph>`, Assertions: []w3cAssertion{w3cAssertXML("<out test=\"1\" empty=\"\"/>")}, Skip: "unsupported feature: backwards_compatibility"},
+</photograph>`, Assertions: []w3cAssertion{w3cAssertXML("<out test=\"1\" empty=\"\"/>")}},
 		{Name: "avt-1204", StylesheetPath: "tests/attr/avt/avt-1204.xsl", SourceContent: `<photograph>
   <href>headquarters.jpg</href>
   <size width="300"/>
@@ -2869,7 +2869,7 @@ a:_underscore_
 		{Name: "package-version-012", StylesheetPath: "tests/attr/package-version/package-version-012.xsl", Assertions: []w3cAssertion{w3cAnyOf(w3cCheckXPath("/res = 'Success'"))}, AcceptErrors: []string{"XTSE0020"}},
 		{Name: "package-version-013", StylesheetPath: "tests/attr/package-version/package-version-013.xsl", Assertions: []w3cAssertion{w3cAnyOf(w3cCheckXPath("/res = 'Success'"))}, AcceptErrors: []string{"XTSE0020"}},
 		{Name: "package-version-014", StylesheetPath: "tests/attr/package-version/package-version-014.xsl", Assertions: []w3cAssertion{w3cAssertXPath("/res = 'Success'")}},
-		{Name: "package-version-015", StylesheetPath: "tests/attr/package-version/package-version-015.xsl", Assertions: []w3cAssertion{w3cAssertXPath("/res = 'Success'")}, Skip: "unsupported feature: backwards_compatibility"},
+		{Name: "package-version-015", StylesheetPath: "tests/attr/package-version/package-version-015.xsl", Assertions: []w3cAssertion{w3cAssertXPath("/res = 'Success'")}},
 		{Name: "package-version-016", StylesheetPath: "tests/attr/package-version/package-version-016.xsl", Assertions: []w3cAssertion{w3cAssertXPath("/res = 'Success'")}},
 		{Name: "package-version-017", StylesheetPath: "tests/attr/package-version/package-version-017.xsl", Assertions: []w3cAssertion{w3cAssertXPath("/res = 'Success'")}},
 		{Name: "package-version-018", StylesheetPath: "tests/attr/package-version/package-version-018.xsl", Assertions: []w3cAssertion{w3cAssertXPath("/res = 'Success'")}},
@@ -3207,11 +3207,11 @@ cousin 3
 		{Name: "select-3301", StylesheetPath: "tests/attr/select/select-3301.xsl", SourceContent: ` 
 <doc>
   <div>0</div>
-</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>3</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>3</out>")}},
 		{Name: "select-3401", StylesheetPath: "tests/attr/select/select-3401.xsl", SourceContent: ` 
 <doc>
   <div>4</div>
-</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>24</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>24</out>")}},
 		{Name: "select-3501", StylesheetPath: "tests/attr/select/select-3501.xsl", SourceContent: ` 
 <doc>
   <div>6</div>
@@ -3534,7 +3534,7 @@ Node c has on-c in @x</list></out>`)}},
 </doc>`, Assertions: []w3cAssertion{w3cAssertXML(`<out>
 <in>ch1</in>
 <in>ch1</in>
-</out>`)}, Skip: "unsupported feature: backwards_compatibility"},
+</out>`)}},
 		{Name: "select-7401", StylesheetPath: "tests/attr/select/select-7401.xsl", SourceContent: `<doc>
   <m/>
   <n>ok</n>
@@ -3619,7 +3619,7 @@ Node c has on-c in @x</list></out>`)}},
 		{Name: "static-013b", StylesheetPath: "tests/attr/static/static-013.xsl", Params: map[string]string{"static-param": "111"}, ParamTypes: map[string]string{"static-param": "xs:untypedAtomic"}, Assertions: []w3cAssertion{w3cAnyOf(w3cCheckStringValue("110889"))}, AcceptErrors: []string{"XTTE0590"}},
 		{Name: "static-013c", StylesheetPath: "tests/attr/static/static-013.xsl", Params: map[string]string{"static-param": "111"}, ParamTypes: map[string]string{"static-param": "xs:string"}, ExpectError: true, ErrorCode: "XTTE0590"},
 		{Name: "static-014", StylesheetPath: "tests/attr/static/static-014.xsl", Params: map[string]string{"static-param": "111"}, ParamTypes: map[string]string{"static-param": "xs:integer"}, ExpectError: true, ErrorCode: "XTSE0020"},
-		{Name: "static-015", StylesheetPath: "tests/attr/static/static-015.xsl", Params: map[string]string{"static-param1": "123", "static-param2": "456", "static-param3": "789"}, Assertions: []w3cAssertion{w3cAssertStringValue("123456789")}, Skip: "unsupported feature: backwards_compatibility"},
+		{Name: "static-015", StylesheetPath: "tests/attr/static/static-015.xsl", Params: map[string]string{"static-param1": "123", "static-param2": "456", "static-param3": "789"}, Assertions: []w3cAssertion{w3cAssertStringValue("123456789")}},
 		{Name: "static-016", StylesheetPath: "tests/attr/static/static-016.xsl", Params: map[string]string{"static-param": "'Private visibility'"}, ParamTypes: map[string]string{"static-param": "xs:string"}, ExpectError: true, ErrorCode: "XTSE0090"},
 		{Name: "static-017", StylesheetPath: "tests/attr/static/static-017.xsl", ExpectError: true, ErrorCode: "XTSE0090"},
 		{Name: "static-018", StylesheetPath: "tests/attr/static/static-018.xsl", ExpectError: true, ErrorCode: "XTSE0020"},
@@ -3802,7 +3802,7 @@ Node c has on-c in @x</list></out>`)}},
 		{Name: "streamable-138", StylesheetPath: "tests/attr/streamable/streamable-138.xsl", SourceDocPath: "tests/attr/streamable/streamable-137.xml", Assertions: []w3cAssertion{w3cAssertXPath("/out/t = '/r/b[@id=\"i2\"]/c[@id=\"i3\"]/text()[.=\"e\"]'"), w3cAssertXPath("/out/t = '/r/b[@id=\"i2\"]/c[@id=\"i4\"]/text()[.=\"f\"]'")}},
 		{Name: "streamable-139", StylesheetPath: "tests/attr/streamable/streamable-139.xsl", SourceDocPath: "tests/attr/streamable/streamable-137.xml", Assertions: []w3cAssertion{w3cAssertXPath("/out/t = '/r/b[@id=\"i2\"]/c[@id=\"i3\"]/text()[.=\"e\"]'"), w3cAssertXPath("/out/t = '/r/b[@id=\"i2\"]/c[@id=\"i4\"]/text()[.=\"f\"]'")}},
 		{Name: "streamable-140", StylesheetPath: "tests/attr/streamable/streamable-140.xsl", SourceDocPath: "tests/attr/streamable/streamable-140.xml", Assertions: []w3cAssertion{w3cAssertXPath("/root/data/coordinates[1][lat='1.1'][long='1.2']"), w3cAssertXPath("/root/data/coordinates[2][lat='2.1'][long='2.2']")}},
-		{Name: "streamable-141", StylesheetPath: "tests/attr/streamable/streamable-141.xsl", ExpectError: true, ErrorCode: "XTSE3430", Skip: "unsupported feature: backwards_compatibility"},
+		{Name: "streamable-141", StylesheetPath: "tests/attr/streamable/streamable-141.xsl", ExpectError: true, ErrorCode: "XTSE3430"},
 		{Name: "streamable-142", StylesheetPath: "tests/attr/streamable/streamable-142.xsl", SourceDocPath: "tests/attr/streamable/streamable-140.xml", ExpectError: true, ErrorCode: "XTSE3430"},
 		{Name: "streamable-143", StylesheetPath: "tests/attr/streamable/streamable-143.xsl", SourceDocPath: "tests/attr/streamable/streamable-140.xml", ExpectError: true, ErrorCode: "XTSE3430"},
 		{Name: "streamable-144", StylesheetPath: "tests/attr/streamable/streamable-144.xsl", SourceDocPath: "tests/attr/streamable/streamable-140.xml", ExpectError: true, ErrorCode: "XTSE3430"},
@@ -4652,10 +4652,10 @@ Node c has on-c in @x</list></out>`)}},
 `, Assertions: []w3cAssertion{w3cAssertXML(`<out>
         baccarat
     </out>`)}},
-		{Name: "version-012", StylesheetPath: "tests/attr/version/version-012.xsl", SourceDocPath: "tests/attr/version/ver12.xml", Assertions: []w3cAssertion{w3cAssertXML("<testing>fallback</testing>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "version-013", StylesheetPath: "tests/attr/version/version-013.xsl", SourceDocPath: "tests/attr/version/ver13.xml", Assertions: []w3cAssertion{w3cAssertXML("<testing/>")}, Skip: "unsupported feature: backwards_compatibility"},
+		{Name: "version-012", StylesheetPath: "tests/attr/version/version-012.xsl", SourceDocPath: "tests/attr/version/ver12.xml", Assertions: []w3cAssertion{w3cAssertXML("<testing>fallback</testing>")}},
+		{Name: "version-013", StylesheetPath: "tests/attr/version/version-013.xsl", SourceDocPath: "tests/attr/version/ver13.xml", Assertions: []w3cAssertion{w3cAssertXML("<testing/>")}},
 		{Name: "version-014", StylesheetPath: "tests/attr/version/version-014.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML(`<out><a val="5"/>;
-</out>`)}, Skip: "unsupported feature: backwards_compatibility"},
+</out>`)}},
 		{Name: "version-015", StylesheetPath: "tests/attr/version/version-015.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML(`<out><a val="13"/>;
 <a val="London"/>;
 <a val=""/>;
@@ -4701,7 +4701,7 @@ Node c has on-c in @x</list></out>`)}},
    <c id="4"/>
    <d><e/></d>
  </a>
-</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<a>NaN</a>")}, Skip: "unsupported feature: backwards_compatibility"},
+</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<a>NaN</a>")}},
 		{Name: "version-022", StylesheetPath: "tests/attr/version/version-022.xsl", SourceContent: `<doc>
  <a>
    <b id="3"/>
@@ -4753,7 +4753,7 @@ Node c has on-c in @x</list></out>`)}},
   <item n="3">Some</item>
   <item>string</item>
   <item n="19">value</item>
-</doc>`, ExpectError: true, ErrorCode: "XTDE0160"},
+</doc>`, ExpectError: true, ErrorCode: "XTDE0160", Skip: "feature present but test requires absent: backwards_compatibility"},
 		{Name: "version-032", StylesheetPath: "tests/attr/version/version-032.xsl", SourceContent: `<doc>
   <item n="3">Some</item>
   <item>string</item>

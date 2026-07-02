@@ -63,8 +63,8 @@ Agent-consumed guidance. Keep terse. Update when repo workflow or suite policy c
 
 - QT3 targets XPath 3.1 with XSD 1.1 behavior.
 - Skip QT3 tests requiring XSD 1.0-only behavior.
-- XSLT 3.0 targets Basic XSLT Processor conformance.
-- Do not implement or unskip XSLT 1.0/2.0 backwards compatibility tests.
+- XSLT 3.0 targets Basic XSLT Processor conformance, including backwards-compatible processing (XSLT 1.0 behavior + XPath 1.0 compatibility mode). `featureSupported("backwards_compatibility")` is true; a few residual cases are skipped per-case in `expectations/xslt30.json` with specific reasons (1.0-only output method, base-uri fixture, XPath 1.0 grammar).
+- The `spec="XSLT20"`-only tests stay out of scope (`specSupported` whitelists `XSLT20+`/`XSLT30`, not bare `XSLT20`); those are 2.0-specific expected outputs, not a runnable bucket for a 3.0 processor.
 - XSD suite is pinned to w3c/xsdtests (git). `fetch xsd11` clones `sources/xsd11` and copies the XSD-1.1 fixtures into `testdata/xsd11` (gitignored); generated tests skip when fixtures are absent.
 - XSLT suite is pinned to w3c/xslt30-test (git). `fetch xslt30` clones `sources/xslt30` and copies catalog-referenced fixtures (stylesheets + xsl:include/import closure, sources, packages, schemas, collections) into `testdata/xslt30` (gitignored), then overlays the committed `fixtures/xslt30` tree on top.
 - `fixtures/xslt30` (committed) holds the small curated fixture set the catalog scan cannot reproduce from the raw clone: files referenced only at run time (doc()/unparsed-text(), dynamic fn:transform stylesheets, collection members) and fixtures whose content was hand-edited (e.g. a DTD with its XML declaration stripped). Regenerate it only from a known-good fixture tree; never delete a file here without confirming no case needs it.

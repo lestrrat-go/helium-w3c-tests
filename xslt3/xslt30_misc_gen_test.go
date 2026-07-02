@@ -4,56 +4,56 @@ package xslt3_test
 
 func init() {
 	xslt30AllCases = append(xslt30AllCases, []w3cTest{
-		{Name: "backwards-001", StylesheetPath: "tests/misc/backwards/backwards-001.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-002", StylesheetPath: "tests/misc/backwards/backwards-002.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-003", StylesheetPath: "tests/misc/backwards/backwards-003.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-004", StylesheetPath: "tests/misc/backwards/backwards-004.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-005", StylesheetPath: "tests/misc/backwards/backwards-005.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-006", StylesheetPath: "tests/misc/backwards/backwards-006.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out><one>1</one><two>1 2 3 4 5</two></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-007", StylesheetPath: "tests/misc/backwards/backwards-007.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out><one>1</one><two>1 2 3 4 5</two></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-008", StylesheetPath: "tests/misc/backwards/backwards-008.xsl", SecondaryStylesheets: []string{"tests/misc/backwards/backwards-001.xsl"}, InitialTemplate: "two", Assertions: []w3cAssertion{w3cAssertXML("<out-two><out>1</out><two>1 2 3 4 5</two></out-two>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-009", StylesheetPath: "tests/misc/backwards/backwards-009.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out><one>1,2,3,4,5</one><two>1,2,3,4,5</two></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-010", StylesheetPath: "tests/misc/backwards/backwards-010.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out><one select=\"1\"/><two select=\"1 2 3 4 5\"/></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-011", StylesheetPath: "tests/misc/backwards/backwards-011.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out><one>1</one><two>1.2.3.4.5</two></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-012", StylesheetPath: "tests/misc/backwards/backwards-012.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>5 4 3 2 1</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-013", StylesheetPath: "tests/misc/backwards/backwards-013.xsl", SecondaryStylesheets: []string{"tests/misc/backwards/backwards-001.xsl"}, InitialTemplate: "two", Assertions: []w3cAssertion{w3cAssertXML("<out><out>1</out></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-014", StylesheetPath: "tests/misc/backwards/backwards-014.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out/>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-015", StylesheetPath: "tests/misc/backwards/backwards-015.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>NaN</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-016", StylesheetPath: "tests/misc/backwards/backwards-016.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>NaN</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-017", StylesheetPath: "tests/misc/backwards/backwards-017.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertSerializationMatches("href=\"file:///My Documents/page.html\"")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-018", StylesheetPath: "tests/misc/backwards/backwards-018.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertSerializationMatches("meta http-equiv")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-019", StylesheetPath: "tests/misc/backwards/backwards-019.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertSerializationMatches("file:///My Døcuments/page.html")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-019b", StylesheetPath: "tests/misc/backwards/backwards-019b.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertSerializationMatches("file:///My D%C3%B8cuments/page.html")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-020", StylesheetPath: "tests/misc/backwards/backwards-020.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>20</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-021", StylesheetPath: "tests/misc/backwards/backwards-021.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>re</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-022", StylesheetPath: "tests/misc/backwards/backwards-022.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>21</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-023", StylesheetPath: "tests/misc/backwards/backwards-023.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>NaN</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-024", StylesheetPath: "tests/misc/backwards/backwards-024.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>7</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-025", StylesheetPath: "tests/misc/backwards/backwards-025.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>2</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-026", StylesheetPath: "tests/misc/backwards/backwards-026.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>21</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-027", StylesheetPath: "tests/misc/backwards/backwards-027.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-028", StylesheetPath: "tests/misc/backwards/backwards-028.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-029", StylesheetPath: "tests/misc/backwards/backwards-029.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-030", StylesheetPath: "tests/misc/backwards/backwards-030.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-031", StylesheetPath: "tests/misc/backwards/backwards-031.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-032", StylesheetPath: "tests/misc/backwards/backwards-032.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-033", StylesheetPath: "tests/misc/backwards/backwards-033.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-034", StylesheetPath: "tests/misc/backwards/backwards-034.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>false</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-035", StylesheetPath: "tests/misc/backwards/backwards-035.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-036", StylesheetPath: "tests/misc/backwards/backwards-036.xsl", SourceContent: "<data><item>1.00</item><item>2.00</item><item>1</item><item>2</item></data>", Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-037", StylesheetPath: "tests/misc/backwards/backwards-037.xsl", SourceContent: "<data><item>1.00</item><item>2.00</item><item>1</item><item>2</item></data>", Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-038", StylesheetPath: "tests/misc/backwards/backwards-038.xsl", SourceContent: "<data><item>1.00</item><item>2.00</item><item>1</item><item>2</item></data>", Assertions: []w3cAssertion{w3cAssertXML("<out><k><item>1</item></k></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-039", StylesheetPath: "tests/misc/backwards/backwards-039.xsl", SecondaryStylesheets: []string{"tests/misc/backwards/backwards-038.xsl"}, SourceContent: "<data><item>1.00</item><item>2.00</item><item>1</item><item>2</item></data>", Assertions: []w3cAssertion{w3cAssertXML("<out><k><item>1.00</item></k><k><item>1</item></k></out>")}, Skip: "unsupported feature: backwards_compatibility"},
+		{Name: "backwards-001", StylesheetPath: "tests/misc/backwards/backwards-001.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}},
+		{Name: "backwards-002", StylesheetPath: "tests/misc/backwards/backwards-002.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}},
+		{Name: "backwards-003", StylesheetPath: "tests/misc/backwards/backwards-003.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}},
+		{Name: "backwards-004", StylesheetPath: "tests/misc/backwards/backwards-004.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}},
+		{Name: "backwards-005", StylesheetPath: "tests/misc/backwards/backwards-005.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}},
+		{Name: "backwards-006", StylesheetPath: "tests/misc/backwards/backwards-006.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out><one>1</one><two>1 2 3 4 5</two></out>")}},
+		{Name: "backwards-007", StylesheetPath: "tests/misc/backwards/backwards-007.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out><one>1</one><two>1 2 3 4 5</two></out>")}},
+		{Name: "backwards-008", StylesheetPath: "tests/misc/backwards/backwards-008.xsl", SecondaryStylesheets: []string{"tests/misc/backwards/backwards-001.xsl"}, InitialTemplate: "two", Assertions: []w3cAssertion{w3cAssertXML("<out-two><out>1</out><two>1 2 3 4 5</two></out-two>")}},
+		{Name: "backwards-009", StylesheetPath: "tests/misc/backwards/backwards-009.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out><one>1,2,3,4,5</one><two>1,2,3,4,5</two></out>")}},
+		{Name: "backwards-010", StylesheetPath: "tests/misc/backwards/backwards-010.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out><one select=\"1\"/><two select=\"1 2 3 4 5\"/></out>")}},
+		{Name: "backwards-011", StylesheetPath: "tests/misc/backwards/backwards-011.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out><one>1</one><two>1.2.3.4.5</two></out>")}},
+		{Name: "backwards-012", StylesheetPath: "tests/misc/backwards/backwards-012.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>5 4 3 2 1</out>")}},
+		{Name: "backwards-013", StylesheetPath: "tests/misc/backwards/backwards-013.xsl", SecondaryStylesheets: []string{"tests/misc/backwards/backwards-001.xsl"}, InitialTemplate: "two", Assertions: []w3cAssertion{w3cAssertXML("<out><out>1</out></out>")}},
+		{Name: "backwards-014", StylesheetPath: "tests/misc/backwards/backwards-014.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out/>")}},
+		{Name: "backwards-015", StylesheetPath: "tests/misc/backwards/backwards-015.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>NaN</out>")}},
+		{Name: "backwards-016", StylesheetPath: "tests/misc/backwards/backwards-016.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>NaN</out>")}},
+		{Name: "backwards-017", StylesheetPath: "tests/misc/backwards/backwards-017.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertSerializationMatches("href=\"file:///My Documents/page.html\"")}},
+		{Name: "backwards-018", StylesheetPath: "tests/misc/backwards/backwards-018.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertSerializationMatches("meta http-equiv")}},
+		{Name: "backwards-019", StylesheetPath: "tests/misc/backwards/backwards-019.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertSerializationMatches("file:///My Døcuments/page.html")}},
+		{Name: "backwards-019b", StylesheetPath: "tests/misc/backwards/backwards-019b.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertSerializationMatches("file:///My D%C3%B8cuments/page.html")}},
+		{Name: "backwards-020", StylesheetPath: "tests/misc/backwards/backwards-020.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>20</out>")}},
+		{Name: "backwards-021", StylesheetPath: "tests/misc/backwards/backwards-021.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>re</out>")}},
+		{Name: "backwards-022", StylesheetPath: "tests/misc/backwards/backwards-022.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>21</out>")}},
+		{Name: "backwards-023", StylesheetPath: "tests/misc/backwards/backwards-023.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>NaN</out>")}},
+		{Name: "backwards-024", StylesheetPath: "tests/misc/backwards/backwards-024.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>7</out>")}},
+		{Name: "backwards-025", StylesheetPath: "tests/misc/backwards/backwards-025.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>2</out>")}},
+		{Name: "backwards-026", StylesheetPath: "tests/misc/backwards/backwards-026.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>21</out>")}},
+		{Name: "backwards-027", StylesheetPath: "tests/misc/backwards/backwards-027.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}},
+		{Name: "backwards-028", StylesheetPath: "tests/misc/backwards/backwards-028.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}},
+		{Name: "backwards-029", StylesheetPath: "tests/misc/backwards/backwards-029.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}},
+		{Name: "backwards-030", StylesheetPath: "tests/misc/backwards/backwards-030.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}},
+		{Name: "backwards-031", StylesheetPath: "tests/misc/backwards/backwards-031.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}},
+		{Name: "backwards-032", StylesheetPath: "tests/misc/backwards/backwards-032.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}},
+		{Name: "backwards-033", StylesheetPath: "tests/misc/backwards/backwards-033.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}},
+		{Name: "backwards-034", StylesheetPath: "tests/misc/backwards/backwards-034.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>false</out>")}},
+		{Name: "backwards-035", StylesheetPath: "tests/misc/backwards/backwards-035.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}},
+		{Name: "backwards-036", StylesheetPath: "tests/misc/backwards/backwards-036.xsl", SourceContent: "<data><item>1.00</item><item>2.00</item><item>1</item><item>2</item></data>", Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}},
+		{Name: "backwards-037", StylesheetPath: "tests/misc/backwards/backwards-037.xsl", SourceContent: "<data><item>1.00</item><item>2.00</item><item>1</item><item>2</item></data>", Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}},
+		{Name: "backwards-038", StylesheetPath: "tests/misc/backwards/backwards-038.xsl", SourceContent: "<data><item>1.00</item><item>2.00</item><item>1</item><item>2</item></data>", Assertions: []w3cAssertion{w3cAssertXML("<out><k><item>1</item></k></out>")}},
+		{Name: "backwards-039", StylesheetPath: "tests/misc/backwards/backwards-039.xsl", SecondaryStylesheets: []string{"tests/misc/backwards/backwards-038.xsl"}, SourceContent: "<data><item>1.00</item><item>2.00</item><item>1</item><item>2</item></data>", Assertions: []w3cAssertion{w3cAssertXML("<out><k><item>1.00</item></k><k><item>1</item></k></out>")}},
 		{Name: "backwards-040", StylesheetPath: "tests/misc/backwards/backwards-040.xsl", SourceContent: "<data><item>1.00</item><item>2.00</item><item>1</item><item>2</item></data>", Assertions: []w3cAssertion{w3cAssertXML(`<out><item-found param="3"><item>1.00</item></item-found><item-found param="3"
             ><item>2.00</item></item-found><item-found param="3"><item>1</item></item-found><item-found param="3"
-            ><item>2</item></item-found></out>`)}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-041", StylesheetPath: "tests/misc/backwards/backwards-041.xsl", SourceContent: "<data><item>1.00</item><item>2.00</item><item>1</item><item>2</item></data>", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-042", StylesheetPath: "tests/misc/backwards/backwards-042.xsl", SourceContent: "<data><item>1.00</item><item>2.00</item><item>1</item><item>2</item></data>", Assertions: []w3cAssertion{w3cAssertXML("<out>1,2,3</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+            ><item>2</item></item-found></out>`)}},
+		{Name: "backwards-041", StylesheetPath: "tests/misc/backwards/backwards-041.xsl", SourceContent: "<data><item>1.00</item><item>2.00</item><item>1</item><item>2</item></data>", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}},
+		{Name: "backwards-042", StylesheetPath: "tests/misc/backwards/backwards-042.xsl", SourceContent: "<data><item>1.00</item><item>2.00</item><item>1</item><item>2</item></data>", Assertions: []w3cAssertion{w3cAssertXML("<out>1,2,3</out>")}},
 		{Name: "backwards-043", StylesheetPath: "tests/misc/backwards/backwards-043.xsl", SecondaryStylesheets: []string{"tests/misc/backwards/backwards-043a.xsl", "tests/misc/backwards/backwards-043b.xsl"}, SourceContent: `<root>
      <one marker="a"/>
      <two marker="b"/>
      <three marker="c"/>
-</root>`, Assertions: []w3cAssertion{w3cAssertXML("<result><one marker=\"a\"/><two marker=\"b\"/></result>")}, Skip: "unsupported feature: backwards_compatibility"},
+</root>`, Assertions: []w3cAssertion{w3cAssertXML("<result><one marker=\"a\"/><two marker=\"b\"/></result>")}},
 		{Name: "backwards-044", StylesheetPath: "tests/misc/backwards/backwards-044.xsl", SourceContent: `<apply>
   <partialdiff/>
   <bvar>
@@ -65,9 +65,9 @@ func init() {
   <bvar>
     <ci>y</ci> 
   </bvar> 
-</apply>`, Assertions: []w3cAssertion{w3cAssertXML("<out>3</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-045", StylesheetPath: "tests/misc/backwards/backwards-045.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("/out/a1 eq 'true'"), w3cAssertXPath("/out/a2 eq 'false'"), w3cAssertXPath("/out/b1 eq 'true'"), w3cAssertXPath("/out/b2 eq 'false'"), w3cAssertXPath("/out/c1 eq '1'"), w3cAssertXPath("/out/c2 eq '1 2 3'"), w3cAssertXPath("/out/d1 eq 'false'"), w3cAssertXPath("/out/d2 eq 'failed'")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "backwards-046", StylesheetPath: "tests/misc/backwards/backwards-046.xsl", Assertions: []w3cAssertion{w3cAssertXPath("/out/result/@count = '0'")}, Skip: "unsupported feature: backwards_compatibility"},
+</apply>`, Assertions: []w3cAssertion{w3cAssertXML("<out>3</out>")}},
+		{Name: "backwards-045", StylesheetPath: "tests/misc/backwards/backwards-045.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("/out/a1 eq 'true'"), w3cAssertXPath("/out/a2 eq 'false'"), w3cAssertXPath("/out/b1 eq 'true'"), w3cAssertXPath("/out/b2 eq 'false'"), w3cAssertXPath("/out/c1 eq '1'"), w3cAssertXPath("/out/c2 eq '1 2 3'"), w3cAssertXPath("/out/d1 eq 'false'"), w3cAssertXPath("/out/d2 eq 'failed'")}},
+		{Name: "backwards-046", StylesheetPath: "tests/misc/backwards/backwards-046.xsl", Assertions: []w3cAssertion{w3cAssertXPath("/out/result/@count = '0'")}},
 		{Name: "bug-0101", StylesheetPath: "tests/misc/bug/bug-0101.xsl", SourceDocPath: "tests/misc/bug/bug-01.xml", Assertions: []w3cAssertion{w3cAssertXML("<out><a a-foo=\"a-bar\"/><b b-foo=\"b-bar\"/></out>")}},
 		{Name: "bug-0201", StylesheetPath: "tests/misc/bug/bug-0201.xsl", SourceContent: "<doc element=\"e\" attribute=\"a\">jump</doc>", Assertions: []w3cAssertion{w3cAssertXML("<a>jump</a>")}},
 		{Name: "bug-0301", StylesheetPath: "tests/misc/bug/bug-0301.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML(`<out xmlns:z="http://z.uri/" changed="2004-04-06"><z:a a-foo="a-bar"
@@ -363,7 +363,7 @@ text
 		{Name: "bug-6101", StylesheetPath: "tests/misc/bug/bug-6101.xsl", SourceContent: "<a xmlns:prefix=\"http://some.uri/\" prefix:att=\"3\"><b/></a>", Assertions: []w3cAssertion{w3cAssertXML(`<x>
   [.]
 </x>`)}},
-		{Name: "bug-6201", StylesheetPath: "tests/misc/bug/bug-6201.xsl", SourceDocPath: "tests/misc/bug/bug-62.xml", Assertions: []w3cAssertion{w3cAssertXML("<x/>")}, Skip: "unsupported feature: backwards_compatibility"},
+		{Name: "bug-6201", StylesheetPath: "tests/misc/bug/bug-6201.xsl", SourceDocPath: "tests/misc/bug/bug-62.xml", Assertions: []w3cAssertion{w3cAssertXML("<x/>")}},
 		{Name: "bug-6301", StylesheetPath: "tests/misc/bug/bug-6301.xsl", SourceDocPath: "tests/misc/bug/bug-63.xml", Assertions: []w3cAssertion{w3cAssertXPath("/out = \"2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997\"")}},
 		{Name: "bug-6401", StylesheetPath: "tests/misc/bug/bug-6401.xsl", SourceDocPath: "tests/misc/bug/bug-64.xml", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><out>Source document title Short decription content<reference id=\"preproc1- ref\"><title id=\"preproc1- ttl\">Preprocessing Errors\r\n\t\t\t\t\t\t2601 through\r\n\t\t\t\t\t\t2606</title><shortdesc/><refbody><table id=\"preproc1- ttl\"><tgroup cols=\"4\"><colspec column=\"1\" colname=\"col1\" colwidth=\"1*\"/><colspec column=\"2\" colname=\"col2\" colwidth=\"2.25*\"/><colspec column=\"3\" colname=\"col3\" colwidth=\"1*\"/><colspec column=\"4\" colname=\"col5\" colwidth=\"2.25*\"/><thead><row><entry colname=\"col1\" align=\"center\">Error Code</entry><entry colname=\"col1\" align=\"center\">Type</entry><entry colname=\"col1\" align=\"center\">Message</entry><entry colname=\"col1\" align=\"center\">Possible Cause</entry></row></thead><tbody><row><entry colname=\"col1\" align=\"left\" valign=\"top\">Error</entry><entry colname=\"col2\" align=\"left\" valign=\"top\">2601</entry><entry colname=\"col3\" align=\"left\" valign=\"top\">subscript value %1 too large</entry><entry colname=\"col4\" align=\"left\" valign=\"top\">You have attempted to index a host variable that is an array with a value too large for the array.</entry></row><row><entry colname=\"col1\" align=\"left\" valign=\"top\">Error</entry><entry colname=\"col2\" align=\"left\" valign=\"top\">2602</entry><entry colname=\"col3\" align=\"left\" valign=\"top\">combined pointer and arrays not supported for host types</entry><entry colname=\"col4\" align=\"left\" valign=\"top\">You have used an array of pointers as a host variable. This is not legal.</entry></row><row><entry colname=\"col1\" align=\"left\" valign=\"top\">Error</entry><entry colname=\"col2\" align=\"left\" valign=\"top\">2603</entry><entry colname=\"col3\" align=\"left\" valign=\"top\">combined pointer and arrays not supported for host types</entry><entry colname=\"col4\" align=\"left\" valign=\"top\">You have attempted to declare a host variable as an array of character arrays. This is not a legal host variable type</entry></row><row><entry colname=\"col1\" align=\"left\" valign=\"top\">Error</entry><entry colname=\"col2\" align=\"left\" valign=\"top\">2604</entry><entry colname=\"col3\" align=\"left\" valign=\"top\">VARCHAR type must have a length</entry><entry colname=\"col4\" align=\"left\" valign=\"top\">You have attempted to declare a VARCHAR or BINARY host variable using the DECL_VARCHAR or DECL_BINARY macro but have not specified\r\n                            a size for the array.\r\n                         </entry></row><row><entry colname=\"col1\" align=\"left\" valign=\"top\">Error</entry><entry colname=\"col2\" align=\"left\" valign=\"top\">2605</entry><entry colname=\"col3\" align=\"left\" valign=\"top\">arrays of VARCHAR not supported</entry><entry colname=\"col4\" align=\"left\" valign=\"top\">You have attempted to declare a host variable as an array of VARCHAR or BINARY. This is not a legal host variable type.</entry></row><row><entry colname=\"col1\" align=\"left\" valign=\"top\">Error</entry><entry colname=\"col2\" align=\"left\" valign=\"top\">2606</entry><entry colname=\"col3\" align=\"left\" valign=\"top\">VARCHAR host variables cannot be pointers</entry><entry colname=\"col4\" align=\"left\" valign=\"top\">You have attempted to declare a host variable as a pointer to a VARCHAR or BINARY. This is not a legal host variable type.</entry></row></tbody></tgroup></table></refbody></reference></out>")}},
 		{Name: "built-in-templates-0101", StylesheetPath: "tests/misc/built-in-templates/built-in-templates-0101.xsl", SourceDocPath: "tests/misc/built-in-templates/built-in-templates-01.xml", Assertions: []w3cAssertion{w3cAssertXML(`<out>
@@ -487,8 +487,8 @@ Unicode codepoint collation:
 <doc/>`, Assertions: []w3cAssertion{w3cAssertXPath("/out = \"http://www.w3.org/2005/xpath-functions/collation/codepoint\"")}},
 		{Name: "collations-1006", StylesheetPath: "tests/misc/collations/collations-1006.xsl", SourceContent: `<!-- A required but useless input XML doc for a transformation -->
 <doc/>`, Assertions: []w3cAssertion{w3cAnyOf(w3cCheckAllOf(w3cCheckXPath("/out/a = 'true'"), w3cCheckXPath("/out/b = 'true'"), w3cCheckXPath("/out/c = 'true'"), w3cCheckXPath("/out/d = 'true'"), w3cCheckXPath("/out/e = 'Ab aBC aBcD'")))}, AcceptErrors: []string{"FOCH0002"}},
-		{Name: "docbook-001", StylesheetPath: "tests/misc/docbook/docbook-xsl-1.79.1/xhtml5/docbook.xsl", SourceDocPath: "tests/misc/docbook/prague2016mhk.xml", Assertions: []w3cAssertion{w3cAssertXPath("/Q{http://www.w3.org/1999/xhtml}html"), w3cAssertXPath("count(//*) = 249"), w3cAssertXPath("count(//@*) = 212")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "docbook-002", StylesheetPath: "tests/misc/docbook/docbook-xsl-1.79.1/fo/docbook.xsl", SourceDocPath: "tests/misc/docbook/prague2016mhk.xml", Assertions: []w3cAssertion{w3cAssertXPath("/Q{http://www.w3.org/1999/XSL/Format}root"), w3cAssertXPath("count(//*) = 619"), w3cAssertXPath("count(//@*) = 1717")}, Skip: "unsupported feature: backwards_compatibility"},
+		{Name: "docbook-001", StylesheetPath: "tests/misc/docbook/docbook-xsl-1.79.1/xhtml5/docbook.xsl", SourceDocPath: "tests/misc/docbook/prague2016mhk.xml", Assertions: []w3cAssertion{w3cAssertXPath("/Q{http://www.w3.org/1999/xhtml}html"), w3cAssertXPath("count(//*) = 249"), w3cAssertXPath("count(//@*) = 212")}},
+		{Name: "docbook-002", StylesheetPath: "tests/misc/docbook/docbook-xsl-1.79.1/fo/docbook.xsl", SourceDocPath: "tests/misc/docbook/prague2016mhk.xml", Assertions: []w3cAssertion{w3cAssertXPath("/Q{http://www.w3.org/1999/XSL/Format}root"), w3cAssertXPath("count(//*) = 619"), w3cAssertXPath("count(//@*) = 1717")}},
 		{Name: "docbook-003", StylesheetPath: "tests/misc/docbook/docbook-003.xsl", Assertions: []w3cAssertion{w3cAssertXPath("/Q{http://docbook.org/ns/docbook}section/@xml:id=\"V1.79.1_Tools\""), w3cAssertXPath("/Q{http://docbook.org/ns/docbook}section/*:title = \"Tools\"")}},
 		{Name: "docbook-004", StylesheetPath: "tests/misc/docbook/docbook-004.xsl", Assertions: []w3cAssertion{w3cAssertXPath("/Q{http://docbook.org/ns/docbook}section/@xml:id=\"V1.79.1_Tools\""), w3cAssertXPath("/Q{http://docbook.org/ns/docbook}section/*:title = \"Tools\"")}},
 		{Name: "embedded-stylesheet-001", StylesheetPath: "", SourceDocPath: "tests/misc/embedded-stylesheet/embed001.xml", Assertions: []w3cAssertion{w3cAssertXML("<out><item xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" attr=\"atr3\"><subitem>c</subitem></item></out>")}, EmbeddedStylesheet: true},
@@ -819,7 +819,7 @@ Unicode codepoint collation:
 		{Name: "error-0150e", StylesheetPath: "tests/misc/error/error-0150e.xsl", SourceContent: `<doc>
   <element attribute="3"/>
 </doc>`, InitialTemplate: "main", ExpectError: true, ErrorCode: "XTSE0165"},
-		{Name: "error-0160a", StylesheetPath: "tests/misc/error/error-0160a.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XTDE0160"},
+		{Name: "error-0160a", StylesheetPath: "tests/misc/error/error-0160a.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XTDE0160", Skip: "feature present but test requires absent: backwards_compatibility"},
 		{Name: "error-0165a", StylesheetPath: "tests/misc/error/error-0165a.xsl", SourceContent: `<doc>
   <element attribute="3"/>
 </doc>`, ExpectError: true, ErrorCode: "XTSE0165"},
@@ -1617,7 +1617,7 @@ Unicode codepoint collation:
   <element attribute="3"/>
 </doc>`, InitialTemplate: "main", ExpectError: true, ErrorCode: "XTDE1400"},
 		{Name: "error-1420a", StylesheetPath: "tests/misc/error/error-1420a.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XTDE1420"},
-		{Name: "error-1425a", StylesheetPath: "tests/misc/error/error-1425a.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XTDE1425", Skip: "unsupported feature: backwards_compatibility"},
+		{Name: "error-1425a", StylesheetPath: "tests/misc/error/error-1425a.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XTDE1425"},
 		{Name: "error-1428a", StylesheetPath: "tests/misc/error/error-1428a.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XTDE1428"},
 		{Name: "error-1430a", StylesheetPath: "tests/misc/error/error-1430a.xsl", SourceContent: `<doc>
   <element attribute="3"/>
@@ -2073,8 +2073,8 @@ Unicode codepoint collation:
 		{Name: "initial-template-003", StylesheetPath: "tests/misc/initial-template/initial-template-001.xsl", InitialTemplate: "param1", InitialTemplateParams: map[string]string{"a": "1234"}, InitialTemplateTunnelParams: map[string]string{"{http://my.net/}b": "999"}, Params: map[string]string{"a": "77"}, Assertions: []w3cAssertion{w3cAssertXML("<a>1234 999 154</a>")}},
 		{Name: "initial-template-003a", StylesheetPath: "tests/misc/initial-template/initial-template-001.xsl", InitialTemplate: "param1", InitialTemplateParams: map[string]string{"a": "1234"}, InitialTemplateTunnelParams: map[string]string{"{http://my.net/}b": "999"}, Params: map[string]string{"a": "77"}, ExpectError: true, ErrorCode: "XTDE0060", Skip: "unsupported spec: XSLT20"},
 		{Name: "initial-template-004", StylesheetPath: "tests/misc/initial-template/initial-template-004.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("deep-equal($result, (123.5,\r\n            -18,\r\n            12.6,\r\n            14.2,\r\n            123.6,\r\n            -56,\r\n            123.5,\r\n            123.6))")}},
-		{Name: "initial-template-080", StylesheetPath: "tests/misc/initial-template/initial-template-080.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("/out = '23'")}},
-		{Name: "initial-template-081", StylesheetPath: "tests/misc/initial-template/initial-template-080.xsl", InitialTemplate: "other", ExpectError: true, ErrorCode: "XTDE0160"},
+		{Name: "initial-template-080", StylesheetPath: "tests/misc/initial-template/initial-template-080.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("/out = '23'")}, Skip: "feature present but test requires absent: backwards_compatibility"},
+		{Name: "initial-template-081", StylesheetPath: "tests/misc/initial-template/initial-template-080.xsl", InitialTemplate: "other", ExpectError: true, ErrorCode: "XTDE0160", Skip: "feature present but test requires absent: backwards_compatibility"},
 		{Name: "initial-template-901", StylesheetPath: "tests/misc/initial-template/initial-template-001.xsl", InitialTemplate: "nonsuch", InitialTemplateParams: map[string]string{"a": "1234"}, InitialTemplateTunnelParams: map[string]string{"{http://my.net/}b": "999"}, ExpectError: true, ErrorCode: "XTDE0040"},
 		{Name: "initial-template-902", StylesheetPath: "tests/misc/initial-template/initial-template-001.xsl", InitialTemplate: "param1", InitialTemplateTunnelParams: map[string]string{"{http://my.net/}b": "999"}, ExpectError: true, ErrorCode: "XTDE0700"},
 		{Name: "initial-template-902a", StylesheetPath: "tests/misc/initial-template/initial-template-001.xsl", InitialTemplate: "param1", ExpectError: true, ErrorCode: "XTDE0060", Skip: "unsupported spec: XSLT20"},
@@ -4657,33 +4657,33 @@ b'`, "regex": "'a\\sb'"}, ParamTypes: map[string]string{"delimiter": "xs:string"
 		{Name: "xml-version-040", StylesheetPath: "tests/misc/xml-version/xml-version-040.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out><a xmlns:pref=\"http://example.org/pre&#xC0;\"><b/></a></out>")}},
 		{Name: "xml-version-041", StylesheetPath: "tests/misc/xml-version/xml-version-041.xsl", SourceContent: "<?xml version=\"1.1\"?><doc><rĳk RĲk=\"RIJK\"><bell>&#7;</bell><nbh>&#131;</nbh><nel>&#133;</nel><plain>vanilla</plain></rĳk></doc>", ExpectError: true, ErrorCode: "SEPM0016"},
 		{Name: "xml-version-042", StylesheetPath: "tests/misc/xml-version/xml-version-042.xsl", SourceContent: "<?xml version=\"1.1\"?><doc><rĳk RĲk=\"RIJK\"><bell>&#7;</bell><nbh>&#131;</nbh><nel>&#133;</nel><plain>vanilla</plain></rĳk></doc>", Assertions: []w3cAssertion{w3cAssertSerializationMatches("version=['\"]1.1['\"]"), w3cAssertSerializationMatches("xmlns:a=(\"\"|'')")}},
-		{Name: "xslt-compat-001", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-001.xsl", SourceDocPath: "tests/misc/xslt-compat/xsltbc001.xml", Assertions: []w3cAssertion{w3cAssertXML("<out>Some</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+		{Name: "xslt-compat-001", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-001.xsl", SourceDocPath: "tests/misc/xslt-compat/xsltbc001.xml", Assertions: []w3cAssertion{w3cAssertXML("<out>Some</out>")}},
 		{Name: "xslt-compat-002", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-002.xsl", SourceDocPath: "tests/misc/xslt-compat/xsltbc001.xml", Assertions: []w3cAssertion{w3cAssertXML(`<out>
 Some at 1
 string at 2
-value at 3</out>`)}, Skip: "unsupported feature: backwards_compatibility"},
+value at 3</out>`)}},
 		{Name: "xslt-compat-003", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-003.xsl", SourceDocPath: "tests/misc/xslt-compat/xsltbc001.xml", Assertions: []w3cAssertion{w3cAssertXML("<out><log>((</log><log>))</log></out>"), w3cAssertResultDocument("xslt-compat-003-2.out", w3cCheckXML(`<?xml version="1.0" encoding="UTF-8"?>
-<item name="text">string</item>`))}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xslt-compat-004", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-004.xsl", SourceDocPath: "tests/misc/xslt-compat/xsltbc001.xml", Assertions: []w3cAssertion{w3cAssertXML("<out item1=\"Some\"/>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xslt-compat-005", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-005.xsl", SourceDocPath: "tests/misc/xslt-compat/xsltbc001.xml", Assertions: []w3cAssertion{w3cAssertXML("<out><sometag attributevalue=\"Some\"/></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xslt-compat-006", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-006.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out>a!racada!ra</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xslt-compat-007", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-007.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out><inner xmlns:foo=\"http://foo.example.com\" a1=\"test\"/></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xslt-compat-008", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-008.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out>A bc def ghij klmno</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xslt-compat-009", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-009.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out attrib=\"Setting it the new way\"/>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xslt-compat-010", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-010.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out>300|4|-2|-1|1|0.5|-0.5|0|-50|-17|</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+<item name="text">string</item>`))}},
+		{Name: "xslt-compat-004", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-004.xsl", SourceDocPath: "tests/misc/xslt-compat/xsltbc001.xml", Assertions: []w3cAssertion{w3cAssertXML("<out item1=\"Some\"/>")}},
+		{Name: "xslt-compat-005", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-005.xsl", SourceDocPath: "tests/misc/xslt-compat/xsltbc001.xml", Assertions: []w3cAssertion{w3cAssertXML("<out><sometag attributevalue=\"Some\"/></out>")}},
+		{Name: "xslt-compat-006", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-006.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out>a!racada!ra</out>")}},
+		{Name: "xslt-compat-007", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-007.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out><inner xmlns:foo=\"http://foo.example.com\" a1=\"test\"/></out>")}},
+		{Name: "xslt-compat-008", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-008.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out>A bc def ghij klmno</out>")}},
+		{Name: "xslt-compat-009", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-009.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out attrib=\"Setting it the new way\"/>")}},
+		{Name: "xslt-compat-010", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-010.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out>300|4|-2|-1|1|0.5|-0.5|0|-50|-17|</out>")}},
 		{Name: "xslt-compat-011", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-011.xsl", SourceContent: `<doc>
   <!-- 55 -->
   <s flag="no">9</s>
   <!-- 75 -->
   <s flag="no">11</s>
   <!-- 70 -->
-</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out><v>14</v><x>false</x></out>")}, Skip: "unsupported feature: backwards_compatibility"},
+</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out><v>14</v><x>false</x></out>")}},
 		{Name: "xslt-compat-012", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-012.xsl", SourceDocPath: "tests/misc/xslt-compat/xsltbc019.xml", Assertions: []w3cAssertion{w3cAssertXML(`<out>
 <v>38.56</v>
 <v toobig="yes">1.9345E122</v>
 <v>17.0034</v>
 <v toobig="yes">5.93784E217</v>
-</out>`)}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xslt-compat-013", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-013.xsl", SourceDocPath: "tests/misc/xslt-compat/xsltbc019.xml", Assertions: []w3cAssertion{w3cAssertXML("<a/>")}, Skip: "unsupported feature: backwards_compatibility"},
+</out>`)}},
+		{Name: "xslt-compat-013", StylesheetPath: "tests/misc/xslt-compat/xslt-compat-013.xsl", SourceDocPath: "tests/misc/xslt-compat/xsltbc019.xml", Assertions: []w3cAssertion{w3cAssertXML("<a/>")}},
 	}...)
 }

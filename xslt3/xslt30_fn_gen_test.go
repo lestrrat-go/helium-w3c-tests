@@ -525,7 +525,7 @@ Function returns value for property xsd-version: true
    <number>5223849703457</number>
    <number>ABC</number>
    <number>-394729834.2347239480234</number>
-</doc>`, ExpectError: true, ErrorCode: "XTDE1420", Skip: "unsupported feature: backwards_compatibility"},
+</doc>`, ExpectError: true, ErrorCode: "XTDE1420"},
 		{Name: "format-date-001", StylesheetPath: "tests/fn/format-date/format-date-001.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML(`<?xml version="1.0" encoding="UTF-8"?><out>;
  <tr><code>2003-09-7</code><code x="2003-09-7"/></tr>;
  <tr><code>9-7-2003</code><code x="9-7-2003"/></tr>;
@@ -2136,7 +2136,7 @@ Function returns value for property xsd-version: true
 		{Name: "format-number-013", StylesheetPath: "tests/fn/format-number/format-number-013.xsl", SourceContent: `<doc>
 </doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>off-the-scale</out>")}},
 		{Name: "format-number-014", StylesheetPath: "tests/fn/format-number/format-number-014.xsl", SourceContent: `<doc>
-</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>non-numeric</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>non-numeric</out>")}},
 		{Name: "format-number-015", StylesheetPath: "tests/fn/format-number/format-number-015.xsl", SourceContent: `<doc>
 </doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>485.7m</out>")}},
 		{Name: "format-number-016", StylesheetPath: "tests/fn/format-number/format-number-016.xsl", SourceContent: `<doc>
@@ -2184,7 +2184,7 @@ __26,931.4</out>`)}},
 		{Name: "format-number-034", StylesheetPath: "tests/fn/format-number/format-number-034.xsl", SourceContent: `<doc>
 </doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>Infinity</out>")}},
 		{Name: "format-number-035", StylesheetPath: "tests/fn/format-number/format-number-035.xsl", SourceContent: `<doc>
-</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>NaN</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>NaN</out>")}},
 		{Name: "format-number-036", StylesheetPath: "tests/fn/format-number/format-number-036.xsl", SourceContent: `<doc>
 </doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>-Infinity</out>")}},
 		{Name: "format-number-037", StylesheetPath: "tests/fn/format-number/format-number-037.xsl", SourceContent: `<doc>
@@ -2192,17 +2192,17 @@ __26,931.4</out>`)}},
 		{Name: "format-number-038", StylesheetPath: "tests/fn/format-number/format-number-038.xsl", SourceContent: `<doc>
 </doc>`, Assertions: []w3cAssertion{w3cAssertXML(`<out>
 <foo>not a number, -13.2</foo>
-<baz>not a number, -13.2</baz></out>`)}, Skip: "unsupported feature: backwards_compatibility"},
+<baz>not a number, -13.2</baz></out>`)}},
 		{Name: "format-number-039", StylesheetPath: "tests/fn/format-number/format-number-039.xsl", SourceContent: `<doc>
-</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>not a number, 3.2</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>not a number, 3.2</out>")}},
 		{Name: "format-number-040", StylesheetPath: "tests/fn/format-number/format-number-040.xsl", SourceContent: `<doc>
 </doc>`, Assertions: []w3cAssertion{w3cAssertXML(`<out>
 <one>not a number, -13.2</one>
-<sub>not a number, -13.2</sub></out>`)}, Skip: "unsupported feature: backwards_compatibility"},
+<sub>not a number, -13.2</sub></out>`)}},
 		{Name: "format-number-041", StylesheetPath: "tests/fn/format-number/format-number-041.xsl", SourceContent: `<doc>
 </doc>`, Assertions: []w3cAssertion{w3cAssertXML(`<out>
 <main>not a number, -13.2</main>
-<sub>not a number, -13.2</sub></out>`)}, Skip: "unsupported feature: backwards_compatibility"},
+<sub>not a number, -13.2</sub></out>`)}},
 		{Name: "format-number-042", StylesheetPath: "tests/fn/format-number/format-number-042.xsl", SourceContent: `<doc>
 </doc>`, Assertions: []w3cAssertion{w3cAssertXML(`<out>
 <one>012.345,67, -98.765,432</one>
@@ -4553,9 +4553,9 @@ E: center
 		{Name: "system-property-016", StylesheetPath: "tests/fn/system-property/system-property-016.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out>truetrue</out>")}},
 		{Name: "system-property-017", StylesheetPath: "tests/fn/system-property/system-property-017.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out>truetrue</out>")}},
 		{Name: "system-property-018", StylesheetPath: "tests/fn/system-property/system-property-018.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXPath("/out = 'true'")}},
-		{Name: "system-property-019", StylesheetPath: "tests/fn/system-property/system-property-019.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXPath("/out=\"yes\"")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "system-property-019a", StylesheetPath: "tests/fn/system-property/system-property-019.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXPath("/out=\"no\"")}},
-		{Name: "system-property-020", StylesheetPath: "tests/fn/system-property/system-property-020.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXPath("count(/out/a[.='']) = 3")}},
+		{Name: "system-property-019", StylesheetPath: "tests/fn/system-property/system-property-019.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXPath("/out=\"yes\"")}},
+		{Name: "system-property-019a", StylesheetPath: "tests/fn/system-property/system-property-019.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXPath("/out=\"no\"")}, Skip: "feature present but test requires absent: backwards_compatibility"},
+		{Name: "system-property-020", StylesheetPath: "tests/fn/system-property/system-property-020.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXPath("count(/out/a[.='']) = 3")}, Skip: "feature present but test requires absent: backwards_compatibility"},
 		{Name: "system-property-021", StylesheetPath: "tests/fn/system-property/system-property-021.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXPath("/out/ok")}},
 		{Name: "system-property-022", StylesheetPath: "tests/fn/system-property/system-property-022.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTDE3160"},
 		{Name: "system-property-023", StylesheetPath: "tests/fn/system-property/system-property-023.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXPath("/out = 'true'")}},
