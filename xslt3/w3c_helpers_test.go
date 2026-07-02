@@ -1367,6 +1367,11 @@ func w3cRunOne(t *testing.T, tc w3cTest) {
 	// so the comparison matches what a real processor would emit.
 	var buf bytes.Buffer
 	outDef := inv.ResolvedOutputDef()
+	// W3C default_html_version dependency: pin the processor's default HTML
+	// serialization version when the stylesheet did not set an explicit one.
+	if v := w3cDefaultHTMLVersions[tc.Name]; v != "" && outDef != nil && outDef.HTMLVersion == "" {
+		outDef.HTMLVersion = v
+	}
 	hasSerialization := assertionsNeedSerialization(tc.Assertions)
 	hasCharMaps := outDef != nil && outDef.ResolvedCharMap != nil
 	hasNonUTF8Encoding := outDef != nil && outDef.Encoding != "" && !strings.EqualFold(outDef.Encoding, "UTF-8") && !strings.EqualFold(outDef.Encoding, "UTF8")
@@ -1591,14 +1596,20 @@ func w3cImplicitSkipReason(name string) string {
 	return ""
 }
 
+// w3cDefaultHTMLVersions maps individual test names to the HTML serialization
+// version the W3C catalog's default_html_version dependency requires. Our
+// processor defaults html-version to 5 (XSLT 3.0 §20); these cases pin it to 4
+// (HTML 4.01) as a processor-level default. Applied by the runner only when the
+// stylesheet did not set an explicit html-version. The HTML5 companions
+// (output-0195a, result-document-1402b) exercise the default and are unlisted.
+var w3cDefaultHTMLVersions = map[string]string{
+	"output-0195":          "4",
+	"result-document-1402": "4",
+}
+
 // w3cImplicitSkips maps individual test names to skip reasons for tests
 // blocked by known parser or runtime limitations.
 var w3cImplicitSkips = map[string]string{
-	// W3C dependency: default_html_version=4 / feature=HTML4
-	// These tests require the processor to default html-version to 4; ours defaults to 5.
-	// HTML5 companion tests (output-0195a, result-document-1402b) already pass.
-	"output-0195":          "W3C dependency default_html_version=4; HTML5 companion output-0195a passes",
-	"result-document-1402": "W3C dependency default_html_version=4; HTML5 companion result-document-1402b passes",
 
 	// document('http://...#fragment') test that relied on the previous
 	// implementation's broken behavior: os.ReadFile of an http:// URL
