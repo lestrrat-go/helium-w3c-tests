@@ -1966,7 +1966,7 @@ Position:3,Last:3
 		{Name: "variable-0301", StylesheetPath: "tests/decl/variable/variable-0301.xsl", SourceContent: "<go/>", Assertions: []w3cAssertion{w3cAssertXML("<a>x = abc</a>")}},
 		{Name: "variable-0302", StylesheetPath: "tests/decl/variable/variable-0302.xsl", SourceContent: "<go/>", Assertions: []w3cAssertion{w3cAssertXML("<a>abc</a>")}},
 		{Name: "variable-0303", StylesheetPath: "tests/decl/variable/variable-0303.xsl", SourceContent: "<go/>", Assertions: []w3cAssertion{w3cAssertXML("<a>abc</a>")}},
-		{Name: "variable-0401", StylesheetPath: "tests/decl/variable/variable-0401.xsl", SourceContent: "<doc><chap><section><para/></section></chap></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"><v2><x>42</x></v2><v1><x>42</x></v1></out>")}, Skip: "unsupported feature: backwards_compatibility"},
+		{Name: "variable-0401", StylesheetPath: "tests/decl/variable/variable-0401.xsl", SourceContent: "<doc><chap><section><para/></section></chap></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"><v2><x>42</x></v2><v1><x>42</x></v1></out>")}},
 		{Name: "variable-0501", StylesheetPath: "tests/decl/variable/variable-0501.xsl", SourceDocPath: "tests/decl/variable/variable-05.xml", Assertions: []w3cAssertion{w3cAssertXML("<out><book><nodes>1</nodes><copy><t>1 4097 Chapter 1 2 3105 Chapter 2</t></copy></book></out>")}},
 		{Name: "variable-0601", StylesheetPath: "tests/decl/variable/variable-0601.xsl", SourceContent: "<!-- Test #1 for xsl:variable --><doc></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out>ABC</out>")}},
 		{Name: "variable-0701", StylesheetPath: "tests/decl/variable/variable-0701.xsl", SourceContent: "<!-- Test #2 for xsl:variable --><doc></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out>ABC,<B>ABC</B></out>")}},
@@ -2039,7 +2039,7 @@ end doc template, $var=level1
     <b/>
   </a>
 </doc></out>`)}},
-		{Name: "variable-2201", StylesheetPath: "tests/decl/variable/variable-2201.xsl", SourceContent: "<dummy/>", Assertions: []w3cAssertion{w3cAssertXML("<out>It is global!</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+		{Name: "variable-2201", StylesheetPath: "tests/decl/variable/variable-2201.xsl", SourceContent: "<dummy/>", Assertions: []w3cAssertion{w3cAssertXML("<out>It is global!</out>")}},
 		{Name: "variable-2202", StylesheetPath: "tests/decl/variable/variable-2202.xsl", SourceContent: "<dummy/>", ExpectError: true, ErrorCode: "XTSE0680"},
 		{Name: "variable-2301", StylesheetPath: "tests/decl/variable/variable-2301.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out>titi</out>")}},
 		{Name: "variable-2302", StylesheetPath: "tests/decl/variable/variable-2302.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out>titi</out>")}},

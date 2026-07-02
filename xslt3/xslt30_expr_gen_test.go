@@ -1214,7 +1214,7 @@ doc/foo/baz/is not new
    false
    </out>`)}},
 		{Name: "expression-4301", StylesheetPath: "tests/expr/expression/expression-4301.xsl", InitialTemplate: "main", Params: map[string]string{"blahParam": "'blah'"}, Assertions: []w3cAssertion{w3cAssertXML("<out><one>false</one><two>true</two><three>true</three></out>")}},
-		{Name: "expression-4302", StylesheetPath: "tests/expr/expression/expression-4302.xsl", SourceContent: "<a>A</a>", Assertions: []w3cAssertion{w3cAssertXML("<span>false</span>")}, Skip: "unsupported feature: backwards_compatibility"},
+		{Name: "expression-4302", StylesheetPath: "tests/expr/expression/expression-4302.xsl", SourceContent: "<a>A</a>", Assertions: []w3cAssertion{w3cAssertXML("<span>false</span>")}},
 		{Name: "expression-4303", StylesheetPath: "tests/expr/expression/expression-4303.xsl", SourceContent: "<a>A</a>", ExpectError: true, ErrorCode: "FORG0001"},
 		{Name: "expression-4401", StylesheetPath: "tests/expr/expression/expression-4401.xsl", SourceDocPath: "tests/expr/expression/expression-44.xml", Assertions: []w3cAssertion{w3cAssertXML("<out><section nr=\"2\"/></out>")}},
 		{Name: "expression-4402", StylesheetPath: "tests/expr/expression/expression-4402.xsl", SourceDocPath: "tests/expr/expression/expression-44.xml", Assertions: []w3cAssertion{w3cAssertXML("<out><section nr=\"1\"/></out>")}},
@@ -1741,7 +1741,7 @@ doc/foo/baz/is not new
 		{Name: "math-3314", StylesheetPath: "tests/expr/math/math-3314.xsl", SourceContent: "<doc></doc>", Assertions: []w3cAssertion{w3cAssertXPath("/out/aa[@ans=\"3\"]"), w3cAssertXPath("/out/ab[@ans=\"0\"]"), w3cAssertXPath("/out/ac[@ans=\"-2\"]"), w3cAssertXPath("/out/ad[@ans=\"-2\"]"), w3cAssertXPath("/out/ae[@ans=\"2\"]"), w3cAssertXPath("/out/af[@ans=\"2\"]"), w3cAssertXPath("/out/ac[@ans=\"-2\"]"), w3cAssertXPath("/out/ad[@ans=\"-2\"]"), w3cAssertXPath("/out/ae[@ans=\"2\"]"), w3cAssertXPath("/out/af[@ans=\"2\"]"), w3cAssertXPath("/out/ac[@ans=\"-2\"]"), w3cAssertXPath("/out/ad[@ans=\"-2\"]"), w3cAssertXPath("/out/ae[@ans=\"2\"]"), w3cAssertXPath("/out/af[@ans=\"2\"]")}},
 		{Name: "math-3315", StylesheetPath: "tests/expr/math/math-3315.xsl", SourceContent: "<doc></doc>", Assertions: []w3cAssertion{w3cAssertXPath("/out/a0[@ans=\"1234567896123456789612345678961234567896.1234567896\"]"), w3cAssertXPath("/out/aa[@ans=\"1234567896123456789612345678961234567896.1235\"]"), w3cAssertXPath("/out/ab[@ans=\"1234567896123456789612345678961234567896.1\"]"), w3cAssertXPath("/out/ac[@ans=\"1234567896123456789612345678961234567896\"]"), w3cAssertXPath("/out/ad[@ans=\"1234567896123456789612345678961234567900\"]"), w3cAssertXPath("/out/ae[@ans=\"1234567896123456789612345678960000000000\"]"), w3cAssertXPath("/out/af[@ans=\"1234567896000000000000000000000000000000\"]"), w3cAssertXPath("/out/af2[@ans=\"1234567897000000000000000000000000000000\"]"), w3cAssertXPath("/out/af3[@ans=\"1234567898000000000000000000000000000000\"]"), w3cAssertXPath("/out/ag[@ans=\"0\"]"), w3cAssertXPath("/out/b0[@ans=\"0.0000000000000000000000000123456789012346\"]"), w3cAssertXPath("/out/ba[@ans=\"0\"]"), w3cAssertXPath("/out/bb[@ans=\"0\"]"), w3cAssertXPath("/out/bc[@ans=\"0\"]"), w3cAssertXPath("/out/bd[@ans=\"0\"]"), w3cAssertXPath("/out/be[@ans=\"0\"]"), w3cAssertXPath("/out/bf[@ans=\"0\"]"), w3cAssertXPath("/out/bg[@ans=\"0\"]")}},
 		{Name: "math-3316", StylesheetPath: "tests/expr/math/math-3316.xsl", SourceContent: "<doc></doc>", Assertions: []w3cAssertion{w3cAssertXML("<circle xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" cx=\"10\" cy=\"-1\" r=\"4\"/>")}},
-		{Name: "math-3317", StylesheetPath: "tests/expr/math/math-3317.xsl", SourceContent: "<doc></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out><a0 ans=\"NaN\"/><a0 ans=\"NaN\"/><a0 ans=\"NaN\"/></out>")}, Skip: "unsupported feature: backwards_compatibility"},
+		{Name: "math-3317", StylesheetPath: "tests/expr/math/math-3317.xsl", SourceContent: "<doc></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out><a0 ans=\"NaN\"/><a0 ans=\"NaN\"/><a0 ans=\"NaN\"/></out>")}},
 		{Name: "math-3318", StylesheetPath: "tests/expr/math/math-3318.xsl", SourceContent: "<doc></doc>", Assertions: []w3cAssertion{w3cAssertXML("<x>123456789012345678</x>")}},
 		{Name: "math-3319", StylesheetPath: "tests/expr/math/math-3319.xsl", SourceContent: "<doc></doc>", Assertions: []w3cAssertion{w3cAssertXML("<x>1.17</x>")}},
 		{Name: "math-3320", StylesheetPath: "tests/expr/math/math-3320.xsl", SourceContent: "<doc></doc>", ExpectError: true, ErrorCode: "XPST0017", Skip: "unsupported spec: XSLT20"},
@@ -1827,35 +1827,35 @@ doc/foo/baz/is not new
   <a>2</a>
   <a>3</a>
   <a>4</a>
-</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}},
 		{Name: "predicate-002", StylesheetPath: "tests/expr/predicate/predicate-002.xsl", SourceContent: ` 
 <doc>
   <a>1</a>
   <a>2</a>
   <a>3</a>
   <a>4</a>
-</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}},
 		{Name: "predicate-003", StylesheetPath: "tests/expr/predicate/predicate-003.xsl", SourceContent: ` 
 <doc>
   <a>1</a>
   <a>2</a>
   <a>3</a>
   <a>4</a>
-</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>1</out>")}},
 		{Name: "predicate-004", StylesheetPath: "tests/expr/predicate/predicate-004.xsl", SourceContent: ` 
 <doc>
   <a>1</a>
   <a>2</a>
   <a>3</a>
   <a>4</a>
-</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>1234</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>1234</out>")}},
 		{Name: "predicate-005", StylesheetPath: "tests/expr/predicate/predicate-005.xsl", SourceContent: ` 
 <doc>
   <a>1</a>
   <a>2</a>
   <a>3</a>
   <a>4</a>
-</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>1234</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>1234</out>")}},
 		{Name: "predicate-006", StylesheetPath: "tests/expr/predicate/predicate-006.xsl", SourceContent: ` 
 <doc>
   <a>1</a>
@@ -2096,23 +2096,23 @@ doc/foo/baz/is not new
 		{Name: "type-functions-0501", StylesheetPath: "tests/expr/type-functions/type-functions-0501.xsl", SourceDocPath: "tests/expr/type-functions/type-functions-05.xml", SourceSchemaPath: "tests/expr/type-functions/variousTypesSchemaFunc.xsd", ImportSchemaPaths: []string{"tests/expr/type-functions/variousTypesSchemaFunc.xsd"}, Assertions: []w3cAssertion{w3cAssertXML("<out><e1>true , hello</e1><e2>true , true , brown-bear</e2></out>")}},
 		{Name: "type-functions-0502", StylesheetPath: "tests/expr/type-functions/type-functions-0502.xsl", SourceDocPath: "tests/expr/type-functions/type-functions-05.xml", SourceSchemaPath: "tests/expr/type-functions/variousTypesSchemaFunc.xsd", ImportSchemaPaths: []string{"tests/expr/type-functions/variousTypesSchemaFunc.xsd"}, Assertions: []w3cAssertion{w3cAssertXML("<out value=\"123-XY\" ok=\"true\"/>")}},
 		{Name: "type-functions-0503", StylesheetPath: "tests/expr/type-functions/type-functions-0503.xsl", SourceDocPath: "tests/expr/type-functions/type-functions-05.xml", SourceSchemaPath: "tests/expr/type-functions/variousTypesSchemaFunc.xsd", ImportSchemaPaths: []string{"tests/expr/type-functions/variousTypesSchemaFunc.xsd"}, ExpectError: true, ErrorCode: "XTSE0770"},
-		{Name: "xpath-compat-0101", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0101.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out><posInf>INF</posInf><negInf>-INF</negInf><negZero>-0</negZero><small>1.0E-8</small><large>1.0E7</large></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xpath-compat-0102", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0102.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXPath("/out/first = \"1999-11-11T12:34:56\""), w3cAssertXPath("/out/second = \"1999-11-11T07:00:11\""), w3cAssertXPath("/out/third = \"2006-05-11T01:02:03\""), w3cAssertXPath("/out/fourth = \"1888-08-08T01:02:03\""), w3cAssertXPath("/out/fifth = \"1999-11-11T01:02:03\"")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xpath-compat-0103", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0103.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out><first>P6Y</first><second>98:76:</second><third>7015D</third></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xpath-compat-0104", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0104.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out>Infinity</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xpath-compat-0105", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0105.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out><eqTrue>false</eqTrue><eqFalse>true</eqFalse><neTrue>true</neTrue><neFalse>false</neFalse></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xpath-compat-0106", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0106.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out><eqTrue>false</eqTrue><eqFalse>true</eqFalse><neTrue>true</neTrue><neFalse>false</neFalse></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xpath-compat-0107", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0107.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out><gtNum>true</gtNum><ltNum>true</ltNum><ltString>true</ltString><geNum>true</geNum><leNum>true</leNum><leString>true</leString></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xpath-compat-0108", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0108.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out><DivOdd>double</DivOdd><DivOdd>double</DivOdd></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xpath-compat-0109", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0109.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out><floatPos>INF</floatPos><floatNeg>-INF</floatNeg><doublePos>INF</doublePos><doubleNeg>-INF</doubleNeg></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xpath-compat-0201", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0201.xsl", SourceDocPath: "tests/expr/xpath-compat/xpath-compat-02.xml", Assertions: []w3cAssertion{w3cAssertXML("<out><first>text n</first><second>April</second><third>text n</third></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xpath-compat-0202", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0202.xsl", SourceDocPath: "tests/expr/xpath-compat/xpath-compat-02.xml", Assertions: []w3cAssertion{w3cAssertXML("<out><first>1234</first><second>content </second><third>89</third><fourth>tr</fourth></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xpath-compat-0301", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0301.xsl", SourceDocPath: "tests/expr/xpath-compat/xpath-compat-03.xml", Assertions: []w3cAssertion{w3cAssertXML("<out>15</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xpath-compat-0302", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0302.xsl", SourceDocPath: "tests/expr/xpath-compat/xpath-compat-03.xml", Assertions: []w3cAssertion{w3cAssertXML("<out>NaN</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xpath-compat-0303", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0303.xsl", SourceDocPath: "tests/expr/xpath-compat/xpath-compat-03.xml", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><out><first>one-two-three-four-five-six-seven</first><second>oneb1twob1threeb1fourb1fiveb1sixb1seven</second><third>one8two8three8four8five8six8seven</third><third>b1trueb2</third></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xpath-compat-0401", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0401.xsl", SourceDocPath: "tests/expr/xpath-compat/xpath-compat-04.xml", Assertions: []w3cAssertion{w3cAssertXML("<out><first>d, e, f, g, h, i</first><second>a, b, c</second><third>c, d, e, f</third><fourth>b, c, d, e</fourth></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xpath-compat-0501", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0501.xsl", SourceDocPath: "tests/expr/xpath-compat/xpath-compat-05.xml", Assertions: []w3cAssertion{w3cAssertXML("<out>WXY</out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xpath-compat-0601", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0601.xsl", SourceContent: "<doc><item seq=\"1\" width=\"1\"/><item seq=\"2\"/><item seq=\"3\" width=\"3\"/><item seq=\"4\" width=\"bad\"/></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out><ok>2</ok><ok>3</ok><ok>4</ok></out>")}, Skip: "unsupported feature: backwards_compatibility"},
-		{Name: "xpath-compat-0701", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0701.xsl", SourceContent: "<doc><!--6--></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out>23</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+		{Name: "xpath-compat-0101", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0101.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out><posInf>INF</posInf><negInf>-INF</negInf><negZero>-0</negZero><small>1.0E-8</small><large>1.0E7</large></out>")}},
+		{Name: "xpath-compat-0102", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0102.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXPath("/out/first = \"1999-11-11T12:34:56\""), w3cAssertXPath("/out/second = \"1999-11-11T07:00:11\""), w3cAssertXPath("/out/third = \"2006-05-11T01:02:03\""), w3cAssertXPath("/out/fourth = \"1888-08-08T01:02:03\""), w3cAssertXPath("/out/fifth = \"1999-11-11T01:02:03\"")}},
+		{Name: "xpath-compat-0103", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0103.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out><first>P6Y</first><second>98:76:</second><third>7015D</third></out>")}},
+		{Name: "xpath-compat-0104", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0104.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out>Infinity</out>")}},
+		{Name: "xpath-compat-0105", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0105.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out><eqTrue>false</eqTrue><eqFalse>true</eqFalse><neTrue>true</neTrue><neFalse>false</neFalse></out>")}},
+		{Name: "xpath-compat-0106", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0106.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out><eqTrue>false</eqTrue><eqFalse>true</eqFalse><neTrue>true</neTrue><neFalse>false</neFalse></out>")}},
+		{Name: "xpath-compat-0107", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0107.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out><gtNum>true</gtNum><ltNum>true</ltNum><ltString>true</ltString><geNum>true</geNum><leNum>true</leNum><leString>true</leString></out>")}},
+		{Name: "xpath-compat-0108", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0108.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out><DivOdd>double</DivOdd><DivOdd>double</DivOdd></out>")}},
+		{Name: "xpath-compat-0109", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0109.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out><floatPos>INF</floatPos><floatNeg>-INF</floatNeg><doublePos>INF</doublePos><doubleNeg>-INF</doubleNeg></out>")}},
+		{Name: "xpath-compat-0201", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0201.xsl", SourceDocPath: "tests/expr/xpath-compat/xpath-compat-02.xml", Assertions: []w3cAssertion{w3cAssertXML("<out><first>text n</first><second>April</second><third>text n</third></out>")}},
+		{Name: "xpath-compat-0202", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0202.xsl", SourceDocPath: "tests/expr/xpath-compat/xpath-compat-02.xml", Assertions: []w3cAssertion{w3cAssertXML("<out><first>1234</first><second>content </second><third>89</third><fourth>tr</fourth></out>")}},
+		{Name: "xpath-compat-0301", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0301.xsl", SourceDocPath: "tests/expr/xpath-compat/xpath-compat-03.xml", Assertions: []w3cAssertion{w3cAssertXML("<out>15</out>")}},
+		{Name: "xpath-compat-0302", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0302.xsl", SourceDocPath: "tests/expr/xpath-compat/xpath-compat-03.xml", Assertions: []w3cAssertion{w3cAssertXML("<out>NaN</out>")}},
+		{Name: "xpath-compat-0303", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0303.xsl", SourceDocPath: "tests/expr/xpath-compat/xpath-compat-03.xml", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><out><first>one-two-three-four-five-six-seven</first><second>oneb1twob1threeb1fourb1fiveb1sixb1seven</second><third>one8two8three8four8five8six8seven</third><third>b1trueb2</third></out>")}},
+		{Name: "xpath-compat-0401", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0401.xsl", SourceDocPath: "tests/expr/xpath-compat/xpath-compat-04.xml", Assertions: []w3cAssertion{w3cAssertXML("<out><first>d, e, f, g, h, i</first><second>a, b, c</second><third>c, d, e, f</third><fourth>b, c, d, e</fourth></out>")}},
+		{Name: "xpath-compat-0501", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0501.xsl", SourceDocPath: "tests/expr/xpath-compat/xpath-compat-05.xml", Assertions: []w3cAssertion{w3cAssertXML("<out>WXY</out>")}},
+		{Name: "xpath-compat-0601", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0601.xsl", SourceContent: "<doc><item seq=\"1\" width=\"1\"/><item seq=\"2\"/><item seq=\"3\" width=\"3\"/><item seq=\"4\" width=\"bad\"/></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out><ok>2</ok><ok>3</ok><ok>4</ok></out>")}},
+		{Name: "xpath-compat-0701", StylesheetPath: "tests/expr/xpath-compat/xpath-compat-0701.xsl", SourceContent: "<doc><!--6--></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out>23</out>")}},
 	}...)
 }

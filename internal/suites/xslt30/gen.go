@@ -968,7 +968,6 @@ func isExcludedTestCase(name string) bool {
 func featureSupported(feature string) bool {
 	switch feature {
 	case
-		"backwards_compatibility",
 		"Saxon-PE", "Saxon-EE":
 		return false
 	}

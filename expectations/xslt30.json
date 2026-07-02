@@ -8,7 +8,12 @@
     "format-number-069c": "XSLT 2.0 test; 3.0 processor recognizes exponent-separator",
     "format-number-070": "user-defined function shadows built-in format-number; arity mismatch",
     "normalize-unicode-008": "missing external fixture NormalizationTest.txt",
-    "type-available-0151": "XSD 1.0 test; our processor targets XSD 1.1 (xs:dateTimeStamp is available)"
+    "type-available-0151": "XSD 1.0 test; our processor targets XSD 1.1 (xs:dateTimeStamp is available)",
+    "select-3401": "requires XPath 1.0 grammar (div/mod as name after operator); compat mode changes semantics, not grammar",
+    "docbook-001": "requires XPath 1.0 grammar (unprefixed 'function' as a name test); compat mode changes semantics, not grammar",
+    "docbook-002": "requires XPath 1.0 grammar (empty function arguments); compat mode changes semantics, not grammar",
+    "backwards-019": "backwards-compatible default output method (xhtml->xml for an implicit 1.0 result tree) not implemented",
+    "backwards-041": "base-uri() of source nodes depends on fixture base URI, not the test-set file path"
   },
   "xfail": {}
 }

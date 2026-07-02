@@ -172,7 +172,7 @@ func init() {
 		{Name: "boolean-029", StylesheetPath: "tests/type/boolean/boolean-029.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}},
 		{Name: "boolean-030", StylesheetPath: "tests/type/boolean/boolean-030.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out>false</out>")}},
 		{Name: "boolean-031", StylesheetPath: "tests/type/boolean/boolean-031.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out>false</out>")}},
-		{Name: "boolean-032", StylesheetPath: "tests/type/boolean/boolean-032.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+		{Name: "boolean-032", StylesheetPath: "tests/type/boolean/boolean-032.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}},
 		{Name: "boolean-033", StylesheetPath: "tests/type/boolean/boolean-033.xsl", SourceContent: `<doc>
 </doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}},
 		{Name: "boolean-034", StylesheetPath: "tests/type/boolean/boolean-034.xsl", SourceContent: `<doc>
@@ -312,7 +312,7 @@ func init() {
   true should be true
   false should be false  
   true should be true    
-</out>`)}, Skip: "unsupported feature: backwards_compatibility"},
+</out>`)}},
 		{Name: "boolean-070", StylesheetPath: "tests/type/boolean/boolean-070.xsl", SourceContent: `<dummy>
  <set1>
   <value>2</value><value>3</value>
@@ -443,15 +443,15 @@ func init() {
 </dummy>
 `, Assertions: []w3cAssertion{w3cAssertXML(`<out>true should be true
   true should be true
-</out>`)}, Skip: "unsupported feature: backwards_compatibility"},
+</out>`)}},
 		{Name: "boolean-082", StylesheetPath: "tests/type/boolean/boolean-082.xsl", SourceContent: `	<dd:hcfa-jcodes xmlns:dd="http://dd.com/">
 	   <dd:hcfa-jcode>J1820</dd:hcfa-jcode>
 	   <dd:hcfa-jcode>J1820  </dd:hcfa-jcode>
 	</dd:hcfa-jcodes>`, Assertions: []w3cAssertion{w3cAssertXML("<zzz xmlns:dd=\"http://dd.com/\"><tr valign=\"top\"><td style=\"color: #336699; font-weight: bold\">HCFA Jcodes:</td><td>J1820, J1820</td></tr></zzz>")}},
 		{Name: "boolean-083", StylesheetPath: "tests/type/boolean/boolean-083.xsl", SourceContent: `<doc>
-</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}},
 		{Name: "boolean-084", StylesheetPath: "tests/type/boolean/boolean-084.xsl", SourceContent: `<doc>
-</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>false</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>false</out>")}},
 		{Name: "boolean-085", StylesheetPath: "tests/type/boolean/boolean-085.xsl", SourceContent: `<doc>
 </doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>false</out>")}},
 		{Name: "boolean-086", StylesheetPath: "tests/type/boolean/boolean-086.xsl", SourceContent: `<doc>
@@ -473,9 +473,9 @@ func init() {
 		{Name: "boolean-094", StylesheetPath: "tests/type/boolean/boolean-094.xsl", SourceContent: `<doc>
 </doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}},
 		{Name: "boolean-095", StylesheetPath: "tests/type/boolean/boolean-095.xsl", SourceContent: `<doc>
-</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}},
 		{Name: "boolean-096", StylesheetPath: "tests/type/boolean/boolean-096.xsl", SourceContent: `<doc>
-</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}},
 		{Name: "boolean-097", StylesheetPath: "tests/type/boolean/boolean-097.xsl", SourceContent: `<doc>
 </doc>`, ExpectError: true, ErrorCode: "XPTY0004"},
 		{Name: "boolean-098", StylesheetPath: "tests/type/boolean/boolean-098.xsl", SourceContent: `<doc>
@@ -1450,7 +1450,7 @@ c-pi
 <ns1:a attrib1="test"/>
 <b ns1:attrib2="test"/>
 </doc>
-`, Assertions: []w3cAssertion{w3cAssertXML("<out xmlns:baz1=\"http://xsl.lotus.com/ns1\" xmlns:baz2=\"http://xsl.lotus.com/ns2\">http://xsl.lotus.com/ns1</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+`, Assertions: []w3cAssertion{w3cAssertXML("<out xmlns:baz1=\"http://xsl.lotus.com/ns1\" xmlns:baz2=\"http://xsl.lotus.com/ns2\">http://xsl.lotus.com/ns1</out>")}},
 		{Name: "string-004", StylesheetPath: "tests/type/string/string-004.xsl", SourceContent: ` 
 <doc xmlns:ns1="http://xsl.lotus.com/ns1"
      xmlns="http://xsl.lotus.com/ns2">
@@ -1531,7 +1531,7 @@ c-pi
 		{Name: "string-028", StylesheetPath: "tests/type/string/string-028.xsl", SourceDocPath: "tests/type/string/str027.xml", Assertions: []w3cAssertion{w3cAssertXML("<out xmlns:baz1=\"http://xsl.lotus.com/ns1\" xmlns:baz2=\"http://xsl.lotus.com/ns2\">http://xsl.lotus.com/ns2</out>")}},
 		{Name: "string-029", StylesheetPath: "tests/type/string/string-029.xsl", SourceDocPath: "tests/type/string/str027.xml", Assertions: []w3cAssertion{w3cAssertXML("<out xmlns:baz1=\"http://xsl.lotus.com/ns1\" xmlns:baz2=\"http://xsl.lotus.com/ns2\"/>")}},
 		{Name: "string-030", StylesheetPath: "tests/type/string/string-030.xsl", SourceDocPath: "tests/type/string/str027.xml", Assertions: []w3cAssertion{w3cAssertXML("<out xmlns:baz1=\"http://xsl.lotus.com/ns1\" xmlns:baz2=\"http://xsl.lotus.com/ns2\">http://xsl.lotus.com/ns1</out>")}},
-		{Name: "string-031", StylesheetPath: "tests/type/string/string-031.xsl", SourceDocPath: "tests/type/string/str027.xml", Assertions: []w3cAssertion{w3cAssertXML("<out xmlns:baz1=\"http://xsl.lotus.com/ns1\" xmlns:baz2=\"http://xsl.lotus.com/ns2\">ns1:a</out>")}, Skip: "unsupported feature: backwards_compatibility"},
+		{Name: "string-031", StylesheetPath: "tests/type/string/string-031.xsl", SourceDocPath: "tests/type/string/str027.xml", Assertions: []w3cAssertion{w3cAssertXML("<out xmlns:baz1=\"http://xsl.lotus.com/ns1\" xmlns:baz2=\"http://xsl.lotus.com/ns2\">ns1:a</out>")}},
 		{Name: "string-032", StylesheetPath: "tests/type/string/string-032.xsl", SourceDocPath: "tests/type/string/str027.xml", Assertions: []w3cAssertion{w3cAssertXML("<out xmlns:baz1=\"http://xsl.lotus.com/ns1\" xmlns:baz2=\"http://xsl.lotus.com/ns2\">ns1:a</out>")}},
 		{Name: "string-033", StylesheetPath: "tests/type/string/string-033.xsl", SourceDocPath: "tests/type/string/str027.xml", Assertions: []w3cAssertion{w3cAssertXML("<out xmlns:baz1=\"http://xsl.lotus.com/ns1\" xmlns:baz2=\"http://xsl.lotus.com/ns2\">b</out>")}},
 		{Name: "string-034", StylesheetPath: "tests/type/string/string-034.xsl", SourceDocPath: "tests/type/string/str027.xml", Assertions: []w3cAssertion{w3cAssertXML("<out xmlns:baz1=\"http://xsl.lotus.com/ns1\" xmlns:baz2=\"http://xsl.lotus.com/ns2\"/>")}},

@@ -19,8 +19,8 @@ const w3cSourceDir = "sources/xslt30"
 const w3cCatalogPath = "sources/xslt30/catalog.xml"
 const w3cCatalogTestSets = 234
 const w3cCatalogTestCases = 14600
-const w3cRunnableTestCases = 11828
-const w3cSkippedTestCases = 1299
+const w3cRunnableTestCases = 11944
+const w3cSkippedTestCases = 1183
 const w3cExcludedTestCases = 1473
 
 func TestXSLT30W3CManifestAvailable(t *testing.T) {
