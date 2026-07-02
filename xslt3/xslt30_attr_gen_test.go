@@ -3436,7 +3436,12 @@ Text for variable
 </doc>`, Assertions: []w3cAssertion{w3cAssertXML(`<out>
 Count of node-set: 1
 Count of union: 1</out>`)}},
-		{Name: "select-6101", StylesheetPath: "tests/attr/select/select-6101.xsl", SourceDocPath: "tests/attr/select/select-61.xml", Assertions: []w3cAssertion{w3cAssertSkip()}, Skip: "unsupported assertion: assert-posture-and-sweep"},
+		{Name: "select-6101", StylesheetPath: "tests/attr/select/select-6101.xsl", SourceDocPath: "tests/attr/select/select-61.xml", Assertions: []w3cAssertion{w3cAssertSerialization("", `<?xml version="1.0" encoding="ISO-8859-1"?><out>
+<e>1. adresse1 </e><e>2. AFTER</e>
+<e>1. adéresse2 </e><e>2. after</e>
+<e>1. adresse3 </e>
+<e>1. BEFORE </e><e>2. adresse4</e>
+<e>1. before </e><e>2. adéresse5</e></out>`)}},
 		{Name: "select-6201", StylesheetPath: "tests/attr/select/select-6201.xsl", SourceDocPath: "tests/attr/select/select-62.xml", Assertions: []w3cAssertion{w3cAssertXPath("/html/body/table/tbody/tr[1][th='William'][td[1]='pc10'][td[2]='pc20']"), w3cAssertXPath("/html/body/table/tbody/tr[2][th='Harry'][td[1]='pc21'][td[2]='pc22']")}},
 		{Name: "select-6301", StylesheetPath: "tests/attr/select/select-6301.xsl", SourceContent: ` 
 <!-- First comment -->
@@ -4574,7 +4579,94 @@ Node c has on-c in @x</list></out>`)}},
 		{Name: "validation-0109", StylesheetPath: "tests/attr/validation/validation-0109.xsl", SourceContent: "<doc/>", InitialTemplate: "main", ExpectError: true, ErrorCode: "XTTE1540"},
 		{Name: "validation-0110", StylesheetPath: "tests/attr/validation/validation-0110.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE0020"},
 		{Name: "validation-0111", StylesheetPath: "tests/attr/validation/validation-0111.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTTE0505"},
-		{Name: "validation-0201", StylesheetPath: "tests/attr/validation/validation-0201.xsl", SourceDocPath: "tests/attr/validation/validation-02.xml", SourceSchemaPath: "tests/attr/validation/gedSchema.xsd", ImportSchemaPaths: []string{"tests/attr/validation/gedSchema.xsd", "tests/attr/validation/xhtml1-transitional.xsd", "tests/attr/validation/xml.xsd", "tests/attr/validation/validation-10.xsd"}, Assertions: []w3cAssertion{w3cAssertSkip()}, Skip: "unsupported assertion: assert-posture-and-sweep"},
+		{Name: "validation-0201", StylesheetPath: "tests/attr/validation/validation-0201.xsl", SourceDocPath: "tests/attr/validation/validation-02.xml", SourceSchemaPath: "tests/attr/validation/gedSchema.xsd", ImportSchemaPaths: []string{"tests/attr/validation/gedSchema.xsd", "tests/attr/validation/xhtml1-transitional.xsd", "tests/attr/validation/xml.xsd", "tests/attr/validation/validation-10.xsd"}, Assertions: []w3cAssertion{w3cAssertSerialization("xhtml", `<?xml version="1.0" encoding="iso-8859-1"?><html xmlns="http://www.w3.org/1999/xhtml">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><style type="text/css">
+
+	H1 {
+	    font-family: Verdana, Helvetica, sans-serif;
+	    font-size: 18pt;
+	    font-weight: bold;
+	    color: "#FF0080"
+	}
+
+	H2 {
+	    font-family: Verdana, Helvetica, sans-serif;
+	    font-size: 14pt;
+	    font-weight: bold;
+	    color: black;
+	}
+
+	H3 {
+	    font-family: Lucida Sans, Helvetica, sans-serif;
+	    font-size: 11pt;
+	    font-weight: bold;
+	    color: black;
+	}
+
+	SPAN.surname {
+	    font-weight: bold;
+        text-decoration: underline;
+	}
+
+	SPAN.label {
+	    font-family: Lucida Sans, Helvetica, sans-serif;
+	    font-size: 10pt;
+	    font-weight: normal;
+        font-style: italic;
+	    color: black;
+	}
+
+    P,LI,TD {
+	    font-family: Lucida Sans, Helvetica, sans-serif;
+	    font-size: 10pt;
+	    font-weight: normal;
+	    color: black;       
+	}
+
+    P.text {
+	    font-family: Comic Sans MS, Helvetica, sans-serif;
+	    font-size: 10pt;
+	    font-weight: normal;
+	    color: black;       
+	}
+
+    </style><title>John Fitzgerald  Kennedy </title>
+   </head>
+   <body bgcolor="cyan">
+      <h1>John Fitzgerald  <span class="surname">Kennedy</span> 
+      </h1>
+      <p><span class="label">Father: </span><a href="I8.html">Joseph Patrick  <span class="surname">Kennedy</span> </a> 
+         <span class="label">Mother: </span><a href="I9.html">Rose Elizabeth  <span class="surname">Fitzgerald</span> </a><a href="I9.html"> <span class="surname">Kennedy</span> </a>  
+         
+      </p>
+      <hr />
+      <table>
+         <tr>
+            <td width="50%" valign="top">
+               <h3>Birth</h3>
+               <p><span class="label">Date: </span>29 May 1917<br /><span class="label">Place: </span>Brookline, MA, USA<br /></p>
+               <h3>Marriage</h3>
+               <p><span class="label">Wife: </span><a href="I2.html">Jaqueline Lee  <span class="surname">Bouvier</span> </a><br /><span class="label">Date: </span>12 September 1953<br /><span class="label">Place: </span>Newport, RI, USA<br /></p>
+               <h3>Death</h3>
+               <p><span class="label">Date: </span>22 November 1963<br /><span class="label">Place: </span>Dallas, TX, USA<br /></p>
+               <p class="text">Assassinated by Lee Harvey Oswald.</p>
+            </td>
+            <td width="20%"></td>
+            <td width="30%" valign="top">
+               <h2>Partner </h2>
+               <p><a href="I2.html">Jaqueline Lee  <span class="surname">Bouvier</span> </a></p>
+               <h3>Children:</h3>
+               <p> 1957 <a href="I5.html">Caroline Bouvier  <span class="surname">Kennedy</span> </a><br /> 1960 <a href="I6.html">John Fitzgerald  <span class="surname">Kennedy</span> </a><br /> 1963 <a href="I7.html">Patrick Bouvier  <span class="surname">Kennedy</span> </a><br /></p>
+            </td>
+         </tr>
+      </table>
+      <hr />
+      <p class="text">Educated at Harvard University. Elected Congressman in 1945<br />aged 29; served three terms in the House of Representatives.<br />Elected Senator in 1952. Elected President in 1960, the<br />youngest ever President of the United States.
+      </p>
+      <hr />
+   </body>
+</html>`)}},
 		{Name: "validation-0202", StylesheetPath: "tests/attr/validation/validation-0202.xsl", SecondaryStylesheets: []string{"tests/attr/validation/validation-0202-person.xsl"}, SourceDocPath: "tests/attr/validation/validation-02.xml", SourceSchemaPath: "tests/attr/validation/gedSchema.xsd", ImportSchemaPaths: []string{"tests/attr/validation/gedSchema.xsd", "tests/attr/validation/xhtml1-transitional.xsd", "tests/attr/validation/xml.xsd", "tests/attr/validation/validation-10.xsd"}, Assertions: []w3cAssertion{w3cAssertResultDocument("validation-0202-out/index.xhtml", w3cCheckAllOf(w3cCheckXPath("/h:html/h:head/h:title/normalize-space() = \"Index of names\""), w3cCheckXPath("/h:html/h:body/h:h1 = \"Index of names\""), w3cCheckXPath("/h:html/h:body/h:h2[1] = \"\""), w3cCheckXPath("/h:html/h:body/h:h2[2] = \"Bennett\""), w3cCheckXPath("/h:html/h:body/h:h2[3] = \"Bouvier\""), w3cCheckXPath("/h:html/h:body/h:p[3]/normalize-space() = \"Jaqueline Lee Bouvier\""))), w3cAssertResultDocument("validation-0202-out/I1.xhtml", w3cCheckAllOf(w3cCheckXPath("/h:html/h:head/h:title/normalize-space() = \"John Fitzgerald Kennedy\""), w3cCheckXPath("/h:html/h:body/h:h1/normalize-space() = \"John Fitzgerald Kennedy\""), w3cCheckXPath("/h:html/h:body/h:table[1]/h:tr[1]/h:td[1]/h:p[1]/text()[1] = \"29 May 1917\""), w3cCheckXPath("/h:html/h:body/h:table[1]/h:tr[1]/h:td[1]/h:p[1]/text()[2] = \"Brookline, MA, USA\""))), w3cAssertResultDocument("validation-0202-out/I2.xhtml", w3cCheckXPath("/h:html/h:head/h:title/normalize-space() = \"Jaqueline Lee Bouvier\"")), w3cAssertResultDocument("validation-0202-out/I3.xhtml", w3cCheckXPath("/h:html/h:head/h:title/normalize-space() = \"John Vernou Bouvier III\"")), w3cAssertResultDocument("validation-0202-out/I4.xhtml", w3cCheckXPath("/h:html/h:head/h:title/normalize-space() = \"Janet Norton Lee\"")), w3cAssertResultDocument("validation-0202-out/I5.xhtml", w3cCheckXPath("/h:html/h:head/h:title/normalize-space() = \"Caroline Bouvier Kennedy\"")), w3cAssertResultDocument("validation-0202-out/I6.xhtml", w3cCheckXPath("/h:html/h:head/h:title/normalize-space() = \"John Fitzgerald Kennedy\"")), w3cAssertResultDocument("validation-0202-out/I7.xhtml", w3cCheckXPath("/h:html/h:head/h:title/normalize-space() = \"Patrick Bouvier Kennedy\"")), w3cAssertResultDocument("validation-0202-out/I8.xhtml", w3cCheckXPath("/h:html/h:head/h:title/normalize-space() = \"Joseph Patrick Kennedy\"")), w3cAssertResultDocument("validation-0202-out/I9.xhtml", w3cCheckXPath("/h:html/h:head/h:title/normalize-space() = \"Rose Elizabeth Fitzgerald\"")), w3cAssertResultDocument("validation-0202-out/I10.xhtml", w3cCheckXPath("/h:html/h:head/h:title/normalize-space() = \"Joseph Patrick Kennedy Jr\"")), w3cAssertResultDocument("validation-0202-out/I11.xhtml", w3cCheckXPath("/h:html/h:head/h:title")), w3cAssertResultDocument("validation-0202-out/I12.xhtml", w3cCheckXPath("/h:html/h:head/h:title")), w3cAssertResultDocument("validation-0202-out/I13.xhtml", w3cCheckXPath("/h:html/h:head/h:title")), w3cAssertResultDocument("validation-0202-out/I14.xhtml", w3cCheckXPath("/h:html/h:head/h:title")), w3cAssertResultDocument("validation-0202-out/I15.xhtml", w3cCheckXPath("/h:html/h:head/h:title")), w3cAssertResultDocument("validation-0202-out/I17.xhtml", w3cCheckXPath("/h:html/h:head/h:title")), w3cAssertResultDocument("validation-0202-out/I18.xhtml", w3cCheckXPath("/h:html/h:head/h:title")), w3cAssertResultDocument("validation-0202-out/I19.xhtml", w3cCheckXPath("/h:html/h:head/h:title")), w3cAssertResultDocument("validation-0202-out/I20.xhtml", w3cCheckXPath("/h:html/h:head/h:title")), w3cAssertResultDocument("validation-0202-out/I21.xhtml", w3cCheckXPath("/h:html/h:head/h:title")), w3cAssertResultDocument("validation-0202-out/I22.xhtml", w3cCheckXPath("/h:html/h:head/h:title")), w3cAssertResultDocument("validation-0202-out/I23.xhtml", w3cCheckXPath("/h:html/h:head/h:title")), w3cAssertResultDocument("validation-0202-out/I24.xhtml", w3cCheckXPath("/h:html/h:head/h:title")), w3cAssertResultDocument("validation-0202-out/I25.xhtml", w3cCheckXPath("/h:html/h:head/h:title"))}},
 		{Name: "validation-0203", StylesheetPath: "tests/attr/validation/validation-0203.xsl", SourceDocPath: "tests/attr/validation/validation-02.xml", SourceSchemaPath: "tests/attr/validation/gedSchema.xsd", ImportSchemaPaths: []string{"tests/attr/validation/gedSchema.xsd", "tests/attr/validation/xhtml1-transitional.xsd", "tests/attr/validation/xml.xsd", "tests/attr/validation/validation-10.xsd"}, Assertions: []w3cAssertion{w3cAssertXML("<root xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">2010-01-25Z</root>")}},
 		{Name: "validation-0204", StylesheetPath: "tests/attr/validation/validation-0204.xsl", SourceDocPath: "tests/attr/validation/validation-02.xml", SourceSchemaPath: "tests/attr/validation/gedSchema.xsd", ImportSchemaPaths: []string{"tests/attr/validation/gedSchema.xsd", "tests/attr/validation/xhtml1-transitional.xsd", "tests/attr/validation/xml.xsd", "tests/attr/validation/validation-10.xsd"}, Assertions: []w3cAssertion{w3cAssertXML("<root xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">Hello!</root>")}},
