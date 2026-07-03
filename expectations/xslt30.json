@@ -12,7 +12,7 @@
     "docbook-002": "requires XPath 1.0 grammar (empty function arguments); compat mode changes semantics, not grammar",
     "backwards-019": "backwards-compatible default output method (xhtml->xml for an implicit 1.0 result tree) not implemented",
     "backwards-041": "base-uri() of source nodes depends on fixture base URI, not the test-set file path",
-    "validation-0201": "schema-aware: unprefixed schema type names (element(*,DateType), instance of StandardDate) require resolving against the imported schema's target namespace (XPST0081)"
+    "validation-0201": "schema-aware source annotation: data(Date) instance of StandardDate requires atomizing a source element typed as a simpleContent union (GeneralDate = StandardDate | xs:string) through its active member, plus exact xhtml indent-width serialization; the unprefixed-type-name XPST0081 compile blocker is fixed"
   },
   "xfail": {}
 }
