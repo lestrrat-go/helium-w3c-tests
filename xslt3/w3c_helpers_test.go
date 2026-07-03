@@ -1653,8 +1653,6 @@ var w3cImplicitSkips = map[string]string{
 	// from an invalid document), so this test can no longer validate against
 	// it. The diagnostic concerns attribute-wildcard derivation-by-restriction,
 	// an xsd-compiler conformance edge tracked separately.
-	"validation-0401": "import schema-for-xslt20.xsd rejected by xsd compiler (attribute-wildcard restriction edge)",
-
 	// XML 1.1 features: namespace undeclaration (xmlns:a="") not supported
 	"xml-version-026": skipXML11NSUndecl,
 	"xml-version-027": skipXML11NSUndecl,
@@ -1697,8 +1695,6 @@ var w3cImplicitSkips = map[string]string{
 	// XTSE0220 instead of compiling a recovery-placeholder schema, so this test
 	// can no longer silently pass. The underlying xsd wildcard-derivation strictness
 	// is a separate, pre-existing limitation; the QNames type the test exercises is fine.
-	"import-schema-029": "xsd compiler rejects schema-for-xslt20.xsd attribute-wildcard derivation; fatal now surfaced (separate xsd limitation)",
-
 	// copy tests: external entity resolution
 	"copy-1401": "requires external entity resolution (SYSTEM entity reference)",
 
@@ -1712,9 +1708,12 @@ var w3cImplicitSkips = map[string]string{
 
 	// validation tests: schema-aware processing
 	"validation-0202": "schema-aware result validation fails",
-	"validation-0501": "schema-aware XSLT schema querying fails",
-	"validation-0601": "schema-aware XSLT schema querying fails",
-	"validation-0701": "schema-aware XSLT schema querying fails",
+	// schema-for-xslt20.xsd now compiles (attribute-wildcard restriction fixed in
+	// xsd), so the strict source validation runs; the remaining gap is schema-aware
+	// schema-element() substitution-group querying over the validated source.
+	"validation-0501": "schema-aware schema-element() substitution-group querying over validated source not implemented",
+	"validation-0601": "schema-aware schema-element() substitution-group querying over validated source not implemented",
+	"validation-0701": "schema-aware schema-element()/attribute-type querying over validated source not implemented",
 	"validation-1202": "instance of schema-element fails",
 	"validation-1204": "instance of schema-element fails",
 
