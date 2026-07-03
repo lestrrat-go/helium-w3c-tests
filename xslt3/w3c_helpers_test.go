@@ -132,6 +132,14 @@ var (
 	// runner and read by w3cAssertResultDocument for proper serialization.
 	w3cResultDocOutputDefs sync.Map // "testName\x00href" → *xslt3.OutputDef
 
+	// w3cResultAnnotations stores the whole-transform PSVI type-annotation map
+	// and schema declarations, keyed by testName. Populated by the receiver's
+	// HandleAnnotations and read by w3cAssertResultDocument so schema-aware
+	// XPath assertions on a secondary result document (e.g. "instance of
+	// element(*, xs:decimal)") resolve against the annotations, which are keyed
+	// by node pointer and thus not carried on the DOM tree itself.
+	w3cResultAnnotations sync.Map // testName → *w3cAnnotationBundle
+
 	// w3cTestFileResolver is the explicit opt-in file URI resolver used by
 	// the W3C XSLT test harness. The base directory is the filesystem root
 	// so absolute file:// URIs from the catalog resolve. Production callers
@@ -222,8 +230,13 @@ type w3cCheck struct {
 	fn func(result string, messages []string, resultDocs map[string]*helium.Document) bool
 	// docFn, when non-nil, is called instead of fn when a concrete document
 	// is available (e.g. inside assert-result-document). This lets XPath
-	// assertions run against the real document, preserving base-uri().
-	docFn func(doc *helium.Document) bool
+	// assertions run against the real document, preserving base-uri(). The
+	// whole-transform type-annotation map and schema declarations (delivered
+	// by HandleAnnotations) are threaded in so schema-aware tests such as
+	// "instance of element(*, xs:decimal)" resolve against a secondary
+	// result document's PSVI type annotations, which are keyed by node pointer
+	// and thus not carried on the serialized/DOM tree itself.
+	docFn func(doc *helium.Document, ann map[helium.Node]string, sd xpath3.SchemaDeclarations) bool
 	// rawFn, when non-nil, is called with the raw XPath sequence for checks
 	// that need typed comparison (assert-eq, assert-deep-eq, etc.).
 	rawFn func(rawResult xpath3.Sequence) bool
@@ -562,10 +575,21 @@ func w3cAssertResultDocument(uri string, checks ...w3cCheck) w3cAssertion {
 				}
 			}
 			rdResult := strings.TrimSpace(buf.String())
+			// The whole-transform PSVI type annotations are keyed by node
+			// pointer and are the SAME nodes present in this result document's
+			// tree, so a schema-aware docFn resolves types like element(*,
+			// xs:decimal) that the serialized form has lost.
+			var annMap map[helium.Node]string
+			var schemaDecl xpath3.SchemaDeclarations
+			if v, found := w3cResultAnnotations.Load(t.Name()); found {
+				bundle := v.(*w3cAnnotationBundle)
+				annMap = bundle.annotations
+				schemaDecl = bundle.declarations
+			}
 			for _, chk := range checks {
 				var pass bool
 				if chk.docFn != nil {
-					pass = chk.docFn(doc)
+					pass = chk.docFn(doc, annMap, schemaDecl)
 				} else {
 					pass = chk.fn(rdResult, messages, resultDocs)
 				}
@@ -689,7 +713,7 @@ func w3cCheckStringValue(expected string) w3cCheck {
 }
 
 func w3cCheckXPath(expr string) w3cCheck {
-	evalOnDoc := func(doc *helium.Document) bool {
+	evalOnDoc := func(doc *helium.Document, ann map[helium.Node]string, sd xpath3.SchemaDeclarations) bool {
 		compiled, err := xpath3.NewCompiler().Compile(expr)
 		if err != nil {
 			return false
@@ -698,6 +722,12 @@ func w3cCheckXPath(expr string) w3cCheck {
 		ns := gatherDocNamespaces(doc)
 		if len(ns) > 0 {
 			eval = eval.Namespaces(ns)
+		}
+		if ann != nil {
+			eval = eval.TypeAnnotations(ann)
+		}
+		if sd != nil {
+			eval = eval.SchemaDeclarations(sd)
 		}
 		res, err := eval.Evaluate(context.TODO(), compiled, doc)
 		if err != nil {
@@ -720,7 +750,7 @@ func w3cCheckXPath(expr string) w3cCheck {
 				}
 				doc = promoteWrapperChildren(doc)
 			}
-			return evalOnDoc(doc)
+			return evalOnDoc(doc, nil, nil)
 		},
 		docFn: evalOnDoc,
 	}
@@ -821,10 +851,10 @@ func w3cCheckAllOf(checks ...w3cCheck) w3cCheck {
 		return true
 	}}
 	if hasDocFn {
-		c.docFn = func(doc *helium.Document) bool {
+		c.docFn = func(doc *helium.Document, ann map[helium.Node]string, sd xpath3.SchemaDeclarations) bool {
 			for _, chk := range checks {
 				if chk.docFn != nil {
-					if !chk.docFn(doc) {
+					if !chk.docFn(doc, ann, sd) {
 						return false
 					}
 				} else {
@@ -1536,7 +1566,16 @@ func (r *w3cReceiver) HandlePrimaryItems(seq xpath3.Sequence) error {
 func (r *w3cReceiver) HandleAnnotations(annotations map[helium.Node]string, declarations xpath3.SchemaDeclarations) error {
 	*r.resultAnnotations = annotations
 	*r.resultSchemaDecl = declarations
+	w3cResultAnnotations.Store(r.testName, &w3cAnnotationBundle{annotations: annotations, declarations: declarations})
 	return nil
+}
+
+// w3cAnnotationBundle carries the whole-transform PSVI type-annotation map and
+// schema declarations delivered by HandleAnnotations, so schema-aware XPath
+// assertions on a secondary result document can be evaluated with them.
+type w3cAnnotationBundle struct {
+	annotations  map[helium.Node]string
+	declarations xpath3.SchemaDeclarations
 }
 
 // w3cErrorAccepted returns true if err's message contains one of the accepted
