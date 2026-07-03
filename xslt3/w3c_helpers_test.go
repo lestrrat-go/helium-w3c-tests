@@ -46,9 +46,6 @@ const (
 	// Version-resolution policy keyword for xsl:use-package selection.
 	versionResolutionLowest = "lowest"
 
-	// W3C test skip messages reused by multiple tests.
-	skipXML11NSUndecl = "XML 1.1: namespace undeclaration not supported by parser"
-
 	// Collection URI used by merge tests for log-file collections.
 	w3cLogFilesCollectionURI = "log-files"
 )
@@ -1653,17 +1650,6 @@ var w3cImplicitSkips = map[string]string{
 	// from an invalid document), so this test can no longer validate against
 	// it. The diagnostic concerns attribute-wildcard derivation-by-restriction,
 	// an xsd-compiler conformance edge tracked separately.
-	// XML 1.1 features: namespace undeclaration (xmlns:a="") not supported
-	"xml-version-026": skipXML11NSUndecl,
-	"xml-version-027": skipXML11NSUndecl,
-	"xml-version-028": skipXML11NSUndecl,
-	"xml-version-031": skipXML11NSUndecl,
-	"xml-version-032": skipXML11NSUndecl,
-	"xml-version-035": skipXML11NSUndecl,
-	"xml-version-037": skipXML11NSUndecl,
-	"xml-version-039": skipXML11NSUndecl,
-	"xml-version-042": skipXML11NSUndecl,
-
 	// XML 1.1 features: control characters (&#x1;..&#x8;, &#x7;) not supported
 	"xml-version-002": "XML 1.1: control characters in stylesheet not supported by parser",
 	"xml-version-007": "XML 1.1: control characters in stylesheet not supported by parser",
