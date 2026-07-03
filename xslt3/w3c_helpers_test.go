@@ -1751,8 +1751,6 @@ var w3cImplicitSkips = map[string]string{
 	"xpath-default-namespace-0703": "schema-element with xpath-default-namespace fails",
 
 	// strip-space: schema-aware whitespace stripping
-	"strip-space-007": "schema-aware whitespace stripping fails",
-	"strip-space-008": "schema-aware whitespace stripping fails",
 
 	// base-uri: xsl:copy base URI propagation
 
@@ -1772,7 +1770,7 @@ var w3cImplicitSkips = map[string]string{
 	// XSD 1.1 features: newly unlocked but failing
 	"validation-1301":   "XSD 1.1 xs:alternative type selection not implemented",
 	"import-schema-164": "XSD validation fails for namespaced attribute ref with default",
-	"strip-space-009":   "schema-aware whitespace stripping not implemented",
+	"strip-space-009":   "requires xsi:type-driven lax root assessment (no global element decl for <doc>) plus XSD 1.1 source-schema compilation to parse the type's xs:assert",
 
 	// higher-order functions: nested for-each-group grouping bug
 }
