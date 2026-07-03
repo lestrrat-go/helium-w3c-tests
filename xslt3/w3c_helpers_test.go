@@ -1653,8 +1653,6 @@ var w3cImplicitSkips = map[string]string{
 	// from an invalid document), so this test can no longer validate against
 	// it. The diagnostic concerns attribute-wildcard derivation-by-restriction,
 	// an xsd-compiler conformance edge tracked separately.
-	"validation-0401": "import schema-for-xslt20.xsd rejected by xsd compiler (attribute-wildcard restriction edge)",
-
 	// XML 1.1 features: namespace undeclaration (xmlns:a="") not supported
 	"xml-version-026": skipXML11NSUndecl,
 	"xml-version-027": skipXML11NSUndecl,
@@ -1697,8 +1695,6 @@ var w3cImplicitSkips = map[string]string{
 	// XTSE0220 instead of compiling a recovery-placeholder schema, so this test
 	// can no longer silently pass. The underlying xsd wildcard-derivation strictness
 	// is a separate, pre-existing limitation; the QNames type the test exercises is fine.
-	"import-schema-029": "xsd compiler rejects schema-for-xslt20.xsd attribute-wildcard derivation; fatal now surfaced (separate xsd limitation)",
-
 	// copy tests: external entity resolution
 	"copy-1401": "requires external entity resolution (SYSTEM entity reference)",
 
@@ -1711,10 +1707,13 @@ var w3cImplicitSkips = map[string]string{
 	// copy tests: schema-aware ID/IDREF
 
 	// validation tests: schema-aware processing
-	"validation-0202": "schema-aware result validation fails",
-	"validation-0501": "schema-aware XSLT schema querying fails",
-	"validation-0601": "schema-aware XSLT schema querying fails",
-	"validation-0701": "schema-aware XSLT schema querying fails",
+	"validation-0202": "schema-aware source annotation: data(Date) instance of StandardDate requires atomizing a source element typed as a simpleContent union (GeneralDate = StandardDate | xs:string) through its active member, plus exact xhtml indent-width serialization; the unprefixed-type-name XPST0081 compile blocker is fixed",
+	// schema-for-xslt20.xsd now compiles (attribute-wildcard restriction fixed in
+	// xsd), so the strict source validation runs; the remaining gap is schema-aware
+	// schema-element() substitution-group querying over the validated source.
+	"validation-0501": "schema-aware schema-element() substitution-group querying over validated source not implemented",
+	"validation-0601": "schema-aware schema-element() substitution-group querying over validated source not implemented",
+	"validation-0701": "schema-aware schema-element()/attribute-type querying over validated source not implemented",
 	"validation-1202": "instance of schema-element fails",
 	"validation-1204": "instance of schema-element fails",
 
@@ -1732,19 +1731,14 @@ var w3cImplicitSkips = map[string]string{
 	// package version resolution: lowest_version not supported (we use highest_version)
 
 	// castable tests: schema-aware union/list type casting
-	"castable-005": "schema-aware union type casting fails",
-	"castable-006": "schema-aware list type casting fails",
+	"castable-005": "schema-aware castable to a user-defined union type (member-type castability)",
+	"castable-006": "schema-aware castable to a user-defined list type",
 
 	// attribute-set tests
 
 	// regex-090/091: regex-group#N function reference captures regex context as closure
 	// The closure implementation is correct per spec, but the test expects empty output.
 	// Likely an issue with how zero-length regex matches are handled by analyze-string.
-
-	// xpath-default-namespace: schema-aware namespace resolution
-	"xpath-default-namespace-0503": "schema-type validation with xpath-default-namespace fails",
-	"xpath-default-namespace-0701": "schema-element with xpath-default-namespace fails",
-	"xpath-default-namespace-0703": "schema-element with xpath-default-namespace fails",
 
 	// strip-space: schema-aware whitespace stripping
 	"strip-space-007": "schema-aware whitespace stripping fails",
@@ -1766,8 +1760,7 @@ var w3cImplicitSkips = map[string]string{
 	"variable-0108": "too slow for CI: large iteration count with variable binding",
 
 	// XSD 1.1 features: newly unlocked but failing
-	"validation-1301":   "XSD 1.1 xs:alternative type selection not implemented",
-	"import-schema-164": "XSD validation fails for namespaced attribute ref with default",
+	"import-schema-164": "XSD 1.1 default-attribute insertion with QName namespace fixup",
 	"strip-space-009":   "schema-aware whitespace stripping not implemented",
 
 	// higher-order functions: nested for-each-group grouping bug
