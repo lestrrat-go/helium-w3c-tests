@@ -1715,8 +1715,6 @@ var w3cImplicitSkips = map[string]string{
 	"validation-0501": "schema-aware XSLT schema querying fails",
 	"validation-0601": "schema-aware XSLT schema querying fails",
 	"validation-0701": "schema-aware XSLT schema querying fails",
-	"validation-1202": "instance of schema-element fails",
-	"validation-1204": "instance of schema-element fails",
 
 	// override: schema-aware union types from xsl:import-schema
 	"override-f-031": "schema-aware union type conversion fails",
@@ -1727,7 +1725,6 @@ var w3cImplicitSkips = map[string]string{
 	// so it no longer needs a name-based skip here.
 
 	// merge: schema-element instance test on merged items
-	"merge-049":   "schema-element() instance test on merged items fails",
 	"merge-051":   "schema-element() instance test on merged items fails",
 	"merge-097":   "uri-collection Saxon-format ?select=glob URIs not supported (W3C catalog notes non-interoperable)",
 	"merge-097s":  "uri-collection Saxon-format ?select=glob URIs not supported (W3C catalog notes non-interoperable)",
