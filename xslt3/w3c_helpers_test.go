@@ -1735,8 +1735,8 @@ var w3cImplicitSkips = map[string]string{
 	// package version resolution: lowest_version not supported (we use highest_version)
 
 	// castable tests: schema-aware union/list type casting
-	"castable-005": "schema-aware union type casting fails",
-	"castable-006": "schema-aware list type casting fails",
+	"castable-005": "schema-aware castable to a user-defined union type (member-type castability)",
+	"castable-006": "schema-aware castable to a user-defined list type",
 
 	// attribute-set tests
 
@@ -1769,8 +1769,7 @@ var w3cImplicitSkips = map[string]string{
 	"variable-0108": "too slow for CI: large iteration count with variable binding",
 
 	// XSD 1.1 features: newly unlocked but failing
-	"validation-1301":   "XSD 1.1 xs:alternative type selection not implemented",
-	"import-schema-164": "XSD validation fails for namespaced attribute ref with default",
+	"import-schema-164": "XSD 1.1 default-attribute insertion with QName namespace fixup",
 	"strip-space-009":   "schema-aware whitespace stripping not implemented",
 
 	// higher-order functions: nested for-each-group grouping bug
