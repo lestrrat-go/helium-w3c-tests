@@ -5,8 +5,10 @@
 package xslt30
 
 import (
+	"bytes"
 	"encoding/xml"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -168,6 +170,7 @@ type xmlAssertion struct {
 	URI      string         `xml:"uri,attr"`
 	Method   string         `xml:"method,attr"`
 	Flags    string         `xml:"flags,attr"`
+	Encoding string         `xml:"encoding,attr"`
 	Inner    []byte         `xml:",innerxml"`
 	Children []xmlAssertion `xml:",any"`
 }
@@ -1255,6 +1258,77 @@ func readContainedAssertionFile(sourceDir, tsDir, file string) ([]byte, error) {
 	return os.ReadFile(filepath.Join(sourceDir, rel))
 }
 
+// decodeSerializationFile decodes the bytes of a non-UTF-8 assert-serialization
+// expected-result file into a UTF-8 string, using the encoding declared on the
+// assertion (falling back to the file's own XML declaration when the attribute
+// is absent). It returns an error when no usable encoding label is available or
+// the decoded output is still not valid UTF-8, so the caller can fall back to
+// skipping the comparison.
+func decodeSerializationFile(data []byte, encoding string) (string, error) {
+	label := strings.TrimSpace(encoding)
+	if label == "" {
+		// The assertion omitted @encoding; fall back to the encoding declared
+		// in the file's own XML declaration.
+		label = xmlDeclEncoding(data)
+	}
+	if label == "" {
+		return "", fmt.Errorf("no encoding declared for non-UTF-8 serialization file")
+	}
+	dec, err := charset.NewReaderLabel(label, bytes.NewReader(data))
+	if err != nil {
+		return "", err
+	}
+	out, err := io.ReadAll(dec)
+	if err != nil {
+		return "", err
+	}
+	if !utf8.Valid(out) {
+		return "", fmt.Errorf("decoded serialization file is not valid UTF-8")
+	}
+	return string(out), nil
+}
+
+// xmlDeclEncoding extracts the encoding label from an XML declaration at the
+// start of data, or "" when there is no declaration or no encoding pseudo-attr.
+func xmlDeclEncoding(data []byte) string {
+	head := data
+	if len(head) > 256 {
+		head = head[:256]
+	}
+	s := string(head)
+	if !strings.HasPrefix(strings.TrimSpace(s), "<?xml") {
+		return ""
+	}
+	end := strings.Index(s, "?>")
+	if end < 0 {
+		return ""
+	}
+	decl := s[:end]
+	idx := strings.Index(decl, "encoding")
+	if idx < 0 {
+		return ""
+	}
+	rest := decl[idx+len("encoding"):]
+	eq := strings.IndexByte(rest, '=')
+	if eq < 0 {
+		return ""
+	}
+	rest = strings.TrimSpace(rest[eq+1:])
+	if rest == "" {
+		return ""
+	}
+	quote := rest[0]
+	if quote != '"' && quote != '\'' {
+		return ""
+	}
+	rest = rest[1:]
+	q := strings.IndexByte(rest, quote)
+	if q < 0 {
+		return ""
+	}
+	return strings.TrimSpace(rest[:q])
+}
+
 func convertAssertion(xa xmlAssertion, sourceDir, tsDir string) assertion {
 	a := assertion{
 		Type: xa.XMLName.Local,
@@ -1297,9 +1371,17 @@ func convertAssertion(xa xmlAssertion, sourceDir, tsDir string) assertion {
 			if err != nil {
 				genFatalf("read assertion file %s: %v", xa.File, err)
 			} else if !utf8.Valid(data) {
-				// Non-UTF-8 serialization output cannot be embedded in Go source.
-				a.Type = "assert-posture-and-sweep"
-				a.Value = "skip: non-UTF-8 serialization comparison"
+				// The expected serialization is in a non-UTF-8 encoding (declared
+				// on the assertion). Decode it to UTF-8 so it can be embedded in
+				// Go source and compared against the runtime output, which the
+				// harness likewise decodes to UTF-8 before comparison.
+				decoded, derr := decodeSerializationFile(data, xa.Encoding)
+				if derr != nil {
+					a.Type = "assert-posture-and-sweep"
+					a.Value = "skip: non-UTF-8 serialization comparison"
+				} else {
+					a.Value = decoded
+				}
 			} else {
 				a.Value = string(data)
 			}
