@@ -1690,20 +1690,8 @@ var w3cImplicitSkips = map[string]string{
 	// it. The diagnostic concerns attribute-wildcard derivation-by-restriction,
 	// an xsd-compiler conformance edge tracked separately.
 	// XML 1.1 features: control characters (&#x1;..&#x8;, &#x7;) not supported
-	"xml-version-002": "XML 1.1: control characters in stylesheet not supported by parser",
-	"xml-version-007": "XML 1.1: control characters in stylesheet not supported by parser",
 	"xml-version-008": "XML 1.1: control characters in stylesheet not supported by parser",
 	"xml-version-023": "XML 1.1: control characters in stylesheet not supported by parser",
-
-	// XML 1.1 features: control characters in source documents
-	"xml-version-020": "XML 1.1: control characters in source document not supported by parser",
-	"xml-version-024": "XML 1.1: control characters in source document not supported by parser",
-	"xml-version-025": "XML 1.1: control characters in source document not supported by parser",
-
-	// XML 1.1: serialization of control chars as numeric character references
-	"xml-version-009": "XML 1.1: control character serialization as numeric refs not implemented",
-	"xml-version-010": "XML 1.1: control character serialization as numeric refs not implemented",
-	"xml-version-018": "XML 1.1: control character serialization as numeric refs not implemented",
 
 	// whitespace-011: external parameter entity resolution not supported
 	"whitespace-011": "parser limitation: external parameter entity resolution not supported",
