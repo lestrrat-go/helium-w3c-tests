@@ -1,0 +1,26 @@
+{
+  "suite": "xslt30",
+  "upstream_suite_commit": "6f8fd9e966ae74a251a2604abef9d904c7bc5c9b",
+  "total_cases": 13127,
+  "expected_fail": 0,
+  "default_run": {
+    "skipped": 781,
+    "by_class": {
+      "deliberately-denied": 3,
+      "expected-divergence": 84,
+      "narrow-quirk": 13,
+      "not-claimed": 76,
+      "performance-gated": 605
+    }
+  },
+  "slow_run": {
+    "skipped": 300,
+    "by_class": {
+      "deliberately-denied": 3,
+      "expected-divergence": 84,
+      "narrow-quirk": 13,
+      "not-claimed": 76,
+      "performance-gated": 124
+    }
+  }
+}
