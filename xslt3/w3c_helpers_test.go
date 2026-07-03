@@ -1731,7 +1731,6 @@ var w3cImplicitSkips = map[string]string{
 	"variable-0108": "too slow for CI: large iteration count with variable binding",
 
 	// XSD 1.1 features: newly unlocked but failing
-	"import-schema-164": "XSD 1.1 default-attribute insertion with QName namespace fixup",
 	"strip-space-009":   "requires xsi:type-driven lax root assessment (no global element decl for <doc>) plus XSD 1.1 source-schema compilation to parse the type's xs:assert",
 
 	// higher-order functions: nested for-each-group grouping bug
