@@ -1709,7 +1709,6 @@ var w3cImplicitSkips = map[string]string{
 	// copy tests: accumulator handling
 
 	// copy tests: schema-aware ID/IDREF
-	"copy-5034": "schema-aware ID/IDREF copy validation fails",
 
 	// validation tests: schema-aware processing
 	"validation-0202": "schema-aware result validation fails",
@@ -1760,11 +1759,6 @@ var w3cImplicitSkips = map[string]string{
 	// arrays: array construction and apply-templates on arrays
 
 	// schema-aware match tests: pattern matching with schema types
-	"match-174": "xsl:type annotation on constructed elements not propagated",
-	"match-181": "xsl:type annotation on constructed elements not propagated",
-	"match-210": "schema-aware attribute type pattern match fails",
-	"match-221": "schema-aware numeric type pattern match fails",
-	"match-232": "schema-aware type pattern match missing items",
 
 	// evaluate tests requiring schema-aware processing
 	"evaluate-048": "requires network access to saxonica.com",
