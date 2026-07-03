@@ -627,9 +627,6 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]struct{}) {
 				hasFeatureDep(ts.Dependencies, "schema-aware") ||
 				hasFeatureDep(tc.Dependencies, "schema-aware")
 			classifySchemaTypeChecking(&gt, isSchemaAware)
-			if isSchemaAware && gt.Skip == "" && gt.StylesheetPath != "" {
-				classifyAdvancedSchemaFeatures(&gt, filepath.Join(sourceDir, gt.StylesheetPath))
-			}
 			// Ad-hoc per-case skips (tests valid per spec but exercising
 			// behavior the processor does not follow) live in
 			// expectations/xslt30.json, applied at run time by the harness, not
@@ -1505,16 +1502,6 @@ func classifySchemaTypeChecking(gt *generatedTest, isSchemaAware bool) {
 	if gt.ErrorCode == "XXXX9999" {
 		gt.Skip = "placeholder error code: " + gt.ErrorCode
 	}
-}
-
-// loadSchemaKnownFailures reads the schema_known_failures.txt file containing
-// test case names (one per line) that require full schema validation and cannot
-// pass with partial schema support.
-// classifyAdvancedSchemaFeatures scans a schema-aware test stylesheet for
-// features that require deep schema support beyond basic type annotations.
-// If found, the test is skipped with a specific reason.
-func classifyAdvancedSchemaFeatures(gt *generatedTest, xslPath string) {
-	// Schema-aware features are now unlocked for testing.
 }
 
 // ──────────────────────────────────────────────────────────────────────
