@@ -1720,8 +1720,6 @@ var w3cImplicitSkips = map[string]string{
 	// package version resolution: lowest_version not supported (we use highest_version)
 
 	// castable tests: schema-aware union/list type casting
-	"castable-005": "schema-aware castable to a user-defined union type (member-type castability)",
-	"castable-006": "schema-aware castable to a user-defined list type",
 
 	// attribute-set tests
 
