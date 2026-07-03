@@ -79,7 +79,10 @@ func run(ctx context.Context, args []string) (int, error) {
 	out := fs.String("out", "", "JUnit XML output path (default: per-suite under test-results/)")
 	summaryOut := fs.String("summary", "", "conformance summary markdown path (default: per-suite under test-results/)")
 	root := fs.String("root", ".", "module root containing suites.lock.json")
-	heliumCommit := fs.String("helium-commit", "", "helium commit the suite ran against, recorded in the summary provenance")
+	heliumCommit := fs.String("helium-commit", "", "helium (code under test) commit the suite ran against, recorded in the summary provenance")
+	harnessCommit := fs.String("harness-commit", "", "helium-w3c-tests (harness) commit that produced the run, recorded in the summary provenance")
+	goVersion := fs.String("go-version", "", "Go version/toolchain that ran the suite (e.g. the output of `go version`), recorded in the summary provenance")
+	mode := fs.String("mode", "", "run mode recorded in the summary provenance (e.g. \"default\" or \"slow (HELIUM_SLOW_TESTS=1)\")")
 	noSystemOut := fs.Bool("no-system-out", false, "omit per-testcase <system-out> from the JUnit XML (failure/skip diagnostics are kept); shrinks large reports")
 	fs.SetOutput(os.Stderr)
 	fs.Usage = func() {
@@ -139,7 +142,13 @@ func run(ctx context.Context, args []string) (int, error) {
 	}
 	fmt.Fprintf(os.Stderr, "wrote JUnit results to %s\n", *out)
 
-	if sErr := writeSummary(*summaryOut, *root, *heliumCommit, suiteKey, suite, stdout.Bytes()); sErr != nil {
+	prov := provenance{
+		heliumCommit:  *heliumCommit,
+		harnessCommit: *harnessCommit,
+		goVersion:     *goVersion,
+		mode:          *mode,
+	}
+	if sErr := writeSummary(*summaryOut, *root, prov, suiteKey, suite, stdout.Bytes()); sErr != nil {
 		return 1, sErr
 	}
 
@@ -153,10 +162,21 @@ func run(ctx context.Context, args []string) (int, error) {
 	return 1, err
 }
 
+// provenance carries the run-context stamps recorded in the summary header so
+// a committed evidence file stands alone: which helium code, which harness,
+// which Go toolchain, and which run mode produced the numbers.
+type provenance struct {
+	heliumCommit  string
+	harnessCommit string
+	goVersion     string
+	mode          string
+}
+
 // writeSummary rolls up the go-test-json output into a committed
 // conformance-evidence markdown report, stamping provenance (pinned upstream
-// commit from suites.lock, generation date) so the file stands alone.
-func writeSummary(path, root, heliumCommit, suiteKey string, suite suiteConfig, jsonOut []byte) error {
+// commit from suites.lock, helium/harness commits, Go version, run mode,
+// generation date) so the file stands alone.
+func writeSummary(path, root string, prov provenance, suiteKey string, suite suiteConfig, jsonOut []byte) error {
 	summary, err := junit.Summarize(bytes.NewReader(jsonOut), junit.Options{
 		SuiteName: suiteKey,
 		RootTest:  suite.rootTest,
@@ -165,9 +185,12 @@ func writeSummary(path, root, heliumCommit, suiteKey string, suite suiteConfig, 
 		return err
 	}
 	meta := junit.SummaryMeta{
-		DisplayName:  suite.displayName,
-		HeliumCommit: heliumCommit,
-		GeneratedAt:  time.Now().UTC().Format("2006-01-02"),
+		DisplayName:   suite.displayName,
+		HeliumCommit:  prov.heliumCommit,
+		HarnessCommit: prov.harnessCommit,
+		GoVersion:     prov.goVersion,
+		Mode:          prov.mode,
+		GeneratedAt:   time.Now().UTC().Format("2006-01-02"),
 	}
 	if lock, lerr := generator.LoadLock(root); lerr == nil {
 		if sl, ok := lock.Suite(suiteKey); ok {

@@ -109,7 +109,10 @@ type SummaryMeta struct {
 	DisplayName    string // e.g. "XSLT 3.0"
 	UpstreamRepo   string // e.g. "https://github.com/w3c/xslt30-test"
 	UpstreamCommit string // pinned suite commit
-	HeliumCommit   string // helium commit the suite ran against (optional)
+	HeliumCommit   string // helium (code under test) commit the suite ran against (optional)
+	HarnessCommit  string // helium-w3c-tests (harness) commit that produced the run (optional)
+	GoVersion      string // Go version/toolchain that ran the suite (optional)
+	Mode           string // run mode, e.g. "default" or "slow (HELIUM_SLOW_TESTS=1)" (optional)
 	GeneratedAt    string // caller-supplied timestamp (optional)
 }
 
@@ -138,6 +141,15 @@ func WriteSummaryMarkdown(w io.Writer, s Summary, meta SummaryMeta) error {
 	}
 	if meta.HeliumCommit != "" {
 		fmt.Fprintf(&b, "- helium: `%s`\n", meta.HeliumCommit)
+	}
+	if meta.HarnessCommit != "" {
+		fmt.Fprintf(&b, "- helium-w3c-tests (harness): `%s`\n", meta.HarnessCommit)
+	}
+	if meta.GoVersion != "" {
+		fmt.Fprintf(&b, "- Go: `%s`\n", meta.GoVersion)
+	}
+	if meta.Mode != "" {
+		fmt.Fprintf(&b, "- Run mode: %s\n", meta.Mode)
 	}
 
 	b.WriteString("\n| Outcome | Count |\n|---------|------:|\n")
