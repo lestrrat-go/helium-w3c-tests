@@ -1693,9 +1693,6 @@ var w3cImplicitSkips = map[string]string{
 	// from an invalid document), so this test can no longer validate against
 	// it. The diagnostic concerns attribute-wildcard derivation-by-restriction,
 	// an xsd-compiler conformance edge tracked separately.
-	// XML 1.1 features: control characters (&#x1;..&#x8;, &#x7;) not supported
-	"xml-version-008": "XML 1.1: control characters in stylesheet not supported by parser",
-	"xml-version-023": "XML 1.1: control characters in stylesheet not supported by parser",
 
 	// whitespace-011: external parameter entity resolution not supported
 	"whitespace-011": "parser limitation: external parameter entity resolution not supported",
