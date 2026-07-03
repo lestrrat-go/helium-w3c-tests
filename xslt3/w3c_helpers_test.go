@@ -1718,10 +1718,6 @@ var w3cImplicitSkips = map[string]string{
 	"validation-1202": "instance of schema-element fails",
 	"validation-1204": "instance of schema-element fails",
 
-	// override: schema-aware union types from xsl:import-schema
-	"override-f-031": "schema-aware union type conversion fails",
-
-
 	// error-FODC0002a-ignore is now skipped by the generator via the
 	// ignore_doc_failure dependency (see tools/xslt3gen getDepsSkipReason),
 	// so it no longer needs a name-based skip here.
