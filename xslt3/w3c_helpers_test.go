@@ -1728,7 +1728,6 @@ var w3cImplicitSkips = map[string]string{
 
 	// merge: schema-element instance test on merged items
 	"merge-049":   "schema-element() instance test on merged items fails",
-	"merge-051":   "schema-element() instance test on merged items fails",
 	"merge-097":   "uri-collection Saxon-format ?select=glob URIs not supported (W3C catalog notes non-interoperable)",
 	"merge-097s":  "uri-collection Saxon-format ?select=glob URIs not supported (W3C catalog notes non-interoperable)",
 	"merge-097sf": "uri-collection Saxon-format ?select=glob URIs not supported (W3C catalog notes non-interoperable)",
