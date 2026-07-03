@@ -955,8 +955,11 @@ func specSupported(spec string) bool {
 		switch s {
 		// Our processor is XSLT 3.0.
 		// "X+" means "version X or later" — we satisfy 1.0+, 2.0+, 3.0+.
-		// "X" without "+" means exactly that version — skip 1.0 and 2.0 only tests.
-		case "XSLT10+", "XSLT20+", "XSLT30", "XSLT30+":
+		// The version-specific XSLT10 / XSLT20 buckets are in scope too: a
+		// conformant 3.0 processor runs them, and where 3.0 semantics
+		// legitimately diverge from the 1.0/2.0 expectation the case is
+		// skipped by name in xslt3/w3c_helpers_test.go with a documented reason.
+		case "XSLT10", "XSLT20", "XSLT10+", "XSLT20+", "XSLT30", "XSLT30+":
 			return true
 		}
 	}

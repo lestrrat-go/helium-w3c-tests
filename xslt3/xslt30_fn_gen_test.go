@@ -72,7 +72,7 @@ func init() {
 		{Name: "accessor-031", StylesheetPath: "tests/fn/accessor/accessor-031.xsl", SourceDocPath: "tests/fn/accessor/accessor021.xml", Assertions: []w3cAssertion{w3cAssertXML("<out><t1>true</t1><t2>true</t2><t3>true</t3></out>")}},
 		{Name: "accessor-032", StylesheetPath: "tests/fn/accessor/accessor-032.xsl", SourceDocPath: "tests/fn/accessor/accessor021.xml", Assertions: []w3cAssertion{w3cAssertXML("<out><t1>true</t1><t2>true</t2></out>")}},
 		{Name: "accessor-033", StylesheetPath: "tests/fn/accessor/accessor-033.xsl", SourceDocPath: "tests/fn/accessor/accessor021.xml", Assertions: []w3cAssertion{w3cAssertXML("<out><t1>true</t1></out>")}},
-		{Name: "accessor-034", StylesheetPath: "tests/fn/accessor/accessor-034.xsl", SourceDocPath: "tests/fn/accessor/accessor021.xml", ExpectError: true, ErrorCode: "XPST0017", Skip: "unsupported spec: XSLT20"},
+		{Name: "accessor-034", StylesheetPath: "tests/fn/accessor/accessor-034.xsl", SourceDocPath: "tests/fn/accessor/accessor021.xml", ExpectError: true, ErrorCode: "XPST0017"},
 		{Name: "accessor-035", StylesheetPath: "tests/fn/accessor/accessor-035.xsl", SourceDocPath: "tests/fn/accessor/accessor023.xml", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><out><doc>doc_uri=\"true\"</doc><Elmt>base_uri=\"true\"</Elmt><Attr>base_uri=\"true\"</Attr><PI>base_uri=\"true\"</PI><Cmt>base_uri=\"true\"</Cmt><Txt>base_uri=\"true\"</Txt><Elmt>base_uri=\"true\"</Elmt><Attr>base_uri=\"true\"</Attr><Elmt>base_uri=\"true\"</Elmt><Elmt>base_uri=\"true\"</Elmt>|up||up||up||up||done1|</out>")}},
 		{Name: "accessor-036", StylesheetPath: "tests/fn/accessor/accessor-036.xsl", SourceDocPath: "tests/fn/accessor/accessor021.xml", Assertions: []w3cAssertion{w3cAssertXML("<out><t1>true</t1><t2>true</t2></out>")}},
 		{Name: "accessor-037", StylesheetPath: "tests/fn/accessor/accessor-037.xsl", SourceContent: "<doc att=\"top\" xmlns:mynamespace=\"http://test.com\"><?mypi some data?><!--This is the 1st comment-->text-in-doc1<inner>text-in-doc2</inner></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out><t1>mypi</t1><t2/><t3/><t4>inner</t4><t5>att</t5><t6/><t7>mynamespace</t7></out>")}},
@@ -535,9 +535,9 @@ Function returns value for property xsd-version: true
  <tr><code>[2003-09-07]</code><code x="[2003-09-07]"/></tr>; 
  <tr><code>(03-09-07)</code><code x="(03-09-07)"/></tr>; 
 </out>`)}},
-		{Name: "format-date-002", StylesheetPath: "tests/fn/format-date/format-date-002.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("every $t in //tr satisfies $t/@a eq $t/@x")}, Skip: "unsupported spec: XSLT20"},
+		{Name: "format-date-002", StylesheetPath: "tests/fn/format-date/format-date-002.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("every $t in //tr satisfies $t/@a eq $t/@x")}},
 		{Name: "format-date-002a", StylesheetPath: "tests/fn/format-date/format-date-002a.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("every $t in //tr satisfies $t/@a eq $t/@x")}},
-		{Name: "format-date-003", StylesheetPath: "tests/fn/format-date/format-date-003.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("every $t in //tr satisfies $t/@a eq $t/@x")}, Skip: "unsupported spec: XSLT20"},
+		{Name: "format-date-003", StylesheetPath: "tests/fn/format-date/format-date-003.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("every $t in //tr satisfies $t/@a eq $t/@x")}},
 		{Name: "format-date-003a", StylesheetPath: "tests/fn/format-date/format-date-003a.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("every $t in //tr satisfies $t/@a eq $t/@x")}},
 		{Name: "format-date-004", StylesheetPath: "tests/fn/format-date/format-date-004.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML(`<?xml version="1.0" encoding="UTF-8"?><out>;
 <t>10.15</t>;
@@ -991,7 +991,7 @@ Function returns value for property xsd-version: true
 <t>O.e</t>;
 <t>P.f</t>;
 </out>`)}},
-		{Name: "format-date-013", StylesheetPath: "tests/fn/format-date/format-date-013.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("every $t in //t satisfies $t/@a eq $t")}, Skip: "unsupported spec: XSLT20"},
+		{Name: "format-date-013", StylesheetPath: "tests/fn/format-date/format-date-013.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("every $t in //t satisfies $t/@a eq $t")}},
 		{Name: "format-date-013a", StylesheetPath: "tests/fn/format-date/format-date-013a.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("every $t in //t satisfies $t/@a eq $t")}},
 		{Name: "format-date-014", StylesheetPath: "tests/fn/format-date/format-date-014.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML(`<?xml version="1.0" encoding="UTF-8"?><out>;
 <x>0715-14:00</x>;
@@ -2260,7 +2260,7 @@ __26,931.4</out>`)}},
 		{Name: "format-number-056", StylesheetPath: "tests/fn/format-number/format-number-056.xsl", SourceContent: `<doc>
 </doc>`, ExpectError: true, ErrorCode: "XTSE1300"},
 		{Name: "format-number-057", StylesheetPath: "tests/fn/format-number/format-number-057.xsl", SourceContent: `<doc>
-</doc>`, ExpectError: true, ErrorCode: "XTDE1310", Skip: "unsupported spec: XSLT20"},
+</doc>`, ExpectError: true, ErrorCode: "XTDE1310"},
 		{Name: "format-number-057n", StylesheetPath: "tests/fn/format-number/format-number-057.xsl", SourceContent: `<doc>
 </doc>`, ExpectError: true, ErrorCode: "FODF1310"},
 		{Name: "format-number-058", StylesheetPath: "tests/fn/format-number/format-number-058.xsl", SourceContent: `<doc>
@@ -2268,7 +2268,7 @@ __26,931.4</out>`)}},
 		{Name: "format-number-059", StylesheetPath: "tests/fn/format-number/format-number-059.xsl", SourceContent: `<doc>
 </doc>`, ExpectError: true, ErrorCode: "XTSE1300"},
 		{Name: "format-number-060", StylesheetPath: "tests/fn/format-number/format-number-060.xsl", SourceContent: `<doc>
-</doc>`, ExpectError: true, ErrorCode: "XTDE1310", Skip: "unsupported spec: XSLT20"},
+</doc>`, ExpectError: true, ErrorCode: "XTDE1310"},
 		{Name: "format-number-060n", StylesheetPath: "tests/fn/format-number/format-number-060.xsl", SourceContent: `<doc>
 </doc>`, ExpectError: true, ErrorCode: "FODF1310"},
 		{Name: "format-number-061", StylesheetPath: "tests/fn/format-number/format-number-061.xsl", SourceContent: `<doc>
@@ -2306,11 +2306,11 @@ __26,931.4</out>`)}},
 		{Name: "format-number-068", StylesheetPath: "tests/fn/format-number/format-number-068.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XTSE1295"},
 		{Name: "format-number-069a", StylesheetPath: "tests/fn/format-number/format-number-069.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("/out = \"1.2346E2\"")}},
 		{Name: "format-number-069b", StylesheetPath: "tests/fn/format-number/format-number-069.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XXX", Skip: "feature present but test requires absent: XPath_3.1"},
-		{Name: "format-number-069c", StylesheetPath: "tests/fn/format-number/format-number-069.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XTSE0090", Skip: "unsupported spec: XSLT20"},
+		{Name: "format-number-069c", StylesheetPath: "tests/fn/format-number/format-number-069.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XTSE0090"},
 		{Name: "format-number-070", StylesheetPath: "tests/fn/format-number/format-number-070.xsl", SourceContent: `<root>
       <value1>58</value1>
       <value2>64</value2>
-   </root>`, InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("/root/format1 = '058'"), w3cAssertXPath("/root/format2 = '0000000064'")}, Skip: "unsupported spec: XSLT20"},
+   </root>`, InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("/root/format1 = '058'"), w3cAssertXPath("/root/format2 = '0000000064'")}},
 		{Name: "function-available-0204", StylesheetPath: "tests/fn/function-available/function-available-0204.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out><true>true</true><false>false</false></out>")}},
 		{Name: "function-available-0801", StylesheetPath: "tests/fn/function-available/function-available-0801.xsl", SourceContent: ` 
 <doc>
@@ -4572,7 +4572,7 @@ E: center
 		{Name: "transform-009", StylesheetPath: "tests/fn/transform/transform-009.xsl", SourceDocPath: "tests/fn/transform/transform-001.xsl", Assertions: []w3cAssertion{w3cAssertSerialization("", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><principal>main output</principal>"), w3cAssertResultDocument("secondary-outputs.xml", w3cCheckAnyOf(w3cCheckSerialization("", "<secondary-outputs>text doc <secondary2>xml doc</secondary2></secondary-outputs>"), w3cCheckSerialization("", "<secondary-outputs><secondary2>xml doc</secondary2> text doc</secondary-outputs>")))}},
 		{Name: "type-available-0146", StylesheetPath: "tests/fn/type-available/type-available-0146.xsl", SourceContent: "<doc><a/><b/><c/></doc>", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><out xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"><anyType>true</anyType><integer>true</integer><string>true</string><date>true</date><time>true</time><untypedAtomic>true</untypedAtomic><anyAtomicType>true</anyAtomicType><anySimpleType>true</anySimpleType><untyped>true</untyped><dayTimeDuration>true</dayTimeDuration><yearMonthDuration>true</yearMonthDuration><unknownType>false</unknownType><unknownType>false</unknownType><unknownType>false</unknownType></out>")}},
 		{Name: "type-available-0147", StylesheetPath: "tests/fn/type-available/type-available-0147.xsl", SourceContent: "<doc><a/><b/><c/></doc>", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><out xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"><integer>true</integer><string>true</string><date>true</date><time>true</time><dayTimeDuration>true</dayTimeDuration><yearMonthDuration>true</yearMonthDuration><untypedAtomic>true</untypedAtomic><anyType>true</anyType><untyped>true</untyped><int>true</int><short>true</short><NCName>true</NCName><ID>true</ID><NOTATION>true</NOTATION><unknownType>false</unknownType><ENTITIES>true</ENTITIES><IDREFS>true</IDREFS><unknownType>false</unknownType><unknownType>false</unknownType></out>")}},
-		{Name: "type-available-0148", StylesheetPath: "tests/fn/type-available/type-available-0148.xsl", SourceContent: "<doc><a/><b/><c/></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out><int>false</int><short>false</short><NCName>false</NCName><ID>false</ID><NOTATION>false</NOTATION><ENTITIES>false</ENTITIES><NMTOKENS>false</NMTOKENS></out>")}, Skip: "unsupported spec: XSLT20"},
+		{Name: "type-available-0148", StylesheetPath: "tests/fn/type-available/type-available-0148.xsl", SourceContent: "<doc><a/><b/><c/></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out><int>false</int><short>false</short><NCName>false</NCName><ID>false</ID><NOTATION>false</NOTATION><ENTITIES>false</ENTITIES><NMTOKENS>false</NMTOKENS></out>")}, Skip: "feature present but test requires absent: schema_aware"},
 		{Name: "type-available-0149", StylesheetPath: "tests/fn/type-available/type-available-0149.xsl", SourceContent: "<doc><a/><b/><c/></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out><a>true</a><a>true</a><a>true</a><a>true</a></out>")}},
 		{Name: "type-available-0150", StylesheetPath: "tests/fn/type-available/type-available-0150.xsl", SourceContent: "<doc><a/><b/><c/></doc>", Assertions: []w3cAssertion{w3cAssertXPath("/out/a = 'true'"), w3cAssertXPath("/out/b = 'true'"), w3cAssertXPath("/out/c = 'false'"), w3cAssertXPath("/out/d = 'false'")}},
 		{Name: "type-available-0151", StylesheetPath: "tests/fn/type-available/type-available-0151.xsl", Assertions: []w3cAssertion{w3cAssertXPath("/out/a = 'false'")}, Skip: "feature present but test requires absent: XSD_1.1"},
