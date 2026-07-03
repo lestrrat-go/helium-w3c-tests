@@ -1707,7 +1707,7 @@ var w3cImplicitSkips = map[string]string{
 	// copy tests: schema-aware ID/IDREF
 
 	// validation tests: schema-aware processing
-	"validation-0202": "schema-aware result validation fails",
+	"validation-0202": "schema-aware source annotation: data(Date) instance of StandardDate requires atomizing a source element typed as a simpleContent union (GeneralDate = StandardDate | xs:string) through its active member, plus exact xhtml indent-width serialization; the unprefixed-type-name XPST0081 compile blocker is fixed",
 	// schema-for-xslt20.xsd now compiles (attribute-wildcard restriction fixed in
 	// xsd), so the strict source validation runs; the remaining gap is schema-aware
 	// schema-element() substitution-group querying over the validated source.
@@ -1743,11 +1743,6 @@ var w3cImplicitSkips = map[string]string{
 	// regex-090/091: regex-group#N function reference captures regex context as closure
 	// The closure implementation is correct per spec, but the test expects empty output.
 	// Likely an issue with how zero-length regex matches are handled by analyze-string.
-
-	// xpath-default-namespace: schema-aware namespace resolution
-	"xpath-default-namespace-0503": "schema-type validation with xpath-default-namespace fails",
-	"xpath-default-namespace-0701": "schema-element with xpath-default-namespace fails",
-	"xpath-default-namespace-0703": "schema-element with xpath-default-namespace fails",
 
 	// strip-space: schema-aware whitespace stripping
 	"strip-space-007": "schema-aware whitespace stripping fails",
