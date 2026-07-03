@@ -1876,15 +1876,50 @@ var w3cImplicitSkips = map[string]string{
 	// exclusive for one processor, so this pre-3.0 variant is a correct-skip divergence.
 	"strip-space-019": "XSLT 2.0-only: strip/preserve conflict is recoverable in 1.0/2.0 but a static error XTSE0270 in XSLT 3.0; our 3.0 processor correctly raises XTSE0270 (see the passing 3.0 variant strip-space-019a)",
 
-	// iii: uncertain — needs per-test investigation.
-	"function-0302":            "XSLT20 un-gated: needs per-test investigation (group iii)",
-	"function-1902":            "XSLT20 un-gated: needs per-test investigation (group iii)",
-	"function-2002":            "XSLT20 un-gated: needs per-test investigation (group iii)",
-	"function-0119a":           "XSLT20 un-gated: needs per-test investigation (group iii)",
-	"use-when-0406":            "XSLT20 un-gated: needs per-test investigation (group iii)",
-	"use-when-0407":            "XSLT20 un-gated: needs per-test investigation (group iii)",
-	"type-0168a":               "XSLT20 un-gated: needs per-test investigation (group iii)",
-	"regex-syntax-xslt20-0984": "XSLT20 un-gated: needs per-test investigation (group iii)",
+	// All of the following are XSLT20-spec tests that assert pre-3.0 behavior our
+	// 3.0 processor legitimately diverges from; each has a passing 3.0 counterpart
+	// or is a Unicode-version dependency. Correct-skips (not helium bugs).
+
+	// element-available('xsl:key') returns false in XSLT 2.0 but true in XSLT 3.0
+	// (W3C bug#27068). Our 3.0 processor returns true for a4; the 2.0 assertion
+	// requires false. Paired 3.0 variant function-0302b passes on the same stylesheet.
+	"function-0302": "XSLT 2.0-only: element-available('xsl:key') is false in 2.0 but true in 3.0 (W3C bug#27068); our 3.0 processor returns true (paired function-0302b PASSes)",
+
+	// Explicitly designed to check that the F+O 3.0 function library is NOT present
+	// in a pure 2.0 processor (fn:data, math:*, fn:string-join#1, fn:serialize, etc.).
+	// helium is a 3.0/3.1 processor, so those functions are available in the static
+	// context regardless of the stylesheet's version="2.0"; the test's premise cannot
+	// hold for a 3.0 processor.
+	"function-1902": "XSLT 2.0-only: asserts the F+O 3.0 function library is absent (2.0 processor); helium is a 3.0/3.1 processor so those functions are correctly available",
+
+	// Same premise as function-1902 for the XSLT 3.0 function set (copy-of#0/#1,
+	// snapshot#0/#1, parse-json). Available in our 3.0 processor by design.
+	"function-2002": "XSLT 2.0-only: asserts XSLT 3.0 functions (copy-of/snapshot/parse-json) are absent (2.0 processor); helium correctly makes them available",
+
+	// required='yes' on an xsl:function xsl:param is XTSE0090 in 2.0 but allowed in
+	// 3.0 (test description says so). Paired 3.0 variant function-0119b passes.
+	"function-0119a": "XSLT 2.0-only: xsl:param required='yes' in xsl:function is XTSE0090 in 2.0 but allowed in 3.0; our 3.0 processor accepts it (paired function-0119b PASSes)",
+
+	// In 2.0 use-when cannot access documents, so doc-available(...) is forced false;
+	// in 3.0 use-when expressions can access documents (W3C modification note marks
+	// this test 2.0-only). Our 3.0 processor allows the document access.
+	"use-when-0406": "XSLT 2.0-only: use-when cannot access documents in 2.0 (doc-available forced false) but can in 3.0 (W3C note marks this 2.0-only); our 3.0 processor accesses documents",
+
+	// generate-id (and other FO30 functions) are unavailable in the 2.0 use-when
+	// static context but available in 3.0. Paired 3.0 variant use-when-0407a passes.
+	"use-when-0407": "XSLT 2.0-only: generate-id is unavailable in the 2.0 use-when static context but available in 3.0; our 3.0 processor exposes it (paired use-when-0407a PASSes)",
+
+	// Casting a non-literal string to xs:QName raises XPTY0004 at run-time in 2.0
+	// but is permitted in 3.0 (the stylesheet's own comment: "permitted in 3.0 even
+	// if the stylesheet says version=2.0"). Paired 3.0 variant type-0168b passes.
+	"type-0168a": "XSLT 2.0-only: run-time xs:QName(string) cast raises XPTY0004 in 2.0 but is permitted in 3.0; our 3.0 processor permits it (paired type-0168b PASSes)",
+
+	// Unicode-version dependency, not a helium bug: `[\w]` = [^\p{P}\p{Z}\p{C}]
+	// (correctly implemented). The test expects U+2308/U+2309 (ceiling brackets) to
+	// match \w, reflecting pre-Unicode-6.1 category Sm; Go's current Unicode tables
+	// (and thus helium) classify them as Ps/Pe (punctuation), so \w correctly excludes
+	// them. Only these two reclassified codepoints differ; every other character matches.
+	"regex-syntax-xslt20-0984": "Unicode-version dependency (not a spec divergence): `[\\w]` is correctly [^\\p{P}\\p{Z}\\p{C}]; the test expects U+2308/U+2309 to match \\w (pre-Unicode-6.1 Sm), but Go's current Unicode tables classify them as Ps/Pe punctuation so \\w correctly excludes them",
 
 	// higher-order functions: nested for-each-group grouping bug
 }
