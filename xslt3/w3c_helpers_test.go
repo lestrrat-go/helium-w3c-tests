@@ -1708,12 +1708,6 @@ var w3cImplicitSkips = map[string]string{
 
 	// validation tests: schema-aware processing
 	"validation-0202": "schema-aware source annotation: data(Date) instance of StandardDate requires atomizing a source element typed as a simpleContent union (GeneralDate = StandardDate | xs:string) through its active member, plus exact xhtml indent-width serialization; the unprefixed-type-name XPST0081 compile blocker is fixed",
-	// schema-for-xslt20.xsd now compiles (attribute-wildcard restriction fixed in
-	// xsd), so the strict source validation runs; the remaining gap is schema-aware
-	// schema-element() substitution-group querying over the validated source.
-	"validation-0501": "schema-aware schema-element() substitution-group querying over validated source not implemented",
-	"validation-0601": "schema-aware schema-element() substitution-group querying over validated source not implemented",
-	"validation-0701": "schema-aware schema-element()/attribute-type querying over validated source not implemented",
 
 	// error-FODC0002a-ignore is now skipped by the generator via the
 	// ignore_doc_failure dependency (see tools/xslt3gen getDepsSkipReason),
