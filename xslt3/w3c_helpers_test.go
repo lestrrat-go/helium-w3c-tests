@@ -1833,14 +1833,6 @@ var w3cImplicitSkips = map[string]string{
 	// D6: forwards-compatible processing differs in 3.0; 2.0 test expects XTSE0340.
 	"version-023": "XSLT 2.0-only: forwards-compatible processing differs in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error XTSE0340)",
 
-	// B1: xsl:output boolean/enum parameter validation (SEPM0016) not enforced.
-	"output-0197": "XSLT20 un-gated: xsl:output boolean/enum parameter validation (SEPM0016) not enforced — pending fix (group B1)",
-	"output-0198": "XSLT20 un-gated: xsl:output boolean/enum parameter validation (SEPM0016) not enforced — pending fix (group B1)",
-	"output-0199": "XSLT20 un-gated: xsl:output boolean/enum parameter validation (SEPM0016) not enforced — pending fix (group B1)",
-	"output-0280": "XSLT20 un-gated: xsl:output boolean/enum parameter validation (SEPM0016) not enforced — pending fix (group B1)",
-	"output-0281": "XSLT20 un-gated: xsl:output boolean/enum parameter validation (SEPM0016) not enforced — pending fix (group B1)",
-	"output-0282": "XSLT20 un-gated: xsl:output boolean/enum parameter validation (SEPM0016) not enforced — pending fix (group B1)",
-	"output-0283": "XSLT20 un-gated: xsl:output boolean/enum parameter validation (SEPM0016) not enforced — pending fix (group B1)",
 
 	// B2: apply-templates/for-each select node()* type-check not enforced.
 	"type-0159":   "legitimate 2.0-vs-3.0 divergence: XTTE0520 (apply-templates select must be node()*) is absent from XSLT 3.0 — a non-node selection is handled by the built-in atomic template rule (on-no-match=text-only-copy), so our 3.0 output is correct; catalog spec dependency is XSLT20",
