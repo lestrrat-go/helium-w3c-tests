@@ -1130,8 +1130,10 @@ func w3cRunOne(t *testing.T, tc w3cTest) {
 				// xs:include/xs:import targets live next to the schema (e.g.
 				// schema066.xsd includes schema066a.xsd). The xsd compiler now
 				// denies nested-schema FS access by default, so opt back into
-				// host access here.
-				schema, schemaErr := xsd.NewCompiler().FS(helium.PermissiveFS()).CompileFile(t.Context(), schemaPath)
+				// host access here. Default to XSD 1.1, mirroring the production
+				// xslt3 xsl:import-schema path (compile_schema.go), so a schema
+				// silent on version (no vc:minVersion) gets 1.1 semantics.
+				schema, schemaErr := xsd.NewCompiler().DefaultVersion(xsd.Version11).FS(helium.PermissiveFS()).CompileFile(t.Context(), schemaPath)
 				if schemaErr != nil {
 					t.Fatalf("compile import schema %q: %v", sp, schemaErr)
 				}
@@ -1378,7 +1380,9 @@ func w3cRunOne(t *testing.T, tc w3cTest) {
 		// Trusted committed W3C fixtures whose nested xs:include/xs:import
 		// targets live next to the schema; the xsd compiler now denies
 		// nested-schema FS access by default, so opt back into host access.
-		schema, schemaErr := xsd.NewCompiler().FS(helium.PermissiveFS()).CompileFile(ctx, schemaPath)
+		// Default to XSD 1.1, mirroring the production xslt3 source-schema path
+		// (source_schema.go), so a schema silent on version gets 1.1 semantics.
+		schema, schemaErr := xsd.NewCompiler().DefaultVersion(xsd.Version11).FS(helium.PermissiveFS()).CompileFile(ctx, schemaPath)
 		if schemaErr != nil {
 			t.Fatalf("compile source schema %q: %v", schemaPath, schemaErr)
 		}
@@ -1756,9 +1760,6 @@ var w3cImplicitSkips = map[string]string{
 	"evaluate-040":  "too slow for CI: large iteration count in xsl:evaluate",
 	"variable-0108": "too slow for CI: large iteration count with variable binding",
 
-	// XSD 1.1 features: newly unlocked but failing
-	"strip-space-009": "requires xsi:type-driven lax root assessment (no global element decl for <doc>) plus XSD 1.1 source-schema compilation to parse the type's xs:assert",
-
 	// --- XSLT 2.0 bucket un-gated (see "XSLT 3.0 — Conformance Scope" in helium
 	// CLAUDE.md). Two kinds of skip below: (1) legitimate 2.0-vs-3.0 divergences
 	// where our 3.0 processor is CORRECT and the case asserts a 2.0-only error;
@@ -1874,6 +1875,8 @@ var w3cImplicitSkips = map[string]string{
 	"use-when-0407":            "XSLT20 un-gated: needs per-test investigation (group iii)",
 	"type-0168a":               "XSLT20 un-gated: needs per-test investigation (group iii)",
 	"regex-syntax-xslt20-0984": "XSLT20 un-gated: needs per-test investigation (group iii)",
+
+	// higher-order functions: nested for-each-group grouping bug
 }
 
 // promoteWrapperChildren takes a document parsed from "<_r>content</_r>"
