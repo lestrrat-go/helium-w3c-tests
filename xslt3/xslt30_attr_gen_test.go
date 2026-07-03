@@ -549,7 +549,7 @@ a:_underscore_
 		{Name: "doe-0176d", StylesheetPath: "tests/attr/disable-output-escaping/doe-0176d.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertSerializationMatches("<body>&lt;p&gt;&amp;nbsp;&lt;/p&gt;</body>")}},
 		{Name: "doe-0176e", StylesheetPath: "tests/attr/disable-output-escaping/doe-0176e.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertSerializationMatches("<body>&lt;p&gt;&amp;nbsp;&lt;/p&gt;</body>")}},
 		{Name: "doe-0176f", StylesheetPath: "tests/attr/disable-output-escaping/doe-0176f.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "SEPM0016"},
-		{Name: "doe-0177", StylesheetPath: "tests/attr/disable-output-escaping/doe-0176.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAnyOf(w3cCheckSerialization("", "<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>&lt;p&gt;&amp;nbsp;&lt;/p&gt;</body></html>"))}, AcceptErrors: []string{"XTRE1620"}, Skip: "unsupported spec: XSLT20"},
+		{Name: "doe-0177", StylesheetPath: "tests/attr/disable-output-escaping/doe-0176.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAnyOf(w3cCheckSerialization("", "<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>&lt;p&gt;&amp;nbsp;&lt;/p&gt;</body></html>"))}, AcceptErrors: []string{"XTRE1620"}, Skip: "feature present but test requires absent: disabling_output_escaping"},
 		{Name: "doe-0177a", StylesheetPath: "tests/attr/disable-output-escaping/doe-0176.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertSerialization("", "<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>&lt;p&gt;&amp;nbsp;&lt;/p&gt;</body></html>")}, Skip: "feature present but test requires absent: disabling_output_escaping"},
 		{Name: "doe-0180", StylesheetPath: "tests/attr/disable-output-escaping/doe-0180.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertSerialization("", "<out special=\"&lt;\">&lt;</out>")}},
 		{Name: "doe-0181", StylesheetPath: "tests/attr/disable-output-escaping/doe-0181.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertSerialization("", "<out><!--<-->&lt;</out>")}},
@@ -794,7 +794,7 @@ a:_underscore_
   <or/>
   <div/>
 </div>
-   `, ExpectError: true, ErrorCode: "XTSE0340", Skip: "unsupported spec: XSLT20"},
+   `, ExpectError: true, ErrorCode: "XTSE0340"},
 		{Name: "match-040", StylesheetPath: "tests/attr/match/match-040.xsl", SourceContent: `<div>
   <and/>
   <or/>
@@ -1242,7 +1242,7 @@ a:_underscore_
     </foo>
   </foo>
 </doc>
-   `, ExpectError: true, ErrorCode: "XTSE0340", Skip: "unsupported spec: XSLT20"},
+   `, ExpectError: true, ErrorCode: "XTSE0340"},
 		{Name: "match-081a", StylesheetPath: "tests/attr/match/match-081.xsl", SourceContent: `<doc>
   <foo att1="c">
     <foo att1="b">
@@ -1262,7 +1262,7 @@ a:_underscore_
     </foo>
   </foo>
 </doc>
-   `, ExpectError: true, ErrorCode: "XTSE0340", Skip: "unsupported spec: XSLT20"},
+   `, ExpectError: true, ErrorCode: "XTSE0340"},
 		{Name: "match-082a", StylesheetPath: "tests/attr/match/match-082a.xsl", SourceContent: `<doc>
   <foo att1="c">
     <foo att1="b">
@@ -1302,7 +1302,7 @@ a:_underscore_
     </foo>
   </foo>
 </doc>
-   `, ExpectError: true, ErrorCode: "XTSE0340", Skip: "unsupported spec: XSLT20"},
+   `, ExpectError: true, ErrorCode: "XTSE0340"},
 		{Name: "match-084", StylesheetPath: "tests/attr/match/match-084.xsl", SourceContent: `<doc>
   <foo att1="c">
     <foo att1="b">
@@ -1312,7 +1312,7 @@ a:_underscore_
     </foo>
   </foo>
 </doc>
-   `, ExpectError: true, ErrorCode: "XTSE0340", Skip: "unsupported spec: XSLT20"},
+   `, ExpectError: true, ErrorCode: "XTSE0340"},
 		{Name: "match-085", StylesheetPath: "tests/attr/match/match-085.xsl", SourceContent: `<doc>
   <foo att1="c">
     <foo att1="b">
@@ -1322,7 +1322,7 @@ a:_underscore_
     </foo>
   </foo>
 </doc>
-   `, ExpectError: true, ErrorCode: "XTSE0340", Skip: "unsupported spec: XSLT20"},
+   `, ExpectError: true, ErrorCode: "XTSE0340"},
 		{Name: "match-086", StylesheetPath: "tests/attr/match/match-086.xsl", SourceContent: `<doc>
   <foo att1="c">
     <foo att1="b">
@@ -1332,7 +1332,7 @@ a:_underscore_
     </foo>
   </foo>
 </doc>
-   `, ExpectError: true, ErrorCode: "XTSE0340", Skip: "unsupported spec: XSLT20"},
+   `, ExpectError: true, ErrorCode: "XTSE0340"},
 		{Name: "match-087", StylesheetPath: "tests/attr/match/match-087.xsl", SourceContent: `<doc>
   <foo att1="c">
     <foo att1="b">
@@ -1342,7 +1342,7 @@ a:_underscore_
     </foo>
   </foo>
 </doc>
-   `, ExpectError: true, ErrorCode: "XTSE0340", Skip: "unsupported spec: XSLT20"},
+   `, ExpectError: true, ErrorCode: "XTSE0340"},
 		{Name: "match-088", StylesheetPath: "tests/attr/match/match-088.xsl", SourceContent: "<doc>Text</doc>", Assertions: []w3cAssertion{w3cAssertXML("<out>Document_Node_Found<elem>doc</elem></out>")}},
 		{Name: "match-089", StylesheetPath: "tests/attr/match/match-089.xsl", SourceContent: "<doc attribute=\"attr_val\"><inner att1=\"at1\"/>Text</doc>", Assertions: []w3cAssertion{w3cAssertXML("<out><doc>attribute</doc><second>att1</second></out>")}},
 		{Name: "match-090", StylesheetPath: "tests/attr/match/match-090.xsl", SourceContent: "<doc attribute=\"attr_val\"><inner1>Text<inner2/></inner1></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out><t1>inner1</t1><t2>inner2</t2></out>")}},
@@ -1767,8 +1767,8 @@ a:_underscore_
   This is the child number 1.
 </out>`)}},
 		{Name: "mode-0701", StylesheetPath: "tests/attr/mode/mode-0701.xsl", SourceContent: "<doc attribute1=\"attribute1\"/>", Assertions: []w3cAssertion{w3cAssertXML("<out>attribute1</out>")}},
-		{Name: "mode-0801a", StylesheetPath: "tests/attr/mode/mode-0801.xsl", SourceContent: "<sss><sss><i>Not OK</i></sss></sss>", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><out>\r\n -Any child of root sss-\r\n\r\n +Any descendant of root sss+\r\n\r\n -Any child of any sss-\r\n\r\n +Any descendant of root sss+\r\n\r\n -Any child of any sss-\r\n\r\n +Any descendant of root sss+\r\n</out>")}, Skip: "unsupported spec: XSLT10 XSLT20"},
-		{Name: "mode-0801b", StylesheetPath: "tests/attr/mode/mode-0801.xsl", SourceContent: "<sss><sss><i>Not OK</i></sss></sss>", ExpectError: true, ErrorCode: "XTRE0540", Skip: "unsupported spec: XSLT10 XSLT20", OnMultipleMatch: "fail"},
+		{Name: "mode-0801a", StylesheetPath: "tests/attr/mode/mode-0801.xsl", SourceContent: "<sss><sss><i>Not OK</i></sss></sss>", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><out>\r\n -Any child of root sss-\r\n\r\n +Any descendant of root sss+\r\n\r\n -Any child of any sss-\r\n\r\n +Any descendant of root sss+\r\n\r\n -Any child of any sss-\r\n\r\n +Any descendant of root sss+\r\n</out>")}},
+		{Name: "mode-0801b", StylesheetPath: "tests/attr/mode/mode-0801.xsl", SourceContent: "<sss><sss><i>Not OK</i></sss></sss>", ExpectError: true, ErrorCode: "XTRE0540", OnMultipleMatch: "fail"},
 		{Name: "mode-0801c", StylesheetPath: "tests/attr/mode/mode-0801.xsl", SourceContent: "<sss><sss><i>Not OK</i></sss></sss>", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><out>\r\n -Any child of root sss-\r\n\r\n +Any descendant of root sss+\r\n\r\n -Any child of any sss-\r\n\r\n +Any descendant of root sss+\r\n\r\n -Any child of any sss-\r\n\r\n +Any descendant of root sss+\r\n</out>")}},
 		{Name: "mode-0802", StylesheetPath: "tests/attr/mode/mode-0802.xsl", SourceContent: "<sss><sss><i>Not OK</i></sss></sss>", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><out>\r\n -Any child of root sss-\r\n\r\n +Any descendant of root sss+\r\n\r\n -Any child of any sss-\r\n\r\n +Any descendant of root sss+\r\n\r\n -Any child of any sss-\r\n\r\n +Any descendant of root sss+\r\n</out>")}},
 		{Name: "mode-0803", StylesheetPath: "tests/attr/mode/mode-0803.xsl", SourceContent: "<sss><sss><i>Not OK</i></sss></sss>", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><out>\r\n -Any child of root sss-\r\n\r\n +Any descendant of root sss+\r\n\r\n -Any child of any sss-\r\n\r\n +Any descendant of root sss+\r\n\r\n -Any child of any sss-\r\n\r\n +Any descendant of root sss+\r\n</out>")}},
@@ -2890,8 +2890,8 @@ a:_underscore_
 		{Name: "package-version-909", StylesheetPath: "tests/attr/package-version/package-version-909.xsl", ExpectError: true, ErrorCode: "FOAR0001"},
 		{Name: "package-version-910", StylesheetPath: "tests/attr/package-version/package-version-910.xsl", ExpectError: true, ErrorCode: "XTSE0020"},
 		{Name: "package-version-911", StylesheetPath: "tests/attr/package-version/package-version-911.xsl", ExpectError: true, ErrorCode: "XTSE0090"},
-		{Name: "package-version-912a", StylesheetPath: "tests/attr/package-version/package-version-912.xsl", ExpectError: true, ErrorCode: "XTSE0010", Skip: "unsupported spec: XSLT20"},
-		{Name: "package-version-912b", StylesheetPath: "tests/attr/package-version/package-version-912.xsl", ExpectError: true, ErrorCode: "*", Skip: "unsupported spec: XSLT10"},
+		{Name: "package-version-912a", StylesheetPath: "tests/attr/package-version/package-version-912.xsl", ExpectError: true, ErrorCode: "XTSE0010"},
+		{Name: "package-version-912b", StylesheetPath: "tests/attr/package-version/package-version-912.xsl", ExpectError: true, ErrorCode: "*"},
 		{Name: "select-0101", StylesheetPath: "tests/attr/select/select-0101.xsl", SourceContent: ` 
 <doc>
   <a><b attr="test"/></a>
@@ -3551,7 +3551,7 @@ Node c has on-c in @x</list></out>`)}},
 		{Name: "select-7501", StylesheetPath: "tests/attr/select/select-7501.xsl", SourceContent: ` 
 <doc><inner1/><inner1/></doc>`, ExpectError: true, ErrorCode: "XTSE0010"},
 		{Name: "select-7502a", StylesheetPath: "tests/attr/select/select-7502.xsl", SourceContent: ` 
-<doc><inner1/><inner1/></doc>`, ExpectError: true, ErrorCode: "XTSE0870", Skip: "unsupported spec: XSLT20"},
+<doc><inner1/><inner1/></doc>`, ExpectError: true, ErrorCode: "XTSE0870"},
 		{Name: "select-7502b", StylesheetPath: "tests/attr/select/select-7502.xsl", SourceContent: ` 
 <doc><inner1/><inner1/></doc>`, Assertions: []w3cAssertion{w3cAssertXPath("/out[not(node())]")}},
 		{Name: "shadow-001", StylesheetPath: "tests/attr/shadow/shadow-001.xsl", SourceContent: `<doc>
@@ -4297,7 +4297,7 @@ Node c has on-c in @x</list></out>`)}},
    <para>p1</para>
    <para>p2</para>
  </section>
-</doc>`, ExpectError: true, ErrorCode: "XPST0017", Skip: "unsupported spec: XSLT20"},
+</doc>`, ExpectError: true, ErrorCode: "XPST0017"},
 		{Name: "use-when-0127b", StylesheetPath: "tests/attr/use-when/use-when-0127.xsl", SourceContent: `<doc>
  <section>
    <para>p1</para>
@@ -4409,12 +4409,12 @@ Node c has on-c in @x</list></out>`)}},
 <item price="100" />
 <item price="120" />
 <item price="150" />
-</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}, Skip: "unsupported spec: XSLT20"},
+</doc>`, Assertions: []w3cAssertion{w3cAssertXML("<out>true</out>")}},
 		{Name: "use-when-0407", StylesheetPath: "tests/attr/use-when/use-when-0407.xsl", SourceContent: `<doc>
 <item price="100" />
 <item price="120" />
 <item price="150" />
-</doc>`, Assertions: []w3cAssertion{w3cAssertXPath("/out/fa[@f=\"current\"]=\"true\""), w3cAssertXPath("/out/fa[@f=\"generate-id\"]=\"true\""), w3cAssertXPath("/out/fa[@f=\"key\"]=\"true\""), w3cAssertXPath("/out/fa[@f=\"unparsed-entity-uri\"]=\"true\""), w3cAssertXPath("/out/fa[@f=\"unparsed-entity-public-id\"]=\"true\""), w3cAssertXPath("/out/fa[@f=\"system-property\"]=\"true\""), w3cAssertXPath("not(/out/in[@f=\"current\"])"), w3cAssertXPath("not(/out/in[@f=\"generate-id\"])"), w3cAssertXPath("not(/out/in[@f=\"key\"])"), w3cAssertXPath("not(/out/in[@f=\"unparsed-entity-uri\"])"), w3cAssertXPath("not(/out/in[@f=\"unparsed-entity-public-id\"])"), w3cAssertXPath("/out/in[@f=\"system-property\"]=\"use-when evaluates to true!!!\"")}, Skip: "unsupported spec: XSLT20"},
+</doc>`, Assertions: []w3cAssertion{w3cAssertXPath("/out/fa[@f=\"current\"]=\"true\""), w3cAssertXPath("/out/fa[@f=\"generate-id\"]=\"true\""), w3cAssertXPath("/out/fa[@f=\"key\"]=\"true\""), w3cAssertXPath("/out/fa[@f=\"unparsed-entity-uri\"]=\"true\""), w3cAssertXPath("/out/fa[@f=\"unparsed-entity-public-id\"]=\"true\""), w3cAssertXPath("/out/fa[@f=\"system-property\"]=\"true\""), w3cAssertXPath("not(/out/in[@f=\"current\"])"), w3cAssertXPath("not(/out/in[@f=\"generate-id\"])"), w3cAssertXPath("not(/out/in[@f=\"key\"])"), w3cAssertXPath("not(/out/in[@f=\"unparsed-entity-uri\"])"), w3cAssertXPath("not(/out/in[@f=\"unparsed-entity-public-id\"])"), w3cAssertXPath("/out/in[@f=\"system-property\"]=\"use-when evaluates to true!!!\"")}},
 		{Name: "use-when-0407a", StylesheetPath: "tests/attr/use-when/use-when-0407a.xsl", SourceContent: `<doc>
 <item price="100" />
 <item price="120" />
@@ -4565,14 +4565,14 @@ Node c has on-c in @x</list></out>`)}},
 		{Name: "validation-0005", StylesheetPath: "tests/attr/validation/validation-0005.xsl", ImportSchemaPaths: []string{"tests/attr/validation/gedSchema.xsd"}, InitialTemplate: "main", ExpectError: true, ErrorCode: "XTTE1510"},
 		{Name: "validation-0006", StylesheetPath: "tests/attr/validation/validation-0006.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XTTE1555"},
 		{Name: "validation-0101", StylesheetPath: "tests/attr/validation/validation-0101.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE1660", Skip: "feature present but test requires absent: schema_aware"},
-		{Name: "validation-0102a", StylesheetPath: "tests/attr/validation/validation-0102.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE1660", Skip: "unsupported spec: XSLT20"},
+		{Name: "validation-0102a", StylesheetPath: "tests/attr/validation/validation-0102.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE1660", Skip: "feature present but test requires absent: schema_aware"},
 		{Name: "validation-0102b", StylesheetPath: "tests/attr/validation/validation-0102.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXPath("/elem = '2.2'")}, Skip: "feature present but test requires absent: schema_aware"},
-		{Name: "validation-0103a", StylesheetPath: "tests/attr/validation/validation-0103.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE1660", Skip: "unsupported spec: XSLT20"},
+		{Name: "validation-0103a", StylesheetPath: "tests/attr/validation/validation-0103.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE1660", Skip: "feature present but test requires absent: schema_aware"},
 		{Name: "validation-0103b", StylesheetPath: "tests/attr/validation/validation-0103.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXPath("/elem = '2.2'")}, Skip: "feature present but test requires absent: schema_aware"},
 		{Name: "validation-0104", StylesheetPath: "tests/attr/validation/validation-0104.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE1660", Skip: "feature present but test requires absent: schema_aware"},
-		{Name: "validation-0105a", StylesheetPath: "tests/attr/validation/validation-0105.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE1660", Skip: "unsupported spec: XSLT20"},
+		{Name: "validation-0105a", StylesheetPath: "tests/attr/validation/validation-0105.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE1660", Skip: "feature present but test requires absent: schema_aware"},
 		{Name: "validation-0105b", StylesheetPath: "tests/attr/validation/validation-0105.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXPath("/elem = '2.2'")}, Skip: "feature present but test requires absent: schema_aware"},
-		{Name: "validation-0106", StylesheetPath: "tests/attr/validation/validation-0106.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE1660", Skip: "unsupported spec: XSLT20"},
+		{Name: "validation-0106", StylesheetPath: "tests/attr/validation/validation-0106.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE1660", Skip: "feature present but test requires absent: schema_aware"},
 		{Name: "validation-0106a", StylesheetPath: "tests/attr/validation/validation-0106.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<elem>2.2</elem>")}, Skip: "feature present but test requires absent: schema_aware"},
 		{Name: "validation-0107", StylesheetPath: "tests/attr/validation/validation-0107.xsl", SourceContent: "<doc/>", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("/out/@a = \"true\""), w3cAssertXPath("/out/@b = \"true\""), w3cAssertXPath("/out/@c = \"true\""), w3cAssertXPath("/out/@d = \"true\"")}},
 		{Name: "validation-0108", StylesheetPath: "tests/attr/validation/validation-0108.xsl", SourceContent: "<doc/>", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("/out/@a = \"true\""), w3cAssertXPath("/out/@b = \"true\"")}},
@@ -4807,7 +4807,7 @@ Node c has on-c in @x</list></out>`)}},
    <c id="4"/>
    <d><e/></d>
  </a>
-</doc>`, ExpectError: true, ErrorCode: "XTSE0340", Skip: "unsupported spec: XSLT20"},
+</doc>`, ExpectError: true, ErrorCode: "XTSE0340"},
 		{Name: "version-023a", StylesheetPath: "tests/attr/version/version-023a.xsl", SourceContent: `<doc>
  <a>
    <b id="3"/>

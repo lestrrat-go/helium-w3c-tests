@@ -98,19 +98,19 @@ Mary had a little lamb
 Its fleece was black as soot
 And everywhere that Mary went
 It put its sooty foot
-</doc>`, ExpectError: true, ErrorCode: "XPTY0004", Skip: "unsupported spec: XSLT20"},
+</doc>`, ExpectError: true, ErrorCode: "XPTY0004"},
 		{Name: "analyze-string-046", StylesheetPath: "tests/insn/analyze-string/analyze-string-046.xsl", SourceContent: `<doc>
 Mary had a little lamb
 Its fleece was black as soot
 And everywhere that Mary went
 It put its sooty foot
-</doc>`, ExpectError: true, ErrorCode: "XTDE1145", Skip: "unsupported spec: XSLT20"},
+</doc>`, ExpectError: true, ErrorCode: "XTDE1145"},
 		{Name: "analyze-string-047", StylesheetPath: "tests/insn/analyze-string/analyze-string-047.xsl", SourceContent: `<doc>
 Mary had a little lamb
 Its fleece was black as soot
 And everywhere that Mary went
 It put its sooty foot
-</doc>`, ExpectError: true, ErrorCode: "XTDE1140", Skip: "unsupported spec: XSLT20"},
+</doc>`, ExpectError: true, ErrorCode: "XTDE1140"},
 		{Name: "analyze-string-048", StylesheetPath: "tests/insn/analyze-string/analyze-string-048.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><out>\r\n<E1>a*cada*</E1>\r\n<E2>*</E2>\r\n<E3>*</E3>\r\n<E4>*</E4>\r\n<E5/>\r\n<E6>*racadabra</E6>\r\n<E7>abracadabra</E7>\r\n<E8>abracadabra</E8>\r\n<E9>abracadabra</E9>\r\n<E10>abracadabra</E10></out>")}},
 		{Name: "analyze-string-049", StylesheetPath: "tests/insn/analyze-string/analyze-string-049.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML(`<out>
 <e1>b</e1>
@@ -183,7 +183,7 @@ Tak, tak, tak! - da kommen sie.</poem>`, Assertions: []w3cAssertion{w3cAssertXML
 </doc>`, Assertions: []w3cAssertion{w3cAssertXPath("/out/*[1][self::non-match]/item = \"b\""), w3cAssertXPath("/out/*[1][self::non-match]/pos = \"1\""), w3cAssertXPath("/out/*[1][self::non-match]/size = \"6\""), w3cAssertXPath("/out/*[2][self::match]/item = \"a\""), w3cAssertXPath("/out/*[2][self::match]/pos = \"2\""), w3cAssertXPath("/out/*[2][self::match]/size = \"6\""), w3cAssertXPath("/out/*[3][self::non-match]/item = \"n\""), w3cAssertXPath("/out/*[3][self::non-match]/pos = \"3\""), w3cAssertXPath("/out/*[3][self::non-match]/size = \"6\""), w3cAssertXPath("/out/*[4][self::match]/item = \"a\""), w3cAssertXPath("/out/*[4][self::match]/pos = \"4\""), w3cAssertXPath("/out/*[4][self::match]/size = \"6\""), w3cAssertXPath("/out/*[5][self::non-match]/item = \"n\""), w3cAssertXPath("/out/*[5][self::non-match]/pos = \"5\""), w3cAssertXPath("/out/*[5][self::non-match]/size = \"6\""), w3cAssertXPath("/out/*[6][self::match]/item = \"a\""), w3cAssertXPath("/out/*[6][self::match]/pos = \"6\""), w3cAssertXPath("/out/*[6][self::match]/size = \"6\"")}},
 		{Name: "analyze-string-084", StylesheetPath: "tests/insn/analyze-string/analyze-string-084.xsl", SourceDocPath: "tests/insn/analyze-string/analyze-string-084.xml", Assertions: []w3cAssertion{w3cAssertXML("<out><p>this</p></out>")}},
 		{Name: "analyze-string-085", StylesheetPath: "tests/insn/analyze-string/analyze-string-085.xsl", SourceDocPath: "tests/insn/analyze-string/analyze-string-905.xml", ExpectError: true, ErrorCode: "XPTY0020"},
-		{Name: "analyze-string-090a", StylesheetPath: "tests/insn/analyze-string/analyze-string-090.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XTDE1150", Skip: "unsupported spec: XSLT20"},
+		{Name: "analyze-string-090a", StylesheetPath: "tests/insn/analyze-string/analyze-string-090.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XTDE1150"},
 		{Name: "analyze-string-090b", StylesheetPath: "tests/insn/analyze-string/analyze-string-090.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath(`/out/a[@nr='2'] = '
 Heading
 '`), w3cAssertXPath(`/out/a[@nr='4'] = '
@@ -193,7 +193,7 @@ above is a line of three spaces
 '`), w3cAssertXPath(`/out/a[@nr='8'] = '
 above is a line containing a tab
 '`), w3cAssertXPath("count(/out/a) = 4")}},
-		{Name: "analyze-string-091a", StylesheetPath: "tests/insn/analyze-string/analyze-string-091.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XTDE1150", Skip: "unsupported spec: XSLT20"},
+		{Name: "analyze-string-091a", StylesheetPath: "tests/insn/analyze-string/analyze-string-091.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XTDE1150"},
 		{Name: "analyze-string-091b", StylesheetPath: "tests/insn/analyze-string/analyze-string-091.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("/out='a b c d e f'")}},
 		{Name: "analyze-string-092", StylesheetPath: "tests/insn/analyze-string/analyze-string-092.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("/out/col[1]='Ten Thousand'"), w3cAssertXPath("/out/col[2]='10000'"), w3cAssertXPath("/out/col[3]=''"), w3cAssertXPath("/out/col[4]='10,000'"), w3cAssertXPath("/out/col[5]='It''s \"10 Grand\", mister'"), w3cAssertXPath("/out/col[6]='10K'"), w3cAssertXPath("count(/out/col) = 6")}},
 		{Name: "analyze-string-093", StylesheetPath: "tests/insn/analyze-string/analyze-string-093.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XTSE0010"},
@@ -223,12 +223,12 @@ above is a line containing a tab
 <doc>
   <foo test="true"/>
 </doc>
-`, Assertions: []w3cAssertion{w3cAssertXML("<out>Match-of-wildcard</out>")}, Skip: "unsupported spec: XSLT10 XSLT20"},
+`, Assertions: []w3cAssertion{w3cAssertXML("<out>Match-of-wildcard</out>")}},
 		{Name: "conflict-resolution-0102b", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-0102.xsl", SourceContent: ` 
 <doc>
   <foo test="true"/>
 </doc>
-`, ExpectError: true, ErrorCode: "XTRE0540", Skip: "unsupported spec: XSLT10 XSLT20", OnMultipleMatch: "fail"},
+`, ExpectError: true, ErrorCode: "XTRE0540", OnMultipleMatch: "fail"},
 		{Name: "conflict-resolution-0102c", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-0102.xsl", SourceContent: ` 
 <doc>
   <foo test="true"/>
@@ -238,12 +238,12 @@ above is a line containing a tab
 <doc>
   <foo test="true"/>
 </doc>
-`, Assertions: []w3cAssertion{w3cAssertXML("<out>Match-of-node-type</out>")}, Skip: "unsupported spec: XSLT10 XSLT20"},
+`, Assertions: []w3cAssertion{w3cAssertXML("<out>Match-of-node-type</out>")}},
 		{Name: "conflict-resolution-0104b", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-0104.xsl", SourceContent: ` 
 <doc>
   <foo test="true"/>
 </doc>
-`, ExpectError: true, ErrorCode: "XTRE0540", Skip: "unsupported spec: XSLT10 XSLT20", OnMultipleMatch: "fail"},
+`, ExpectError: true, ErrorCode: "XTRE0540", OnMultipleMatch: "fail"},
 		{Name: "conflict-resolution-0104c", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-0104.xsl", SourceContent: ` 
 <doc>
   <foo test="true"/>
@@ -263,12 +263,12 @@ above is a line containing a tab
 <doc>
   <foo test="true"/>
 </doc>
-`, Assertions: []w3cAssertion{w3cAssertXML("<out>Match-of-non-simple '/'</out>")}, Skip: "unsupported spec: XSLT10 XSLT20"},
+`, Assertions: []w3cAssertion{w3cAssertXML("<out>Match-of-non-simple '/'</out>")}},
 		{Name: "conflict-resolution-0108b", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-0108.xsl", SourceContent: ` 
 <doc>
   <foo test="true"/>
 </doc>
-`, ExpectError: true, ErrorCode: "XTRE0540", Skip: "unsupported spec: XSLT10 XSLT20", OnMultipleMatch: "fail"},
+`, ExpectError: true, ErrorCode: "XTRE0540", OnMultipleMatch: "fail"},
 		{Name: "conflict-resolution-0108c", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-0108.xsl", SourceContent: ` 
 <doc>
   <foo test="true"/>
@@ -278,12 +278,12 @@ above is a line containing a tab
 <doc>
   <foo test="true"/>
 </doc>
-`, Assertions: []w3cAssertion{w3cAssertXML("<out>Match-of-non-simple '[...]'</out>")}, Skip: "unsupported spec: XSLT10 XSLT20"},
+`, Assertions: []w3cAssertion{w3cAssertXML("<out>Match-of-non-simple '[...]'</out>")}},
 		{Name: "conflict-resolution-0110b", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-0110.xsl", SourceContent: ` 
 <doc>
   <foo test="true"/>
 </doc>
-`, ExpectError: true, ErrorCode: "XTRE0540", Skip: "unsupported spec: XSLT10 XSLT20", OnMultipleMatch: "fail"},
+`, ExpectError: true, ErrorCode: "XTRE0540", OnMultipleMatch: "fail"},
 		{Name: "conflict-resolution-0110c", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-0110.xsl", SourceContent: ` 
 <doc>
   <foo test="true"/>
@@ -295,8 +295,8 @@ above is a line containing a tab
 </doc>
 `, Assertions: []w3cAssertion{w3cAssertXML("<text>Match-of //* (correct)</text>")}},
 		{Name: "conflict-resolution-0201", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-0201.xsl", SourceContent: "<doc><file test=\"true\"/><file test=\"false\"/></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out>Match-on-node-name,Match-w/qualified-attribute-value</out>")}},
-		{Name: "conflict-resolution-0401a", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-0401.xsl", SourceContent: "<bar:foo xmlns:bar=\"http://bar.com/\"/>", Assertions: []w3cAssertion{w3cAssertXML("<b>matched bar:*</b>")}, Skip: "unsupported spec: XSLT20"},
-		{Name: "conflict-resolution-0401b", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-0401.xsl", SourceContent: "<bar:foo xmlns:bar=\"http://bar.com/\"/>", ExpectError: true, ErrorCode: "XTRE0540", Skip: "unsupported spec: XSLT20", OnMultipleMatch: "fail"},
+		{Name: "conflict-resolution-0401a", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-0401.xsl", SourceContent: "<bar:foo xmlns:bar=\"http://bar.com/\"/>", Assertions: []w3cAssertion{w3cAssertXML("<b>matched bar:*</b>")}},
+		{Name: "conflict-resolution-0401b", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-0401.xsl", SourceContent: "<bar:foo xmlns:bar=\"http://bar.com/\"/>", ExpectError: true, ErrorCode: "XTRE0540", OnMultipleMatch: "fail"},
 		{Name: "conflict-resolution-0401c", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-0401.xsl", SourceContent: "<bar:foo xmlns:bar=\"http://bar.com/\"/>", Assertions: []w3cAssertion{w3cAssertXML("<b>matched bar:*</b>")}},
 		{Name: "conflict-resolution-0501", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-0501.xsl", SourceContent: `<doc>
   <a>
@@ -367,8 +367,8 @@ above is a line containing a tab
 		{Name: "conflict-resolution-1101", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-1101.xsl", SourceContent: "<top/>", Assertions: []w3cAssertion{w3cAssertXML("<z>42</z>")}},
 		{Name: "conflict-resolution-1102", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-1102.xsl", SourceContent: "<top/>", Assertions: []w3cAssertion{w3cAssertXML("<z>42</z>")}},
 		{Name: "conflict-resolution-1201", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-1201.xsl", SourceContent: "<doc><foo test=\"true\">magic</foo></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out>(5)(4)(3)(2)</out>")}},
-		{Name: "conflict-resolution-1202a", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-1202.xsl", SourceContent: "<doc><foo test=\"true\">magic</foo></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out>(5)(4)(3b)(3a)(2)</out>")}, Skip: "unsupported spec: XSLT10 XSLT20"},
-		{Name: "conflict-resolution-1202b", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-1202.xsl", SourceContent: "<doc><foo test=\"true\">magic</foo></doc>", ExpectError: true, ErrorCode: "XTRE0540", Skip: "unsupported spec: XSLT10 XSLT20", OnMultipleMatch: "fail"},
+		{Name: "conflict-resolution-1202a", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-1202.xsl", SourceContent: "<doc><foo test=\"true\">magic</foo></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out>(5)(4)(3b)(3a)(2)</out>")}},
+		{Name: "conflict-resolution-1202b", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-1202.xsl", SourceContent: "<doc><foo test=\"true\">magic</foo></doc>", ExpectError: true, ErrorCode: "XTRE0540", OnMultipleMatch: "fail"},
 		{Name: "conflict-resolution-1202c", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-1202.xsl", SourceContent: "<doc><foo test=\"true\">magic</foo></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out>(5)(4)(3b)(3a)(2)</out>")}},
 		{Name: "conflict-resolution-1204", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-1204.xsl", SecondaryStylesheets: []string{"tests/insn/apply-templates/conflict-resolution-1204a.xsl"}, SourceContent: "<doc><foo test=\"true\">magic</foo></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out>(5)(4)(3)(2)(25)</out>")}},
 		{Name: "conflict-resolution-1205", StylesheetPath: "tests/insn/apply-templates/conflict-resolution-1205.xsl", SourceContent: "<doc><foo test=\"true\">magic</foo></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out>(5)(4)(3)(2)<e p=\"17\"/></out>")}},
@@ -460,7 +460,7 @@ above is a line containing a tab
 		{Name: "call-template-0401", StylesheetPath: "tests/insn/call-template/call-template-0401.xsl", SourceContent: ` 
 <doc>
   <a>top-level-a</a>
-</doc>`, InitialTemplate: "temp", ExpectError: true, ErrorCode: "XTDE0060", Skip: "unsupported spec: XSLT20"},
+</doc>`, InitialTemplate: "temp", ExpectError: true, ErrorCode: "XTDE0060"},
 		{Name: "call-template-0401a", StylesheetPath: "tests/insn/call-template/call-template-0401.xsl", SourceContent: ` 
 <doc>
   <a>top-level-a</a>
@@ -1738,7 +1738,7 @@ Old--est-att--rib-ute
 		{Name: "evaluate-051", StylesheetPath: "tests/insn/evaluate/evaluate-051.xsl", Assertions: []w3cAssertion{w3cAssertXPath("/out/in = '60'")}},
 		{Name: "evaluate-052", StylesheetPath: "tests/insn/evaluate/evaluate-052.xsl", SourceDocPath: "tests/insn/evaluate/evaluate-052.xml", Assertions: []w3cAssertion{w3cAssertXPath("/root/result = 'foo 1'")}},
 		{Name: "for-each-group-001", StylesheetPath: "tests/insn/for-each-group/for-each-group-001.xsl", SourceDocPath: "tests/insn/for-each-group/group001.xml", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><table><tr><th>Position</th><th>Country</th><th>City List</th><th>Population</th></tr><tr><td>1</td><td>italy</td><td>milan, venice</td><td>6</td></tr><tr><td>2</td><td>france</td><td>paris, lyon</td><td>9</td></tr><tr><td>3</td><td>germany</td><td>munich</td><td>4</td></tr></table>")}},
-		{Name: "for-each-group-002a", StylesheetPath: "tests/insn/for-each-group/for-each-group-002.xsl", SourceDocPath: "tests/insn/for-each-group/group001.xml", ExpectError: true, ErrorCode: "XPST0008", Skip: "unsupported spec: XSLT20"},
+		{Name: "for-each-group-002a", StylesheetPath: "tests/insn/for-each-group/for-each-group-002.xsl", SourceDocPath: "tests/insn/for-each-group/group001.xml", ExpectError: true, ErrorCode: "XPST0008"},
 		{Name: "for-each-group-002", StylesheetPath: "tests/insn/for-each-group/for-each-group-002.xsl", SourceDocPath: "tests/insn/for-each-group/group001.xml", ExpectError: true, ErrorCode: "XTSE0090"},
 		{Name: "for-each-group-003", StylesheetPath: "tests/insn/for-each-group/for-each-group-003.xsl", SourceDocPath: "tests/insn/for-each-group/group001.xml", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><table><tr><th>Country</th><th>City List</th><th>Population</th></tr><tr><td>france</td><td>lyon, paris</td><td>9</td></tr><tr><td>germany</td><td>munich</td><td>4</td></tr><tr><td>italy</td><td>milan, venice</td><td>6</td></tr></table>")}},
 		{Name: "for-each-group-005", StylesheetPath: "tests/insn/for-each-group/for-each-group-005.xsl", SourceDocPath: "tests/insn/for-each-group/group001.xml", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><table>;\r\n  <tr><th>Country</th><th>City List</th><th>Population</th></tr>;\r\n  <tr><td>france</td><td>paris, lyon</td><td>9</td></tr>;\r\n  <tr><td>italy</td><td>milan, venice</td><td>6</td></tr>;\r\n  <tr><td>germany</td><td>munich</td><td>4</td></tr>;\r\n  </table>")}},
@@ -1749,7 +1749,7 @@ Old--est-att--rib-ute
 		{Name: "for-each-group-012", StylesheetPath: "tests/insn/for-each-group/for-each-group-012.xsl", SourceDocPath: "tests/insn/for-each-group/group001.xml", Assertions: []w3cAssertion{w3cAssertXML("<chapter>italy france germany</chapter>")}},
 		{Name: "for-each-group-013", StylesheetPath: "tests/insn/for-each-group/for-each-group-013.xsl", SourceDocPath: "tests/insn/for-each-group/group001.xml", Assertions: []w3cAssertion{w3cAssertXML("<chapter>134 1556 12 15 65</chapter>")}},
 		{Name: "for-each-group-014", StylesheetPath: "tests/insn/for-each-group/for-each-group-014.xsl", SourceDocPath: "tests/insn/for-each-group/group001.xml", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><table><tr><th>Position</th><th>Country</th><th>City List</th><th>Population</th></tr><tbody><tr><td>1</td><td>italy</td><td>milan, venice</td><td>6</td></tr><tr><td>2</td><td>france</td><td>paris, lyon</td><td>9</td></tr><tr><td>3</td><td>germany</td><td>munich</td><td>4</td></tr></tbody></table>")}},
-		{Name: "for-each-group-015a", StylesheetPath: "tests/insn/for-each-group/for-each-group-015.xsl", SourceDocPath: "tests/insn/for-each-group/group001.xml", Assertions: []w3cAssertion{w3cAssertXPath("/out/g/h/@key = \"\"")}, Skip: "unsupported spec: XSLT20"},
+		{Name: "for-each-group-015a", StylesheetPath: "tests/insn/for-each-group/for-each-group-015.xsl", SourceDocPath: "tests/insn/for-each-group/group001.xml", Assertions: []w3cAssertion{w3cAssertXPath("/out/g/h/@key = \"\"")}},
 		{Name: "for-each-group-015b", StylesheetPath: "tests/insn/for-each-group/for-each-group-015.xsl", SourceDocPath: "tests/insn/for-each-group/group001.xml", ExpectError: true, ErrorCode: "XTDE1071"},
 		{Name: "for-each-group-016", StylesheetPath: "tests/insn/for-each-group/for-each-group-016.xsl", SourceContent: `<body>
   <h2>heading1</h2>
@@ -1845,7 +1845,7 @@ while you are in the cinema.</p></o>`)}},
 		{Name: "for-each-group-043", StylesheetPath: "tests/insn/for-each-group/for-each-group-043.xsl", SourceDocPath: "tests/insn/for-each-group/group020.xml", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><out><group country=\"italy\" pop=\"5\"><city name=\"milan\" country=\"italy\" pop=\"5\"/></group><group country=\"france\" pop=\"7\"><city name=\"paris\" country=\"france\" pop=\"7\"/></group><group country=\"germany\" pop=\"4\"><city name=\"munich\" country=\"germany\" pop=\"4\"/></group><group country=\"france\" pop=\"2\"><city name=\"lyon\" country=\"france\" pop=\"2\"/></group><group country=\"england\" pop=\"10\"><city name=\"london\" country=\"england\" pop=\"10\"/></group><group country=\"england\" pop=\"5\"><city name=\"bristol\" country=\"england\" pop=\"5.0\"/><city name=\"sheffield\" country=\"england\" pop=\"05\"/></group><group country=\"england\" pop=\"7\"><city name=\"manchester\" country=\"england\" pop=\"7.0\"/><city name=\"liverpool\" country=\"england\" pop=\"7\"/></group><group country=\"italy\" pop=\"1\"><city name=\"venice\" country=\"italy\" pop=\"1\"/></group></out>")}},
 		{Name: "for-each-group-044", StylesheetPath: "tests/insn/for-each-group/for-each-group-044.xsl", SourceDocPath: "tests/insn/for-each-group/group020.xml", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><out><group country=\"italy\" pop=\"5\"><city name=\"milan\" country=\"italy\" pop=\"5\"/></group><group country=\"france\" pop=\"7\"><city name=\"paris\" country=\"france\" pop=\"7\"/></group><group country=\"germany\" pop=\"4\"><city name=\"munich\" country=\"germany\" pop=\"4\"/></group><group country=\"france\" pop=\"2\"><city name=\"lyon\" country=\"france\" pop=\"2\"/></group><group country=\"england\" pop=\"10\"><city name=\"london\" country=\"england\" pop=\"10\"/></group><group country=\"england\" pop=\"5\"><city name=\"bristol\" country=\"england\" pop=\"5.0\"/></group><group country=\"england\" pop=\"7\"><city name=\"manchester\" country=\"england\" pop=\"7.0\"/><city name=\"liverpool\" country=\"england\" pop=\"7\"/></group><group country=\"england\" pop=\"5\"><city name=\"sheffield\" country=\"england\" pop=\"05\"/></group><group country=\"italy\" pop=\"1\"><city name=\"venice\" country=\"italy\" pop=\"1\"/></group></out>")}},
 		{Name: "for-each-group-045", StylesheetPath: "tests/insn/for-each-group/for-each-group-045.xsl", SourceDocPath: "tests/insn/for-each-group/group020.xml", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><out><group values=\"1\"/><group values=\"2 3\"/><group values=\"4 5\"/><group values=\"6 7\"/><group values=\"8 9\"/><group values=\"10 11\"/><group values=\"12 13\"/><group values=\"14 15\"/><group values=\"16 17\"/><group values=\"18 19\"/><group values=\"20 21\"/><group values=\"22 23\"/><group values=\"24 25\"/><group values=\"26 27\"/><group values=\"28 29\"/><group values=\"30\"/></out>")}},
-		{Name: "for-each-group-046", StylesheetPath: "tests/insn/for-each-group/for-each-group-046.xsl", SourceDocPath: "tests/insn/for-each-group/group020.xml", ExpectError: true, ErrorCode: "XTTE1120", Skip: "unsupported spec: XSLT20"},
+		{Name: "for-each-group-046", StylesheetPath: "tests/insn/for-each-group/for-each-group-046.xsl", SourceDocPath: "tests/insn/for-each-group/group020.xml", ExpectError: true, ErrorCode: "XTTE1120"},
 		{Name: "for-each-group-046a", StylesheetPath: "tests/insn/for-each-group/for-each-group-046.xsl", SourceDocPath: "tests/insn/for-each-group/group020.xml", Assertions: []w3cAssertion{w3cAssertXPath("/out/group = '1 2 3 4 2 1'")}},
 		{Name: "for-each-group-047", StylesheetPath: "tests/insn/for-each-group/for-each-group-047.xsl", SourceDocPath: "tests/insn/for-each-group/group020.xml", ExpectError: true, ErrorCode: "XTSE1060"},
 		{Name: "for-each-group-048", StylesheetPath: "tests/insn/for-each-group/for-each-group-048.xsl", SourceDocPath: "tests/insn/for-each-group/group020.xml", ExpectError: true, ErrorCode: "XTSE1070"},
@@ -1933,7 +1933,7 @@ while you are in the cinema.</p></o>`)}},
         <item key="c" value="c2"/>
     </items>
 </root>`, Assertions: []w3cAssertion{w3cAssertXPath("count(/out/item) = 5"), w3cAssertXPath("string-join(/out/item/@pos, '|') = '1|2|3|4|5'"), w3cAssertXPath("string-join(/out/item/@last, '|') = '5|5|5|5|5'")}},
-		{Name: "for-each-group-081a", StylesheetPath: "tests/insn/for-each-group/for-each-group-081.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("/out = 'true'")}, Skip: "unsupported spec: XSLT20"},
+		{Name: "for-each-group-081a", StylesheetPath: "tests/insn/for-each-group/for-each-group-081.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("/out = 'true'")}},
 		{Name: "for-each-group-081b", StylesheetPath: "tests/insn/for-each-group/for-each-group-081.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XTDE1061"},
 		{Name: "for-each-group-082", StylesheetPath: "tests/insn/for-each-group/for-each-group-082.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML(`<out
             ><group><line att="1"/><line att="2"/><line att="4"/><line att="7"/><line att="8"/><line att="11"/></group
@@ -5750,17 +5750,17 @@ footnote</footnote> and a <citation/></p>
 		{Name: "result-document-1004", StylesheetPath: "tests/insn/result-document/result-document-1004.xsl", SourceContent: "<!-- A required but useless input XML doc for a transformation --><doc/>", ExpectError: true, ErrorCode: "XTRE1495"},
 		{Name: "result-document-1005", StylesheetPath: "tests/insn/result-document/result-document-1005.xsl", SourceContent: "<!-- A required but useless input XML doc for a transformation --><doc/>", ExpectError: true, ErrorCode: "XTRE1495"},
 		{Name: "result-document-1006", StylesheetPath: "tests/insn/result-document/result-document-1006.xsl", SourceContent: "<!-- A required but useless input XML doc for a transformation --><doc/>", ExpectError: true, ErrorCode: "XTRE1495"},
-		{Name: "result-document-1101", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "a", ExpectError: true, ErrorCode: "XTDE1480", Skip: "unsupported spec: XSLT20"},
-		{Name: "result-document-1102", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "b", ExpectError: true, ErrorCode: "XTDE1480", Skip: "unsupported spec: XSLT20"},
-		{Name: "result-document-1103", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "c", ExpectError: true, ErrorCode: "XTDE1480", Skip: "unsupported spec: XSLT20"},
-		{Name: "result-document-1104", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "d", ExpectError: true, ErrorCode: "XTDE1480", Skip: "unsupported spec: XSLT20"},
-		{Name: "result-document-1105", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "e", ExpectError: true, ErrorCode: "XTDE1480", Skip: "unsupported spec: XSLT20"},
-		{Name: "result-document-1106", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "f", ExpectError: true, ErrorCode: "XTDE1480", Skip: "unsupported spec: XSLT20"},
-		{Name: "result-document-1107", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "g", ExpectError: true, ErrorCode: "XTDE1480", Skip: "unsupported spec: XSLT20"},
-		{Name: "result-document-1108", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "h", ExpectError: true, ErrorCode: "XTDE1480", Skip: "unsupported spec: XSLT20"},
-		{Name: "result-document-1109", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "i", ExpectError: true, ErrorCode: "XTDE1480", Skip: "unsupported spec: XSLT20"},
-		{Name: "result-document-1110", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "j", ExpectError: true, ErrorCode: "XTDE1480", Skip: "unsupported spec: XSLT20"},
-		{Name: "result-document-1111", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "k", ExpectError: true, ErrorCode: "XTDE1480", Skip: "unsupported spec: XSLT20"},
+		{Name: "result-document-1101", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "a", ExpectError: true, ErrorCode: "XTDE1480"},
+		{Name: "result-document-1102", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "b", ExpectError: true, ErrorCode: "XTDE1480"},
+		{Name: "result-document-1103", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "c", ExpectError: true, ErrorCode: "XTDE1480"},
+		{Name: "result-document-1104", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "d", ExpectError: true, ErrorCode: "XTDE1480"},
+		{Name: "result-document-1105", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "e", ExpectError: true, ErrorCode: "XTDE1480"},
+		{Name: "result-document-1106", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "f", ExpectError: true, ErrorCode: "XTDE1480"},
+		{Name: "result-document-1107", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "g", ExpectError: true, ErrorCode: "XTDE1480"},
+		{Name: "result-document-1108", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "h", ExpectError: true, ErrorCode: "XTDE1480"},
+		{Name: "result-document-1109", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "i", ExpectError: true, ErrorCode: "XTDE1480"},
+		{Name: "result-document-1110", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "j", ExpectError: true, ErrorCode: "XTDE1480"},
+		{Name: "result-document-1111", StylesheetPath: "tests/insn/result-document/result-document-1101.xsl", InitialTemplate: "k", ExpectError: true, ErrorCode: "XTDE1480"},
 		{Name: "result-document-1131", StylesheetPath: "tests/insn/result-document/result-document-1130.xsl", InitialTemplate: "a", ExpectError: true, ErrorCode: "XTDE1480"},
 		{Name: "result-document-1132", StylesheetPath: "tests/insn/result-document/result-document-1130.xsl", InitialTemplate: "b", Assertions: []w3cAssertion{w3cAssertXPath("/b/@v = 'rrr'")}},
 		{Name: "result-document-1133", StylesheetPath: "tests/insn/result-document/result-document-1130.xsl", InitialTemplate: "c", Assertions: []w3cAssertion{w3cAssertXPath("/c='rrr'")}},
@@ -5840,7 +5840,7 @@ footnote</footnote> and a <citation/></p>
 		{Name: "sequence-0134", StylesheetPath: "tests/insn/sequence/sequence-0134.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTTE0505"},
 		{Name: "sequence-0135", StylesheetPath: "tests/insn/sequence/sequence-0135.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XPDY0050"},
 		{Name: "sequence-0136", StylesheetPath: "tests/insn/sequence/sequence-0136.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XPDY0050"},
-		{Name: "sequence-0137", StylesheetPath: "tests/insn/sequence/sequence-0137.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE0010", Skip: "unsupported spec: XSLT20"},
+		{Name: "sequence-0137", StylesheetPath: "tests/insn/sequence/sequence-0137.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE0010"},
 		{Name: "sequence-0137a", StylesheetPath: "tests/insn/sequence/sequence-0137.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXPath("/zzz = '5 10 6 11 7 5 20 6 21 7 5 30 6 31 7'")}},
 		{Name: "sequence-0138", StylesheetPath: "tests/insn/sequence/sequence-0138.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE0010"},
 		{Name: "sequence-0139", StylesheetPath: "tests/insn/sequence/sequence-0139.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE0010"},
@@ -5973,11 +5973,11 @@ http://www.example14.com:foo14
 		{Name: "sequence-2002", StylesheetPath: "tests/insn/sequence/sequence-2002.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXML("<out><x1>1 2 3</x1><x2>3 2 1</x2><x3>3 2 1 1 2 3</x3></out>")}},
 		{Name: "sequence-2101", StylesheetPath: "tests/insn/sequence/sequence-2101.xsl", SourceContent: "<doc><num>1</num><num>2</num><num>3</num><num>4</num><num>5</num><num2>35</num2><num2>36</num2><one>1</one></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out>3 4 5 6 7 8 9 1032 33 34 35 3635 36</out>")}},
 		{Name: "sequence-2301", StylesheetPath: "tests/insn/sequence/sequence-2301.xsl", SourceContent: "<doc><one>1</one><two>2</two></doc>", Assertions: []w3cAssertion{w3cAssertXML("<out>truetrue</out>")}},
-		{Name: "sequence-2401a", StylesheetPath: "tests/insn/sequence/sequence-2401.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE0010", Skip: "unsupported spec: XSLT20"},
+		{Name: "sequence-2401a", StylesheetPath: "tests/insn/sequence/sequence-2401.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE0010"},
 		{Name: "sequence-2401b", StylesheetPath: "tests/insn/sequence/sequence-2401.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE3185"},
-		{Name: "sequence-2402a", StylesheetPath: "tests/insn/sequence/sequence-2402.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE0010", Skip: "unsupported spec: XSLT20"},
+		{Name: "sequence-2402a", StylesheetPath: "tests/insn/sequence/sequence-2402.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE0010"},
 		{Name: "sequence-2402b", StylesheetPath: "tests/insn/sequence/sequence-2402.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXPath("/out[not(node())]")}},
-		{Name: "sequence-2403a", StylesheetPath: "tests/insn/sequence/sequence-2403.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE0010", Skip: "unsupported spec: XSLT20"},
+		{Name: "sequence-2403a", StylesheetPath: "tests/insn/sequence/sequence-2403.xsl", SourceContent: "<doc/>", ExpectError: true, ErrorCode: "XTSE0010"},
 		{Name: "sequence-2403b", StylesheetPath: "tests/insn/sequence/sequence-2403.xsl", SourceContent: "<doc/>", Assertions: []w3cAssertion{w3cAssertXPath("/out[foo and bar]")}},
 		{Name: "sort-001", StylesheetPath: "tests/insn/sort/sort-001.xsl", SourceDocPath: "tests/insn/sort/sort001.xml", Assertions: []w3cAssertion{w3cAssertXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><out>Hello 617-939-5938 -47 -13 0 1 002 3 04 5 0008 23 40 69 82 99 100 666 777 803.05 803.23 803.33333332 803.33333333 1001001001 1001001001 803.33333333 803.33333332 803.23 803.05 777 666 100 99 82 69 40 23 0008 5 04 3 002 1 0 -13 -47 Hello 617-939-5938 </out>")}},
 		{Name: "sort-002", StylesheetPath: "tests/insn/sort/sort-002.xsl", SourceDocPath: "tests/insn/sort/sort002.xml", Assertions: []w3cAssertion{w3cAssertXPath(`deep-equal(/out/asc/item/string(), 
@@ -6472,11 +6472,11 @@ C8: Re: Thread C;
 		{Name: "try-010", StylesheetPath: "tests/insn/try/try-010.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out test=\"Infinity\"/>")}},
 		{Name: "try-011", StylesheetPath: "tests/insn/try/try-011.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XPST0008"},
 		{Name: "try-012", StylesheetPath: "tests/insn/try/try-012.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out try=\"true\" catch=\"true\"/>")}},
-		{Name: "try-013", StylesheetPath: "tests/insn/try/try-013.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out try=\"false\" catch=\"false\"/>")}, Skip: "unsupported spec: XSLT20"},
+		{Name: "try-013", StylesheetPath: "tests/insn/try/try-013.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out try=\"false\" catch=\"false\"/>")}},
 		{Name: "try-014", StylesheetPath: "tests/insn/try/try-014.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>4</out>")}},
-		{Name: "try-015", StylesheetPath: "tests/insn/try/try-014.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>5</out>")}, Skip: "unsupported spec: XSLT20"},
+		{Name: "try-015", StylesheetPath: "tests/insn/try/try-014.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>5</out>")}, Skip: "feature present but test requires absent: schema_aware"},
 		{Name: "try-016", StylesheetPath: "tests/insn/try/try-016.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>4</out>")}},
-		{Name: "try-017", StylesheetPath: "tests/insn/try/try-017.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>5</out>")}, Skip: "unsupported spec: XSLT20"},
+		{Name: "try-017", StylesheetPath: "tests/insn/try/try-017.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>5</out>")}, Skip: "feature present but test requires absent: schema_aware"},
 		{Name: "try-018", StylesheetPath: "tests/insn/try/try-018.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("/out/code[@ns=\"http://www.w3.org/2005/xqt-errors\" and @local=\"FODC0002\"]"), w3cAssertXPath("/out/description[contains(., 'try-018-rubbish.xml')]"), w3cAssertXPath("/out/module[ends-with(., 'try-018.xsl')]"), w3cAssertXPath("/out/line = \"11\"")}},
 		{Name: "try-019", StylesheetPath: "tests/insn/try/try-019.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("contains(/out, \"FODC0002\")"), w3cAssertXPath("contains(/out, 'rubbish.xml')"), w3cAssertXPath("contains(/out, 'try-019.xsl')"), w3cAssertXPath("contains(/out, '#11#')")}},
 		{Name: "try-020", StylesheetPath: "tests/insn/try/try-020.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<output xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"><ERROR message=\"Division by 0 error caught!\"/></output>")}},
@@ -6487,8 +6487,8 @@ C8: Re: Thread C;
 		{Name: "try-022", StylesheetPath: "tests/insn/try/try-022.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXPath("/result/*:error[@code=\"err:FOAR0001\" and @module=\"try-022.xsl\" and @line=\"21\"]"), w3cAssertXPath("contains(/result/*:error/message, \"zero\")"), w3cAssertXPath("/result/output = \"main document\""), w3cAssertResultDocument("try-022-1.out", w3cCheckXPath("/output"))}},
 		{Name: "try-023", StylesheetPath: "tests/insn/try/try-023.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertResultDocument("try023.out", w3cCheckXPath("/output = \"main document\"")), w3cAssertResultDocument("try023_1.out", w3cCheckXPath("/output/output/note = \"secondary document written\""))}},
 		{Name: "try-024", StylesheetPath: "tests/insn/try/try-024.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertResultDocument("try024.out", w3cCheckXPath("/output = \"main document\"")), w3cAssertResultDocument("try024_1.out", w3cCheckAllOf(w3cCheckXPath("/output/output/note = \"secondary document written\""), w3cCheckXPath("/output/output/*:error/@code[contains(.,\"FOAR0001\")]"), w3cCheckXPath("contains(/output/output/*:error/message, \"zero\")")))}},
-		{Name: "try-025", StylesheetPath: "tests/insn/try/try-025.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XTSE0010", Skip: "unsupported spec: XSLT20"},
-		{Name: "try-026", StylesheetPath: "tests/insn/try/try-026.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>5</out>")}, Skip: "unsupported spec: XSLT20"},
+		{Name: "try-025", StylesheetPath: "tests/insn/try/try-025.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "XTSE0010", Skip: "feature present but test requires absent: schema_aware"},
+		{Name: "try-026", StylesheetPath: "tests/insn/try/try-026.xsl", InitialTemplate: "main", Assertions: []w3cAssertion{w3cAssertXML("<out>5</out>")}, Skip: "feature present but test requires absent: schema_aware"},
 		{Name: "try-027", StylesheetPath: "tests/insn/try/try-027.xsl", SourceDocPath: "tests/insn/try/try020.xml", Assertions: []w3cAssertion{w3cAssertXML("<output xmlns:err=\"http://www.w3.org/2005/xqt-errors\"/>")}},
 		{Name: "try-028", StylesheetPath: "tests/insn/try/try-028.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "FOAR0001"},
 		{Name: "try-029", StylesheetPath: "tests/insn/try/try-029.xsl", InitialTemplate: "main", ExpectError: true, ErrorCode: "FOAR0001"},

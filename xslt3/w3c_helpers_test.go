@@ -1757,9 +1757,123 @@ var w3cImplicitSkips = map[string]string{
 	"variable-0108": "too slow for CI: large iteration count with variable binding",
 
 	// XSD 1.1 features: newly unlocked but failing
-	"strip-space-009":   "requires xsi:type-driven lax root assessment (no global element decl for <doc>) plus XSD 1.1 source-schema compilation to parse the type's xs:assert",
+	"strip-space-009": "requires xsi:type-driven lax root assessment (no global element decl for <doc>) plus XSD 1.1 source-schema compilation to parse the type's xs:assert",
 
-	// higher-order functions: nested for-each-group grouping bug
+	// --- XSLT 2.0 bucket un-gated (see "XSLT 3.0 — Conformance Scope" in helium
+	// CLAUDE.md). Two kinds of skip below: (1) legitimate 2.0-vs-3.0 divergences
+	// where our 3.0 processor is CORRECT and the case asserts a 2.0-only error;
+	// (2) genuine gaps pending a fix, tagged with their follow-up group.
+
+	// D1: 3.0-only regex constructs (non-capturing groups, reluctant quantifiers)
+	// are legal in XSLT 3.0; the 2.0 test expects FORX0002.
+	"regex-syntax-xslt20-0766": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0845": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0846": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0847": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0848": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0849": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0850": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0851": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0852": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0853": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0855": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0856": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0857": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0858": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0859": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0860": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0861": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0864": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0865": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0866": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0877": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0878": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0880": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0883": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0942": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0943": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0944": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0945": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0946": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0947": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0948": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0949": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0950": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0951": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0952": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0953": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0954": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+	"regex-syntax-xslt20-0955": "XSLT 2.0-only: 3.0-only regex construct (non-capturing group / reluctant quantifier) is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error FORX0002)",
+
+	// D2: match/error pattern-syntax relaxed in 3.0; 2.0 test expects XTSE0340.
+	"match-039":   "XSLT 2.0-only: match/error pattern syntax relaxed in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error XTSE0340)",
+	"match-081":   "XSLT 2.0-only: match/error pattern syntax relaxed in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error XTSE0340)",
+	"match-082":   "XSLT 2.0-only: match/error pattern syntax relaxed in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error XTSE0340)",
+	"match-083":   "XSLT 2.0-only: match/error pattern syntax relaxed in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error XTSE0340)",
+	"match-084":   "XSLT 2.0-only: match/error pattern syntax relaxed in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error XTSE0340)",
+	"match-085":   "XSLT 2.0-only: match/error pattern syntax relaxed in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error XTSE0340)",
+	"match-086":   "XSLT 2.0-only: match/error pattern syntax relaxed in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error XTSE0340)",
+	"error-0340a": "XSLT 2.0-only: match/error pattern syntax relaxed in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error XTSE0340)",
+
+	// D3: xsl:sequence with a contained sequence constructor is valid in 3.0.
+	"sequence-0137":  "XSLT 2.0-only: xsl:sequence with contained sequence constructor is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error XTSE0010)",
+	"sequence-2402a": "XSLT 2.0-only: xsl:sequence with contained sequence constructor is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error XTSE0010)",
+	"sequence-2403a": "XSLT 2.0-only: xsl:sequence with contained sequence constructor is valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error XTSE0010)",
+
+	// D4: functions/arities added in 3.0 / XPath 3.1; 2.0 test expects XPST0017.
+	"accessor-034":        "XSLT 2.0-only: function/arity added in XSLT 3.0 / XPath 3.1; our 3.0 processor correctly accepts (test expects the 2.0 error XPST0017)",
+	"math-3320":           "XSLT 2.0-only: function/arity added in XSLT 3.0 / XPath 3.1; our 3.0 processor correctly accepts (test expects the 2.0 error XPST0017)",
+	"type-functions-0203": "XSLT 2.0-only: function/arity added in XSLT 3.0 / XPath 3.1; our 3.0 processor correctly accepts (test expects the 2.0 error XPST0017)",
+	"use-when-0127a":      "XSLT 2.0-only: function/arity added in XSLT 3.0 / XPath 3.1; our 3.0 processor correctly accepts (test expects the 2.0 error XPST0017)",
+
+	// D5: construct valid in 3.0; 2.0 test expects XTTE1120.
+	"for-each-group-046": "XSLT 2.0-only: construct valid in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error XTTE1120)",
+
+	// D6: forwards-compatible processing differs in 3.0; 2.0 test expects XTSE0340.
+	"version-023": "XSLT 2.0-only: forwards-compatible processing differs in XSLT 3.0; our 3.0 processor correctly accepts (test expects the 2.0 error XTSE0340)",
+
+	// B1: xsl:output boolean/enum parameter validation (SEPM0016) not enforced.
+	"output-0197": "XSLT20 un-gated: xsl:output boolean/enum parameter validation (SEPM0016) not enforced — pending fix (group B1)",
+	"output-0198": "XSLT20 un-gated: xsl:output boolean/enum parameter validation (SEPM0016) not enforced — pending fix (group B1)",
+	"output-0199": "XSLT20 un-gated: xsl:output boolean/enum parameter validation (SEPM0016) not enforced — pending fix (group B1)",
+	"output-0280": "XSLT20 un-gated: xsl:output boolean/enum parameter validation (SEPM0016) not enforced — pending fix (group B1)",
+	"output-0281": "XSLT20 un-gated: xsl:output boolean/enum parameter validation (SEPM0016) not enforced — pending fix (group B1)",
+	"output-0282": "XSLT20 un-gated: xsl:output boolean/enum parameter validation (SEPM0016) not enforced — pending fix (group B1)",
+	"output-0283": "XSLT20 un-gated: xsl:output boolean/enum parameter validation (SEPM0016) not enforced — pending fix (group B1)",
+
+	// B2: apply-templates/for-each select node()* type-check not enforced.
+	"type-0159":   "XSLT20 un-gated: apply-templates/for-each select node()* required-type check (XTTE0520/XTTE1120) not enforced — pending fix (group B2)",
+	"error-0520a": "XSLT20 un-gated: apply-templates/for-each select node()* required-type check (XTTE0520/XTTE1120) not enforced — pending fix (group B2)",
+	"error-0520b": "XSLT20 un-gated: apply-templates/for-each select node()* required-type check (XTTE0520/XTTE1120) not enforced — pending fix (group B2)",
+	"error-0520d": "XSLT20 un-gated: apply-templates/for-each select node()* required-type check (XTTE0520/XTTE1120) not enforced — pending fix (group B2)",
+	"error-1120a": "XSLT20 un-gated: apply-templates/for-each select node()* required-type check (XTTE0520/XTTE1120) not enforced — pending fix (group B2)",
+
+	// B3: format-date/format-time rounding and field width incorrect.
+	"format-date-002": "XSLT20 un-gated: format-date/format-time rounding and field-width incorrect — pending fix (group B3)",
+	"format-date-003": "XSLT20 un-gated: format-date/format-time rounding and field-width incorrect — pending fix (group B3)",
+	"format-date-013": "XSLT20 un-gated: format-date/format-time rounding and field-width incorrect — pending fix (group B3)",
+
+	// B4: initial-entry-point conflict detection not implemented.
+	"error-0047a":           "XSLT20 un-gated: initial-entry conflict detection (XTDE0047/XTDE0060) not implemented — pending fix (group B4)",
+	"initial-template-002a": "XSLT20 un-gated: initial-entry conflict detection (XTDE0047/XTDE0060) not implemented — pending fix (group B4)",
+	"initial-template-003a": "XSLT20 un-gated: initial-entry conflict detection (XTDE0047/XTDE0060) not implemented — pending fix (group B4)",
+
+	// B5: current-group()/current-grouping-key() outside grouping context.
+	"for-each-group-081a": "XSLT20 un-gated: current-group()/current-grouping-key() empty-outside-context handling — pending fix (group B5)",
+	"for-each-group-015a": "XSLT20 un-gated: current-group()/current-grouping-key() empty-outside-context handling — pending fix (group B5)",
+
+	// B6: strip-space/preserve-space recoverable conflict over-strict.
+	"strip-space-019": "XSLT20 un-gated: strip-space/preserve-space recoverable conflict (XTSE0270) over-strict — pending fix (group B6)",
+
+	// iii: uncertain — needs per-test investigation.
+	"function-0302":            "XSLT20 un-gated: needs per-test investigation (group iii)",
+	"function-1902":            "XSLT20 un-gated: needs per-test investigation (group iii)",
+	"function-2002":            "XSLT20 un-gated: needs per-test investigation (group iii)",
+	"function-0119a":           "XSLT20 un-gated: needs per-test investigation (group iii)",
+	"use-when-0406":            "XSLT20 un-gated: needs per-test investigation (group iii)",
+	"use-when-0407":            "XSLT20 un-gated: needs per-test investigation (group iii)",
+	"type-0168a":               "XSLT20 un-gated: needs per-test investigation (group iii)",
+	"regex-syntax-xslt20-0984": "XSLT20 un-gated: needs per-test investigation (group iii)",
 }
 
 // promoteWrapperChildren takes a document parsed from "<_r>content</_r>"

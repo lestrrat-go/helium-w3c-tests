@@ -16,12 +16,12 @@ const w3cSourceRepo = "https://github.com/w3c/xslt30-test.git"
 const w3cSourceURL = ""
 const w3cPinnedCommit = "6f8fd9e966ae74a251a2604abef9d904c7bc5c9b"
 const w3cSourceDir = "sources/xslt30"
-const w3cCatalogPath = "sources/xslt30/catalog.xml"
-const w3cCatalogTestSets = 234
-const w3cCatalogTestCases = 14600
-const w3cRunnableTestCases = 11944
-const w3cSkippedTestCases = 1183
-const w3cExcludedTestCases = 1473
+const w3cCatalogPath = ""
+const w3cCatalogTestSets = 0
+const w3cCatalogTestCases = 0
+const w3cRunnableTestCases = 0
+const w3cSkippedTestCases = 0
+const w3cExcludedTestCases = 0
 
 func TestXSLT30W3CManifestAvailable(t *testing.T) {
 	t.Parallel()
