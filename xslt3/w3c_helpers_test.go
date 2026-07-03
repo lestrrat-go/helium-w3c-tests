@@ -1841,10 +1841,16 @@ var w3cImplicitSkips = map[string]string{
 	"error-0520d": "legitimate 2.0-vs-3.0 divergence: XTTE0520 absent from XSLT 3.0 (apply-templates select=concat(...) processed by the built-in atomic template rule); W3C catalog marks this case \"test not applicable to XSLT 3.0\", spec dependency XSLT20",
 	"error-1120a": "legitimate 2.0-vs-3.0 divergence: XTTE1120 absent from XSLT 3.0 (for-each-group group-starting-with over atomic population — a non-node never matches a pattern, no error); W3C catalog note: \"Error code XTTE1120 absent in xslt3.0 spec. Changed dependency to xslt20\"",
 
-	// B3: format-date/format-time rounding and field width incorrect.
-	"format-date-002": "XSLT20 un-gated: format-date/format-time rounding and field-width incorrect — pending fix (group B3)",
-	"format-date-003": "XSLT20 un-gated: format-date/format-time rounding and field-width incorrect — pending fix (group B3)",
-	"format-date-013": "XSLT20 un-gated: format-date/format-time rounding and field-width incorrect — pending fix (group B3)",
+	// format-date fractional-second rounding: XPath 3.1 truncates fractional
+	// seconds (F&O §9.8.4.1); these XSLT20-pinned cases assert the pre-3.1 2.0
+	// rounding (.456 → .5/.46). helium truncates (.456 → .4/.45), which is
+	// correct for a 3.0/XPath-3.1 processor, so the XSLT30+ a-variants
+	// (format-date-002a/003a/013a) pass. Catalog spec dependency is XSLT20;
+	// the a-variants carry the 2016 note "Rounding rules for fractional seconds
+	// change in XPath 3.1".
+	"format-date-002": "legitimate 2.0-vs-3.0 divergence: XPath 3.1 truncates fractional seconds (F&O §9.8.4.1); this XSLT20 case asserts 2.0 rounding, while the XSLT30+ variant format-date-002a (truncation) passes",
+	"format-date-003": "legitimate 2.0-vs-3.0 divergence: XPath 3.1 truncates fractional seconds (F&O §9.8.4.1); this XSLT20 case asserts 2.0 rounding, while the XSLT30+ variant format-date-003a (truncation) passes",
+	"format-date-013": "legitimate 2.0-vs-3.0 divergence: XPath 3.1 truncates fractional seconds (F&O §9.8.4.1); this XSLT20 case asserts 2.0 rounding, while the XSLT30+ variant format-date-013a (truncation) passes",
 
 	// B4: initial-entry-point conflict detection not implemented.
 	"error-0047a":           "legitimate 2.0-vs-3.0 divergence: XTDE0047 removed in XSLT 3.0 (W3C bug 28418); initial-template + initial-mode no longer conflict, a 3.0 processor runs the template. Catalog spec dependency is XSLT20",
