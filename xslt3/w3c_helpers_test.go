@@ -1709,7 +1709,6 @@ var w3cImplicitSkips = map[string]string{
 	"whitespace-011": "parser limitation: external parameter entity resolution not supported",
 
 	// nodetest: child::schema-attribute axis conversion produces non-empty result
-	"nodetest-032": "child::schema-attribute axis conversion vs XPath 2.0 expected output mismatch",
 
 	// import-schema-029: the full XSLT 2.0 schema (schema-for-xslt20.xsd)
 	// triggers a fatal schema-construction diagnostic in our xsd compiler
