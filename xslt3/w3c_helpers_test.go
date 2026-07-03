@@ -1714,8 +1714,6 @@ var w3cImplicitSkips = map[string]string{
 	"validation-0501": "schema-aware schema-element() substitution-group querying over validated source not implemented",
 	"validation-0601": "schema-aware schema-element() substitution-group querying over validated source not implemented",
 	"validation-0701": "schema-aware schema-element()/attribute-type querying over validated source not implemented",
-	"validation-1202": "instance of schema-element fails",
-	"validation-1204": "instance of schema-element fails",
 
 	// error-FODC0002a-ignore is now skipped by the generator via the
 	// ignore_doc_failure dependency (see tools/xslt3gen getDepsSkipReason),
