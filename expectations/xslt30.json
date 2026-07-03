@@ -12,7 +12,7 @@
     "docbook-002": "requires XPath 1.0 grammar (empty function arguments); compat mode changes semantics, not grammar",
     "backwards-019": "backwards-compatible default output method (xhtml->xml for an implicit 1.0 result tree) not implemented",
     "backwards-041": "base-uri() of source nodes depends on fixture base URI, not the test-set file path",
-    "validation-0201": "schema-aware source annotation: data(Date) instance of StandardDate requires atomizing a source element typed as a simpleContent union (GeneralDate = StandardDate | xs:string) through its active member, plus exact xhtml indent-width serialization; the unprefixed-type-name XPST0081 compile blocker is fixed"
+    "validation-0201": "byte-exact xhtml serialization: transform output is content-correct (schema-aware source union atomization now formats dates), but assert-serialization needs Saxon-identical xhtml formatting — 3-space indent, inline-element-aware whitespace (no indentation inside span/a/br), XML declaration on the same line as the root element, and &#xa0; preservation — a serialization-algorithm detail, not a schema-annotation gap"
   },
   "xfail": {}
 }

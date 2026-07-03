@@ -1722,9 +1722,6 @@ var w3cImplicitSkips = map[string]string{
 
 	// copy tests: schema-aware ID/IDREF
 
-	// validation tests: schema-aware processing
-	"validation-0202": "schema-aware source annotation: data(Date) instance of StandardDate requires atomizing a source element typed as a simpleContent union (GeneralDate = StandardDate | xs:string) through its active member, plus exact xhtml indent-width serialization; the unprefixed-type-name XPST0081 compile blocker is fixed",
-
 	// error-FODC0002a-ignore is now skipped by the generator via the
 	// ignore_doc_failure dependency (see tools/xslt3gen getDepsSkipReason),
 	// so it no longer needs a name-based skip here.
