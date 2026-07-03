@@ -52,6 +52,7 @@ Agent-consumed guidance. Keep terse. Update when repo workflow or suite policy c
 - Verify workspace mode: `go env GOWORK`
 - Keep `go.work` local unless user explicitly asks to version workspace state.
 - `go.mod` already has `replace github.com/lestrrat-go/helium => ../helium`; keep replacement unless changing module linkage intentionally.
+- To run a suite against an isolated Helium worktree (parallel conformance work), see README "Running Against a Helium Worktree": paired same-named worktrees in both repos, a gitignored `go.work` whose own `replace` overrides the `go.mod` `replace => ../helium` (a `use`-only `go.work` is NOT enough), a symlink of `testdata/xslt30` into the worktree (`RepoRoot()` resolves to the worktree via `runtime.Caller`), then `go test` from the worktree.
 
 ## Generated Files
 

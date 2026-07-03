@@ -95,6 +95,52 @@ The XSLT 3.0 suite copies catalog-referenced fixtures out of the gitignored
 `fixtures/xslt30` tree — a small curated set (files referenced only at run time,
 plus hand-edited fixtures) that a static catalog scan cannot reproduce.
 
+## Running Against a Helium Worktree
+
+The `go.mod` `replace` points at the sibling `../helium` root checkout. To run a
+suite against a specific Helium worktree instead (e.g. a feature branch, so
+conformance work can proceed in parallel), use paired worktrees plus a local
+`go.work`:
+
+1. Create worktrees with the SAME branch name in both repos:
+
+   ```sh
+   git -C <helium>           worktree add <helium>/.worktrees/<branch>           -b <branch> [origin/main]
+   git -C <helium-w3c-tests> worktree add <helium-w3c-tests>/.worktrees/<branch> -b <branch> [origin/main]
+   ```
+
+2. In the helium-w3c-tests worktree, create a `go.work` (it is gitignored) whose
+   `replace` overrides the `go.mod` `replace` and points at the Helium worktree:
+
+   ```
+   go 1.26.1
+
+   use .
+
+   replace github.com/lestrrat-go/helium => /abs/path/to/helium/.worktrees/<branch>
+   ```
+
+   A `use`-only `go.work` does NOT work: the `go.mod` `replace => ../helium`
+   still fires and resolves to the root checkout. The `go.work` `replace` is
+   required to override it.
+
+3. Fixtures (`testdata/xslt30`, ~215MB, gitignored, fetched via
+   `go run ./cmd/w3cgen fetch`) live only in the root checkout. Symlink them into
+   the worktree instead of re-fetching — `RepoRoot()` resolves via
+   `runtime.Caller` to the worktree, so the fixtures must be reachable locally:
+
+   ```sh
+   mkdir -p <helium-w3c-tests>/.worktrees/<branch>/testdata
+   ln -s <helium-w3c-tests>/testdata/xslt30 <helium-w3c-tests>/.worktrees/<branch>/testdata/xslt30
+   ```
+
+4. Run tests from the worktree:
+
+   ```sh
+   cd <helium-w3c-tests>/.worktrees/<branch>
+   go test ./xslt3/ -run 'TestXSLT30W3C/<case>' -v
+   ```
+
 ## Current State
 
 This is the infrastructure split. The suite plugins already produce executable
