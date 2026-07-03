@@ -1690,9 +1690,6 @@ var w3cImplicitSkips = map[string]string{
 	// override: schema-aware union types from xsl:import-schema
 	"override-f-031": "schema-aware union type conversion fails",
 
-	// use-package: package-scoped namespace serialization in result-document
-	"use-package-108":  "package-scoped namespace alias serialization not implemented",
-	"use-package-108b": "package-scoped namespace alias serialization not implemented",
 
 	// error-FODC0002a-ignore is now skipped by the generator via the
 	// ignore_doc_failure dependency (see tools/xslt3gen getDepsSkipReason),
