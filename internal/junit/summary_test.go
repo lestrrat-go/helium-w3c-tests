@@ -84,6 +84,8 @@ func TestWriteSummaryMarkdown(t *testing.T) {
 	var b strings.Builder
 	if err := WriteSummaryMarkdown(&b, s, SummaryMeta{
 		DisplayName: "Demo", UpstreamRepo: "https://example/repo", UpstreamCommit: "abc123",
+		HeliumCommit: "hel111", HarnessCommit: "harn22", GoVersion: "go version go1.26.1 linux/amd64",
+		Mode: "slow (HELIUM_SLOW_TESTS=1)",
 	}); err != nil {
 		t.Fatalf("WriteSummaryMarkdown: %v", err)
 	}
@@ -94,6 +96,10 @@ func TestWriteSummaryMarkdown(t *testing.T) {
 		"| Fail | 1 |",
 		"| **Total** | **5** |",
 		"@ `abc123`",
+		"- helium: `hel111`",
+		"- helium-w3c-tests (harness): `harn22`",
+		"- Go: `go version go1.26.1 linux/amd64`",
+		"- Run mode: slow (HELIUM_SLOW_TESTS=1)",
 		"| unsupported spec: XSLT20 | 2 |",
 	} {
 		if !strings.Contains(out, want) {
