@@ -1855,9 +1855,9 @@ var w3cImplicitSkips = map[string]string{
 	"format-date-013": "XSLT20 un-gated: format-date/format-time rounding and field-width incorrect — pending fix (group B3)",
 
 	// B4: initial-entry-point conflict detection not implemented.
-	"error-0047a":           "XSLT20 un-gated: initial-entry conflict detection (XTDE0047/XTDE0060) not implemented — pending fix (group B4)",
-	"initial-template-002a": "XSLT20 un-gated: initial-entry conflict detection (XTDE0047/XTDE0060) not implemented — pending fix (group B4)",
-	"initial-template-003a": "XSLT20 un-gated: initial-entry conflict detection (XTDE0047/XTDE0060) not implemented — pending fix (group B4)",
+	"error-0047a":           "legitimate 2.0-vs-3.0 divergence: XTDE0047 removed in XSLT 3.0 (W3C bug 28418); initial-template + initial-mode no longer conflict, a 3.0 processor runs the template. Catalog spec dependency is XSLT20",
+	"initial-template-002a": "legitimate 2.0-vs-3.0 divergence: XTDE0060 removed in XSLT 3.0 (a required param can now be supplied to the initial template); 002a is byte-identical to the passing initial-template-002, so a 3.0 processor produces a result rather than the 2.0-only error",
+	"initial-template-003a": "legitimate 2.0-vs-3.0 divergence: XTDE0060 removed in XSLT 3.0 (a required param can now be supplied to the initial template); 003a is byte-identical to the passing initial-template-003, so a 3.0 processor produces a result rather than the 2.0-only error",
 
 	// XSLT 2.0-only: current-group()/current-grouping-key() with no current group
 	// returns the empty sequence in XSLT 2.0 but is dynamic error XTDE1061/XTDE1071
