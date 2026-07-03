@@ -1863,8 +1863,14 @@ var w3cImplicitSkips = map[string]string{
 	"for-each-group-081a": "XSLT20 un-gated: current-group()/current-grouping-key() empty-outside-context handling — pending fix (group B5)",
 	"for-each-group-015a": "XSLT20 un-gated: current-group()/current-grouping-key() empty-outside-context handling — pending fix (group B5)",
 
-	// B6: strip-space/preserve-space recoverable conflict over-strict.
-	"strip-space-019": "XSLT20 un-gated: strip-space/preserve-space recoverable conflict (XTSE0270) over-strict — pending fix (group B6)",
+	// XSLT 2.0-only: the xsl:strip-space/xsl:preserve-space conflict is a RECOVERABLE
+	// error in XSLT 1.0/2.0 (recover to last-wins, or raise XTRE0270) but a STATIC error
+	// XTSE0270 in XSLT 3.0 (W3C catalog note: "XTSE0270 - is not a recoverable error in
+	// XSLT30"). This test (spec="XSLT10 XSLT20") asserts the pre-3.0 recovery; our 3.0
+	// processor correctly raises the static XTSE0270. Its 3.0 counterpart strip-space-019a
+	// (spec="XSLT30+", identical stylesheet, expects XTSE0270) passes. The two are mutually
+	// exclusive for one processor, so this pre-3.0 variant is a correct-skip divergence.
+	"strip-space-019": "XSLT 2.0-only: strip/preserve conflict is recoverable in 1.0/2.0 but a static error XTSE0270 in XSLT 3.0; our 3.0 processor correctly raises XTSE0270 (see the passing 3.0 variant strip-space-019a)",
 
 	// iii: uncertain — needs per-test investigation.
 	"function-0302":            "XSLT20 un-gated: needs per-test investigation (group iii)",
