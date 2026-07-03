@@ -1026,28 +1026,11 @@ func w3cRunOne(t *testing.T, tc w3cTest) {
 	w3cSem <- struct{}{}
 	t.Cleanup(func() { <-w3cSem })
 
-	if _, slow := w3cSlowTests[tc.Name]; slow && os.Getenv("HELIUM_SLOW_TESTS") == "" {
-		t.Skip("slow test; set HELIUM_SLOW_TESTS=1 to run")
-	}
-	if isSlowSourceDoc(tc.SourceDocPath) && os.Getenv("HELIUM_SLOW_TESTS") == "" {
-		t.Skip("slow source doc; set HELIUM_SLOW_TESTS=1 to run")
-	}
-	if isSlowStreamingTest(tc.Name) && os.Getenv("HELIUM_SLOW_TESTS") == "" {
-		t.Skip("slow streaming test (big-transactions.xml); set HELIUM_SLOW_TESTS=1 to run")
-	}
-
-	if reason := w3cImplicitSkipReason(tc.Name); reason != "" {
+	// The ordered skip decision is factored into w3cSkipDecision (see
+	// w3c_skip_ledger_test.go) so the live runner and the checked-in skip
+	// ledger share one source of truth and cannot drift.
+	if skip, reason := w3cSkipDecision(tc, os.Getenv("HELIUM_SLOW_TESTS") != ""); skip {
 		t.Skip(reason)
-		return
-	}
-
-	if tc.Skip != "" {
-		t.Skip(tc.Skip)
-		return
-	}
-
-	if tc.StylesheetPath == "" && !tc.EmbeddedStylesheet {
-		t.Skip("no stylesheet")
 		return
 	}
 
