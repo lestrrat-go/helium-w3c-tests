@@ -1859,9 +1859,15 @@ var w3cImplicitSkips = map[string]string{
 	"initial-template-002a": "XSLT20 un-gated: initial-entry conflict detection (XTDE0047/XTDE0060) not implemented — pending fix (group B4)",
 	"initial-template-003a": "XSLT20 un-gated: initial-entry conflict detection (XTDE0047/XTDE0060) not implemented — pending fix (group B4)",
 
-	// B5: current-group()/current-grouping-key() outside grouping context.
-	"for-each-group-081a": "XSLT20 un-gated: current-group()/current-grouping-key() empty-outside-context handling — pending fix (group B5)",
-	"for-each-group-015a": "XSLT20 un-gated: current-group()/current-grouping-key() empty-outside-context handling — pending fix (group B5)",
+	// XSLT 2.0-only: current-group()/current-grouping-key() with no current group
+	// returns the empty sequence in XSLT 2.0 but is dynamic error XTDE1061/XTDE1071
+	// in XSLT 3.0. Our 3.0 processor correctly raises the errors (the paired XSLT30+
+	// variants for-each-group-081b/015b PASS). These -a variants run the identical
+	// version="2.0" stylesheet with the identical invocation as the -b variants, so
+	// satisfying them would require the opposite behavior and would break the passing
+	// 3.0 variants. Correct-skip (mirrors version-023).
+	"for-each-group-081a": "XSLT 2.0-only: current-group() absent returns empty in 2.0 but raises XTDE1061 in XSLT 3.0; our 3.0 processor correctly errors (paired 081b PASSes on the same stylesheet)",
+	"for-each-group-015a": "XSLT 2.0-only: current-grouping-key() in positional group returns empty in 2.0 but raises XTDE1071 in XSLT 3.0; our 3.0 processor correctly errors (paired 015b PASSes on the same stylesheet)",
 
 	// B6: strip-space/preserve-space recoverable conflict over-strict.
 	"strip-space-019": "XSLT20 un-gated: strip-space/preserve-space recoverable conflict (XTSE0270) over-strict — pending fix (group B6)",
