@@ -1843,11 +1843,11 @@ var w3cImplicitSkips = map[string]string{
 	"output-0283": "XSLT20 un-gated: xsl:output boolean/enum parameter validation (SEPM0016) not enforced — pending fix (group B1)",
 
 	// B2: apply-templates/for-each select node()* type-check not enforced.
-	"type-0159":   "XSLT20 un-gated: apply-templates/for-each select node()* required-type check (XTTE0520/XTTE1120) not enforced — pending fix (group B2)",
-	"error-0520a": "XSLT20 un-gated: apply-templates/for-each select node()* required-type check (XTTE0520/XTTE1120) not enforced — pending fix (group B2)",
-	"error-0520b": "XSLT20 un-gated: apply-templates/for-each select node()* required-type check (XTTE0520/XTTE1120) not enforced — pending fix (group B2)",
-	"error-0520d": "XSLT20 un-gated: apply-templates/for-each select node()* required-type check (XTTE0520/XTTE1120) not enforced — pending fix (group B2)",
-	"error-1120a": "XSLT20 un-gated: apply-templates/for-each select node()* required-type check (XTTE0520/XTTE1120) not enforced — pending fix (group B2)",
+	"type-0159":   "legitimate 2.0-vs-3.0 divergence: XTTE0520 (apply-templates select must be node()*) is absent from XSLT 3.0 — a non-node selection is handled by the built-in atomic template rule (on-no-match=text-only-copy), so our 3.0 output is correct; catalog spec dependency is XSLT20",
+	"error-0520a": "legitimate 2.0-vs-3.0 divergence: XTTE0520 absent from XSLT 3.0 (apply-templates select=\"3\" processed by the built-in atomic template rule); W3C catalog marks this case \"test not applicable to XSLT 3.0\", spec dependency XSLT20",
+	"error-0520b": "legitimate 2.0-vs-3.0 divergence: XTTE0520 absent from XSLT 3.0 (apply-templates select=\"3\" processed by the built-in atomic template rule); W3C catalog marks this case \"test not applicable to XSLT 3.0\", spec dependency XSLT20",
+	"error-0520d": "legitimate 2.0-vs-3.0 divergence: XTTE0520 absent from XSLT 3.0 (apply-templates select=concat(...) processed by the built-in atomic template rule); W3C catalog marks this case \"test not applicable to XSLT 3.0\", spec dependency XSLT20",
+	"error-1120a": "legitimate 2.0-vs-3.0 divergence: XTTE1120 absent from XSLT 3.0 (for-each-group group-starting-with over atomic population — a non-node never matches a pattern, no error); W3C catalog note: \"Error code XTTE1120 absent in xslt3.0 spec. Changed dependency to xslt20\"",
 
 	// B3: format-date/format-time rounding and field width incorrect.
 	"format-date-002": "XSLT20 un-gated: format-date/format-time rounding and field-width incorrect — pending fix (group B3)",
