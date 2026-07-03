@@ -1690,9 +1690,6 @@ var w3cImplicitSkips = map[string]string{
 	// override: schema-aware union types from xsl:import-schema
 	"override-f-031": "schema-aware union type conversion fails",
 
-	// use-package: package-scoped namespace serialization in result-document
-	"use-package-108":  "package-scoped namespace alias serialization not implemented",
-	"use-package-108b": "package-scoped namespace alias serialization not implemented",
 
 	// error-FODC0002a-ignore is now skipped by the generator via the
 	// ignore_doc_failure dependency (see tools/xslt3gen getDepsSkipReason),
@@ -1701,7 +1698,6 @@ var w3cImplicitSkips = map[string]string{
 	// merge: schema-element instance test on merged items
 	"merge-049":   "schema-element() instance test on merged items fails",
 	"merge-051":   "schema-element() instance test on merged items fails",
-	"merge-072":   "XTDE2220 alternate=shifted collation sort-order verification not supported",
 	"merge-097":   "uri-collection Saxon-format ?select=glob URIs not supported (W3C catalog notes non-interoperable)",
 	"merge-097s":  "uri-collection Saxon-format ?select=glob URIs not supported (W3C catalog notes non-interoperable)",
 	"merge-097sf": "uri-collection Saxon-format ?select=glob URIs not supported (W3C catalog notes non-interoperable)",
