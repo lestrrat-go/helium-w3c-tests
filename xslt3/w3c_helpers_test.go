@@ -18,6 +18,7 @@ import (
 
 	"github.com/lestrrat-go/helium"
 	htmlparser "github.com/lestrrat-go/helium/html"
+	"github.com/lestrrat-go/helium/xinclude"
 	"github.com/lestrrat-go/helium/xpath3"
 	"github.com/lestrrat-go/helium/xsd"
 	"github.com/lestrrat-go/helium/xslt3"
@@ -185,6 +186,7 @@ type w3cTest struct {
 	PackageDeps                 []w3cPackageDep
 	SourceDocPath               string
 	SourceContent               string
+	SourceXInclude              bool // catalog <source xinclude="true">: apply XInclude to the source document before transform
 	InitialTemplate             string
 	InitialTemplateParams       map[string]string
 	InitialTemplateTunnelParams map[string]string
@@ -1055,6 +1057,25 @@ func w3cRunOne(t *testing.T, tc w3cTest) {
 		} else if tc.SourceContent != "" && tc.StylesheetPath != "" {
 			sourceDoc.SetURL(w3cAbsBaseURI(tc.StylesheetPath))
 		}
+
+		// The catalog can request XInclude processing on a source document
+		// (<source xinclude="true">). Whether an XSLT processor expands
+		// XInclude before the transform sees the tree is implementation-
+		// defined (XSLT 3.0); when the test opts in, expand it here using the
+		// document's own base URI so included content carries the right
+		// xml:base for base-uri(). Markers are suppressed so the transform
+		// observes a plain merged tree. The permissive FS mirrors the trusted-
+		// fixture opt-in used elsewhere in the harness.
+		if tc.SourceXInclude && sourceDoc != nil {
+			base := w3cAbsBaseURI(tc.SourceDocPath)
+			proc := xinclude.NewProcessor().
+				NoXIncludeMarkers().
+				Resolver(xinclude.NewFSResolver(helium.PermissiveFS())).
+				BaseURI(base)
+			if _, xiErr := proc.Process(t.Context(), sourceDoc); xiErr != nil {
+				t.Fatalf("XInclude processing of source %q: %v", tc.SourceDocPath, xiErr)
+			}
+		}
 	}
 
 	// Compile stylesheet
@@ -1742,8 +1763,6 @@ var w3cImplicitSkips = map[string]string{
 	"evaluate-039":  "too slow for CI: large iteration count in xsl:evaluate",
 	"evaluate-040":  "too slow for CI: large iteration count in xsl:evaluate",
 	"variable-0108": "too slow for CI: large iteration count with variable binding",
-
-	"base-uri-052": "XInclude processing not applied to source documents",
 
 	// XSD 1.1 features: newly unlocked but failing
 	"validation-1301":   "XSD 1.1 xs:alternative type selection not implemented",

@@ -75,6 +75,7 @@ type xslSource struct {
 	URI               string      `xml:"uri,attr"`
 	Select            string      `xml:"select,attr"`
 	DefinesStylesheet string      `xml:"defines-stylesheet,attr"`
+	XInclude          string      `xml:"xinclude,attr"`
 	Content           *xslContent `xml:"content"`
 }
 
@@ -184,6 +185,7 @@ type generatedTest struct {
 	PackageDeps                 []packageDep // secondary packages (uri → file)
 	SourceDocPath               string
 	SourceContent               string
+	SourceXInclude              bool // <source xinclude="true"> — apply XInclude to the source doc
 	InitialTemplate             string
 	InitialTemplateParams       map[string]string
 	InitialTemplateTunnelParams map[string]string
@@ -551,6 +553,9 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]struct{}) {
 					}
 					if src.Role != "." {
 						continue
+					}
+					if src.XInclude == "true" {
+						gt.SourceXInclude = true
 					}
 					if srcOK {
 						gt.SourceDocPath = srcRel
@@ -1474,6 +1479,9 @@ func generateTestFile(tests []generatedTest) string {
 
 			if tc.SourceDocPath != "" {
 				fmt.Fprintf(&b, ", SourceDocPath: %q", tc.SourceDocPath)
+			}
+			if tc.SourceXInclude {
+				b.WriteString(", SourceXInclude: true")
 			}
 			if tc.SourceSchemaPath != "" {
 				fmt.Fprintf(&b, ", SourceSchemaPath: %q", tc.SourceSchemaPath)
