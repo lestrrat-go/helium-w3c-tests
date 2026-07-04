@@ -227,6 +227,7 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]bool, map[strin
 				skipReason = setSkipReason
 			}
 			env, envIsGlobal := resolveEnvironment(tc.Environment, localEnvs, globalEnvs)
+			schemas := envSchemas(env, envIsGlobal, tsDir)
 
 			if env != nil {
 				if envSkip := checkEnvironmentSupport(env); envSkip != "" {
@@ -234,6 +235,9 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]bool, map[strin
 						skipReason = envSkip
 					}
 				}
+			}
+			if skipReason == "" {
+				skipReason = schemaAwareSkip(mergedDeps, env, len(schemas) > 0)
 			}
 
 			var contextDocPath string
@@ -263,7 +267,6 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]bool, map[strin
 				}
 			}
 
-			schemas := envSchemas(env, envIsGlobal, tsDir)
 			for _, sc := range schemas {
 				collectSchemaFiles(sourceDir, sc.File, docFiles)
 			}
@@ -507,13 +510,24 @@ func getSkipReason(deps []dependency) string {
 	for _, d := range deps {
 		if d.Type == "feature" && d.Satisfied != "false" {
 			switch d.Value {
-			// schemaImport and schemaAware are served by wiring the
-			// environment's XSD schema into the evaluator (SchemaDeclarations
-			// + validated-source TypeAnnotations), so they run instead of
-			// skipping. schemaValidation is the XQuery validate{} expression,
-			// which is not XPath 3.1 syntax, so those cases stay skipped.
+			// schemaImport / schemaAware are served by wiring the environment's
+			// XSD schema into the evaluator (SchemaDeclarations + validated-source
+			// TypeAnnotations), so they run — but ONLY when the environment
+			// actually declares a <schema> to compile (the schema-presence gate
+			// schemaAwareSkip, applied after environment resolution, keeps a
+			// schema-dependent case with no schema skipped).
+			//
+			// schemaValidation stays CONSERVATIVELY skipped even when a schema is
+			// present: these cases rely on schema-validated CONSTRUCTION semantics
+			// beyond type annotation (the XQuery validate{} expression, or PSVI
+			// insignificant-whitespace stripping of element-only content — e.g.
+			// fn-string-22 asserts /*/string() with the inter-element whitespace
+			// removed), which the annotate-then-evaluate harness does not model.
+			// The skip does not fire for a case that is merely a validated
+			// SOURCE (strict/lax) without a schemaValidation dependency — those
+			// run via schemaAwareSkip's source path.
 			case "schemaValidation":
-				return "requires validate{} expression (XQuery)"
+				return "requires schema-validated construction (validate{}/PSVI whitespace)"
 			case "moduleImport":
 				return "requires XQuery module import"
 			case "collection-stability":
@@ -626,10 +640,39 @@ func checkEnvironmentSupport(env *environment) string {
 	// A validation="strict"/"lax" source is handled at runtime: the source is
 	// XSD-validated against the environment's schema and the resulting type
 	// annotations are fed to the evaluator, so those environments run instead
-	// of skipping.
+	// of skipping — provided a schema is present (see schemaAwareSkip).
 	for _, src := range env.Sources {
 		if src.Role != "." && src.Role != "" && !strings.HasPrefix(src.Role, "$") {
 			return fmt.Sprintf("requires source role %q", src.Role)
+		}
+	}
+	return ""
+}
+
+// schemaAwareSkip gates schema-dependent cases on the presence of at least one
+// <schema> binding in the resolved environment. A case that requires XML Schema
+// support — a schemaImport/schemaAware feature dependency, or a
+// validation="strict"/"lax" source whose types must be annotated — cannot run
+// schema-aware without a schema to compile, so it stays skipped when hasSchema
+// is false. When a schema is present the case runs (SchemaDeclarations +
+// validated-source TypeAnnotations are wired at runtime). This is the shared
+// gate used by both the generator (gen.go) and the manifest planner (plan.go)
+// so the emitted case tables and the reported runnable/skipped counts agree.
+// (schemaValidation is handled conservatively in getSkipReason and never
+// reaches here.)
+func schemaAwareSkip(deps []dependency, env *environment, hasSchema bool) string {
+	if hasSchema {
+		return ""
+	}
+	if hasFeatureDependency(deps, "schemaImport") ||
+		hasFeatureDependency(deps, "schemaAware") {
+		return "requires XML Schema support"
+	}
+	if env != nil {
+		for _, src := range env.Sources {
+			if src.Validation == "strict" || src.Validation == "lax" {
+				return "requires XML Schema support"
+			}
 		}
 	}
 	return ""
@@ -696,6 +739,12 @@ func envCollections(env *environment, envIsGlobal bool, tsDir string) []collecti
 			if src.File == "" {
 				continue
 			}
+			// LIMITATION: a collection source's validation="strict"/"lax" is not
+			// propagated here, so its nodes are parsed without XSD type
+			// annotations (unlike context/variable sources). The FOTS suite
+			// declares no schema-validated collection source (verified), so this
+			// drops no runnable case; wire Validation through sourceBinding and
+			// annotate the resolved collection nodes if one is ever added.
 			binding.SourceDocs = append(binding.SourceDocs, sourceBinding{
 				File: resolveEnvSourcePath(envIsGlobal, tsDir, src.File),
 				URI:  src.URI,

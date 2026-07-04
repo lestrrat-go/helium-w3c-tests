@@ -19,8 +19,8 @@ const w3cSourceDir = "sources/qt3"
 const w3cCatalogPath = "sources/qt3/catalog.xml"
 const w3cCatalogTestSets = 428
 const w3cCatalogTestCases = 31821
-const w3cRunnableTestCases = 22150
-const w3cSkippedTestCases = 323
+const w3cRunnableTestCases = 22086
+const w3cSkippedTestCases = 387
 const w3cExcludedTestCases = 9348
 
 func TestQT3W3CManifestAvailable(t *testing.T) {
