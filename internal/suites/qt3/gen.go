@@ -510,24 +510,17 @@ func getSkipReason(deps []dependency) string {
 	for _, d := range deps {
 		if d.Type == "feature" && d.Satisfied != "false" {
 			switch d.Value {
-			// schemaImport / schemaAware are served by wiring the environment's
-			// XSD schema into the evaluator (SchemaDeclarations + validated-source
-			// TypeAnnotations), so they run — but ONLY when the environment
-			// actually declares a <schema> to compile (the schema-presence gate
-			// schemaAwareSkip, applied after environment resolution, keeps a
-			// schema-dependent case with no schema skipped).
-			//
-			// schemaValidation stays CONSERVATIVELY skipped even when a schema is
-			// present: these cases rely on schema-validated CONSTRUCTION semantics
-			// beyond type annotation (the XQuery validate{} expression, or PSVI
-			// insignificant-whitespace stripping of element-only content — e.g.
-			// fn-string-22 asserts /*/string() with the inter-element whitespace
-			// removed), which the annotate-then-evaluate harness does not model.
-			// The skip does not fire for a case that is merely a validated
-			// SOURCE (strict/lax) without a schemaValidation dependency — those
-			// run via schemaAwareSkip's source path.
-			case "schemaValidation":
-				return "requires schema-validated construction (validate{}/PSVI whitespace)"
+			// schemaImport / schemaAware / schemaValidation are served by wiring
+			// the environment's XSD schema into the evaluator (SchemaDeclarations
+			// + validated-source TypeAnnotations), so they run — but ONLY when the
+			// environment actually declares a <schema> to compile (the
+			// schema-presence gate schemaAwareSkip, applied after environment
+			// resolution, keeps a schema-dependent case with no schema skipped).
+			// A few schemaValidation cases genuinely need schema-validated
+			// CONSTRUCTION semantics beyond type annotation (PSVI insignificant-
+			// whitespace stripping of element-only content, or the XQuery
+			// validate{} expression); those are pinned per-case in
+			// getTestCaseSkipReason, not blanket-skipped here.
 			case "moduleImport":
 				return "requires XQuery module import"
 			case "collection-stability":
@@ -608,6 +601,14 @@ func getTestCaseSkipReason(_, caseName string) string {
 	// generated element tree, which the standalone evaluator does not perform.
 	case "json-to-xml-037", "json-to-xml-038", "json-to-xml-error-042":
 		return "fn:json-to-xml validate option unsupported by standalone evaluator"
+
+	// These schemaValidation cases assert results that depend on PSVI
+	// insignificant-whitespace stripping of element-only content (e.g.
+	// fn-string-22 expects /*/string() with the inter-element whitespace
+	// removed), which the annotate-then-evaluate harness does not model.
+	case "fn-string-22", "fn-string-length-22", "fn-string-length-23",
+		"fn-normalize-space-23", "fn-normalize-space-24":
+		return "requires PSVI insignificant-whitespace-stripping construction (not supported)"
 	}
 	return ""
 }
@@ -658,14 +659,13 @@ func checkEnvironmentSupport(env *environment) string {
 // validated-source TypeAnnotations are wired at runtime). This is the shared
 // gate used by both the generator (gen.go) and the manifest planner (plan.go)
 // so the emitted case tables and the reported runnable/skipped counts agree.
-// (schemaValidation is handled conservatively in getSkipReason and never
-// reaches here.)
 func schemaAwareSkip(deps []dependency, env *environment, hasSchema bool) string {
 	if hasSchema {
 		return ""
 	}
 	if hasFeatureDependency(deps, "schemaImport") ||
-		hasFeatureDependency(deps, "schemaAware") {
+		hasFeatureDependency(deps, "schemaAware") ||
+		hasFeatureDependency(deps, "schemaValidation") {
 		return "requires XML Schema support"
 	}
 	if env != nil {
