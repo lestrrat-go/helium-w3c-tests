@@ -51,6 +51,7 @@ func readCatalogPlan(root string, suiteLock generator.SuiteLock) (info generator
 		}
 		ts := parseTestSet(tsPath)
 		info.TestCaseCount += len(ts.TestCases)
+		tsDir := filepath.Dir(tsRef.File)
 
 		localEnvs := make(map[string]*environment)
 		for i := range ts.Environments {
@@ -77,10 +78,14 @@ func readCatalogPlan(root string, suiteLock generator.SuiteLock) (info generator
 			if skipReason == "" {
 				skipReason = setSkipReason
 			}
-			if env, _ := resolveEnvironment(tc.Environment, localEnvs, globalEnvs); env != nil {
+			env, envIsGlobal := resolveEnvironment(tc.Environment, localEnvs, globalEnvs)
+			if env != nil {
 				if envSkip := checkEnvironmentSupport(env); skipReason == "" && envSkip != "" {
 					skipReason = envSkip
 				}
+			}
+			if skipReason == "" {
+				skipReason = schemaAwareSkip(mergedDeps, env, len(envSchemas(env, envIsGlobal, tsDir)) > 0)
 			}
 
 			if skipReason != "" {

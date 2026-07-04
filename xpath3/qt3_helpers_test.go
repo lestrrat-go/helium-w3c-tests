@@ -21,6 +21,7 @@ import (
 
 	"github.com/lestrrat-go/helium"
 	"github.com/lestrrat-go/helium/xpath3"
+	"github.com/lestrrat-go/helium/xsd"
 	"github.com/stretchr/testify/require"
 )
 
@@ -60,9 +61,17 @@ type qt3Param struct {
 }
 
 type qt3SourceDoc struct {
-	Name    string
-	DocPath string
+	Name       string
+	DocPath    string
+	URI        string
+	Validation string // "strict"/"lax"/"" — XSD-validate this source and annotate its types
+}
+
+// qt3Schema is an in-scope XSD schema for a schema-aware test: URI is the
+// schema's target namespace, DocPath the .xsd path relative to the testdata dir.
+type qt3Schema struct {
 	URI     string
+	DocPath string
 }
 
 type qt3Collection struct {
@@ -86,6 +95,9 @@ type qt3Test struct {
 	BaseURI             string            // static base URI for fn:unparsed-text etc.
 	NeedsHTTP           bool              // test requires HTTP client (e.g. fn:json-doc with URL)
 	ResourceMap         map[string]string // URI → file path (relative to qt3TestDataDir()) for resource resolution
+	Schemas             []qt3Schema       // in-scope XSD schemas for schema-aware evaluation
+	ContextValidation   string            // "strict"/"lax"/"" — validate + annotate the context document
+	SchemaVersion       string            // "1.0" forces XSD 1.0 schema compilation; "" = default 1.1
 	Skip                string
 	ExpectError         bool
 	AcceptError         bool // error is acceptable but not required (any-of with error + non-error)
@@ -257,9 +269,20 @@ func qt3RunTests(t *testing.T, tests []qt3Test) {
 			if len(tc.SourceDocs) > 0 || len(tc.Params) > 0 {
 				vars = make(map[string]xpath3.Sequence, len(tc.SourceDocs)+len(tc.Params))
 			}
+			// Documents whose types must be annotated (context + strict/lax sources).
+			var validatedDocs []helium.Node
+			if (tc.ContextValidation == "strict" || tc.ContextValidation == "lax") && doc != nil {
+				validatedDocs = append(validatedDocs, doc)
+			}
 			for _, src := range tc.SourceDocs {
 				sourceDoc := qt3ParseDocSource(t, src)
 				vars[src.Name] = xpath3.ItemSlice{xpath3.NodeItem{Node: sourceDoc}}
+				if src.Validation == "strict" || src.Validation == "lax" {
+					validatedDocs = append(validatedDocs, sourceDoc)
+				}
+			}
+			if len(tc.Schemas) > 0 {
+				opts = append(opts, qt3SchemaOpts(t, ctx, tc, doc, validatedDocs)...)
 			}
 			if resolver := qt3BuildCollectionResolver(t, ctx, tc, opts, doc, vars); resolver != nil {
 				opts = append(opts, func(e xpath3.Evaluator) xpath3.Evaluator { return e.CollectionResolver(resolver) })
@@ -305,6 +328,232 @@ func qt3RunTests(t *testing.T, tests []qt3Test) {
 			}
 		})
 	}
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Schema-aware wiring
+// ──────────────────────────────────────────────────────────────────────
+
+// qt3SchemaOpts compiles the test's in-scope schemas and returns evaluator
+// mutators that install the SchemaDeclarations provider and (for strict/lax
+// sources) the collected type annotations. A schema that fails to compile
+// skips the case (a helium xsd limitation, reported as a skip rather than a
+// hard failure). Annotation maps are keyed on the exact parsed document nodes
+// the evaluator sees, so schema types atomize/cast as declared.
+func qt3SchemaOpts(t *testing.T, ctx context.Context, tc qt3Test, doc helium.Node, validatedDocs []helium.Node) []qt3EvalMutator {
+	t.Helper()
+	schemas := make([]*xsd.Schema, 0, len(tc.Schemas))
+	for _, sc := range tc.Schemas {
+		schemaPath := filepath.Join(qt3TestDataDir(), sc.DocPath)
+		// Trusted committed W3C fixtures whose nested xs:include/xs:import
+		// targets live next to the schema; opt into host FS access. Default to
+		// XSD 1.1 (honoring an xsd-version="1.0" dependency), mirroring the
+		// production schema-aware paths.
+		compiler := xsd.NewCompiler().FS(helium.PermissiveFS())
+		if tc.SchemaVersion == "1.0" {
+			compiler = compiler.Version(xsd.Version10)
+		} else {
+			compiler = compiler.DefaultVersion(xsd.Version11)
+		}
+		schema, err := compiler.CompileFile(ctx, schemaPath)
+		if err != nil {
+			t.Skipf("schema %q failed to compile: %v", sc.DocPath, err)
+		}
+		schemas = append(schemas, schema)
+	}
+	if len(schemas) == 0 {
+		return nil
+	}
+
+	var muts []qt3EvalMutator
+	if d := qt3AggregateSchemaDecls(schemas); d != nil {
+		muts = append(muts, func(e xpath3.Evaluator) xpath3.Evaluator { return e.SchemaDeclarations(d) })
+	}
+
+	if len(validatedDocs) > 0 {
+		ann := make(xsd.TypeAnnotations)
+		for _, vd := range validatedDocs {
+			qt3AnnotateDoc(t, ctx, schemas, vd, ann)
+		}
+		if len(ann) > 0 {
+			muts = append(muts, func(e xpath3.Evaluator) xpath3.Evaluator { return e.TypeAnnotations(ann) })
+		}
+	}
+	return muts
+}
+
+// qt3AggregateSchemaDecls builds one SchemaDeclarations provider spanning every
+// in-scope schema: a lookup consults each schema's declarations in order and
+// returns the first hit, mirroring how a multi-schema registry delegates. This
+// lets a schema-element()/schema-attribute() test or a schema-aware cast resolve
+// against any in-scope namespace, not just one schema's.
+func qt3AggregateSchemaDecls(schemas []*xsd.Schema) xpath3.SchemaDeclarations {
+	if len(schemas) == 0 {
+		return nil
+	}
+	decls := make(qt3AggregateDecls, 0, len(schemas))
+	for _, s := range schemas {
+		decls = append(decls, s.Declarations())
+	}
+	return decls
+}
+
+// qt3AggregateDecls delegates each SchemaDeclarations method across the wrapped
+// providers, first-hit for lookups and OR for predicates. A cast/validation
+// method returns the first non-nil error (a schema that does not define the type
+// reports "not found" as nil, so only the owning schema can report a facet
+// violation).
+type qt3AggregateDecls []xpath3.SchemaDeclarations
+
+func (a qt3AggregateDecls) LookupSchemaElement(local, ns string) (string, bool) {
+	for _, d := range a {
+		if t, ok := d.LookupSchemaElement(local, ns); ok {
+			return t, true
+		}
+	}
+	return "", false
+}
+
+func (a qt3AggregateDecls) LookupSchemaAttribute(local, ns string) (string, bool) {
+	for _, d := range a {
+		if t, ok := d.LookupSchemaAttribute(local, ns); ok {
+			return t, true
+		}
+	}
+	return "", false
+}
+
+func (a qt3AggregateDecls) LookupSchemaType(local, ns string) (string, bool) {
+	for _, d := range a {
+		if t, ok := d.LookupSchemaType(local, ns); ok {
+			return t, true
+		}
+	}
+	return "", false
+}
+
+func (a qt3AggregateDecls) IsSubtypeOf(typeName, baseTypeName string) bool {
+	for _, d := range a {
+		if d.IsSubtypeOf(typeName, baseTypeName) {
+			return true
+		}
+	}
+	return false
+}
+
+func (a qt3AggregateDecls) IsSubstitutionGroupMember(memberLocal, memberNS, headLocal, headNS string) bool {
+	for _, d := range a {
+		if d.IsSubstitutionGroupMember(memberLocal, memberNS, headLocal, headNS) {
+			return true
+		}
+	}
+	return false
+}
+
+func (a qt3AggregateDecls) ValidateCast(ctx context.Context, value, typeName string) error {
+	for _, d := range a {
+		if err := d.ValidateCast(ctx, value, typeName); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (a qt3AggregateDecls) ValidateCastWithNS(ctx context.Context, value, typeName string, nsMap map[string]string) error {
+	for _, d := range a {
+		if err := d.ValidateCastWithNS(ctx, value, typeName, nsMap); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (a qt3AggregateDecls) ListItemType(typeName string) (string, bool) {
+	for _, d := range a {
+		if it, ok := d.ListItemType(typeName); ok {
+			return it, true
+		}
+	}
+	return "", false
+}
+
+func (a qt3AggregateDecls) UnionMemberTypes(typeName string) []string {
+	for _, d := range a {
+		if m := d.UnionMemberTypes(typeName); m != nil {
+			return m
+		}
+	}
+	return nil
+}
+
+// qt3AnnotateDoc validates node against the schema whose target namespace
+// matches its root element and merges the resulting type annotations into ann.
+// The fixtures are expected valid; a strict/lax source that FAILS validation is
+// skipped (with schema/doc context) rather than run with incomplete PSVI
+// annotations that would silently distort the result.
+func qt3AnnotateDoc(t *testing.T, ctx context.Context, schemas []*xsd.Schema, node helium.Node, ann xsd.TypeAnnotations) {
+	t.Helper()
+	d := qt3AsDocument(node)
+	if d == nil {
+		return
+	}
+	schema := qt3PickValidationSchema(schemas, d)
+	if schema == nil {
+		return
+	}
+	local := make(xsd.TypeAnnotations)
+	if err := xsd.NewValidator(schema).Annotations(&local).Validate(ctx, d); err != nil {
+		t.Skipf("validating source (root ns %q) against schema %q: %v", qt3DocRootNS(d), schema.TargetNamespace(), err)
+	}
+	for k, v := range local {
+		ann[k] = v
+	}
+}
+
+// qt3PickValidationSchema returns the schema whose target namespace exactly
+// matches d's root element namespace. When there is a single in-scope schema it
+// is used as the fallback (it is the only candidate); otherwise a mismatch
+// yields nil rather than validating against an arbitrary schema.
+func qt3PickValidationSchema(schemas []*xsd.Schema, d *helium.Document) *xsd.Schema {
+	if len(schemas) == 0 {
+		return nil
+	}
+	if d != nil {
+		ns := qt3DocRootNS(d)
+		for _, s := range schemas {
+			if s.TargetNamespace() == ns {
+				return s
+			}
+		}
+	}
+	if len(schemas) == 1 {
+		return schemas[0]
+	}
+	return nil
+}
+
+func qt3AsDocument(n helium.Node) *helium.Document {
+	if n == nil {
+		return nil
+	}
+	if d, ok := n.(*helium.Document); ok {
+		return d
+	}
+	if owner := n.OwnerDocument(); owner != nil {
+		return owner
+	}
+	return nil
+}
+
+func qt3DocRootNS(d *helium.Document) string {
+	if d == nil {
+		return ""
+	}
+	root := d.DocumentElement()
+	if root == nil {
+		return ""
+	}
+	return root.URI()
 }
 
 // ──────────────────────────────────────────────────────────────────────
@@ -478,6 +727,13 @@ func qt3BuildCollectionResolver(t *testing.T, ctx context.Context, tc qt3Test, o
 			seq := make(xpath3.ItemSlice, 0, len(col.SourceDocs))
 			uris := make([]string, 0, len(col.SourceDocs))
 			for _, src := range col.SourceDocs {
+				// LIMITATION: collection source docs are parsed without XSD type
+				// annotations. The generator does not propagate a collection
+				// source's validation="strict"/"lax" (qt3SourceDoc.Validation is
+				// unset here), and no schema-validated collection source exists in
+				// the FOTS suite (verified), so no runnable case is affected. To
+				// support one, thread Validation into qt3Collection.SourceDocs and
+				// annotate these exact nodes before building the collection.
 				sourceDoc := qt3ParseDocSource(t, src) //nolint:contextcheck
 				seq = append(seq, xpath3.NodeItem{Node: sourceDoc})
 				if src.URI != "" {
