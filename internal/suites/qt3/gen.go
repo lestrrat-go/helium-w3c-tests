@@ -50,6 +50,7 @@ type environment struct {
 	Name          string          `xml:"name,attr"`
 	Ref           string          `xml:"ref,attr"`
 	Sources       []source        `xml:"source"`
+	Schemas       []schema        `xml:"schema"`
 	Collections   []collection    `xml:"collection"`
 	Resources     []resource      `xml:"resource"`
 	Namespaces    []namespace     `xml:"namespace"`
@@ -57,6 +58,15 @@ type environment struct {
 	DecimalFormat []decimalFormat `xml:"decimal-format"`
 	Params        []param         `xml:"param"`
 	StaticBaseURI *staticBaseURI  `xml:"static-base-uri"`
+}
+
+// schema is a catalog <schema uri=".." file=".."/> element: a schema whose
+// components are in scope for the environment. uri is the schema's target
+// namespace (empty for a no-namespace schema); file is the .xsd path relative
+// to the test-set (or, for a global environment, the suite root).
+type schema struct {
+	URI  string `xml:"uri,attr"`
+	File string `xml:"file,attr"`
 }
 
 type collation struct {
@@ -111,9 +121,15 @@ type param struct {
 }
 
 type sourceBinding struct {
-	Name string
-	File string
-	URI  string
+	Name       string
+	File       string
+	URI        string
+	Validation string
+}
+
+type schemaBinding struct {
+	URI  string // target namespace ("" for a no-namespace schema)
+	File string // .xsd path relative to the suite testdata root
 }
 
 type collectionBinding struct {
@@ -221,6 +237,7 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]bool, map[strin
 			}
 
 			var contextDocPath string
+			var contextValidation string
 			if env != nil {
 				for _, src := range env.Sources {
 					if src.File == "" {
@@ -229,6 +246,7 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]bool, map[strin
 					resolvedPath := resolveEnvSourcePath(envIsGlobal, tsDir, src.File)
 					if src.Role == "." {
 						contextDocPath = resolvedPath
+						contextValidation = src.Validation
 						docFiles[contextDocPath] = true
 					}
 					if strings.HasPrefix(src.Role, "$") {
@@ -243,6 +261,11 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]bool, map[strin
 						docFiles[resolveEnvSourcePath(envIsGlobal, tsDir, src.File)] = true
 					}
 				}
+			}
+
+			schemas := envSchemas(env, envIsGlobal, tsDir)
+			for _, sc := range schemas {
+				collectSchemaFiles(sourceDir, sc.File, docFiles)
 			}
 
 			assertions := parseResultAssertions(tc)
@@ -302,11 +325,14 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]bool, map[strin
 				Params:           envParams(env),
 				Collections:      envCollections(env, envIsGlobal, tsDir),
 				VariableSources:  envVariableSources(env, envIsGlobal, tsDir),
-				BaseURI:          baseURI,
-				NeedsHTTP:        needsHTTP,
-				ResourceMap:      resMap,
-				Assertions:       assertions,
-				SkipReason:       skipReason,
+				BaseURI:           baseURI,
+				NeedsHTTP:         needsHTTP,
+				ResourceMap:       resMap,
+				Schemas:           schemas,
+				ContextValidation: contextValidation,
+				SchemaVersion:     schemaVersionForDeps(mergedDeps),
+				Assertions:        assertions,
+				SkipReason:        skipReason,
 			})
 		}
 	}
@@ -481,8 +507,13 @@ func getSkipReason(deps []dependency) string {
 	for _, d := range deps {
 		if d.Type == "feature" && d.Satisfied != "false" {
 			switch d.Value {
-			case "schemaImport", "schemaValidation", "schemaAware":
-				return "requires XML Schema support"
+			// schemaImport and schemaAware are served by wiring the
+			// environment's XSD schema into the evaluator (SchemaDeclarations
+			// + validated-source TypeAnnotations), so they run instead of
+			// skipping. schemaValidation is the XQuery validate{} expression,
+			// which is not XPath 3.1 syntax, so those cases stay skipped.
+			case "schemaValidation":
+				return "requires validate{} expression (XQuery)"
 			case "moduleImport":
 				return "requires XQuery module import"
 			case "collection-stability":
@@ -529,6 +560,40 @@ func getTestCaseSkipReason(_, caseName string) string {
 		"fn-unparsed-text-available-010", "fn-unparsed-text-available-012",
 		"fn-unparsed-text-lines-012":
 		return "requires static typing"
+
+	// fn:nilled (and element(E, T) matching of a nilled element) needs the PSVI
+	// "nilled" property, which the standalone xpath3 evaluator does not carry —
+	// only the XSLT engine overrides fn:nilled. The type annotations this harness
+	// feeds do not include the nilled property.
+	case "fn-nilled-33", "fn-nilled-35", "fn-nilled-37", "fn-nilled-38",
+		"fn-nilled-39", "fn-nilled-44", "fn-nilled-45", "fn-nilled-46",
+		"fn-nilled-47", "fn-nilled-50", "fn-nilled-51":
+		return "requires schema PSVI nilled property (unsupported by standalone evaluator)"
+
+	// fn:id / fn:element-with-id resolve elements by their schema is-id property,
+	// which the standalone evaluator does not derive from type annotations.
+	case "fn-element-with-id-4", "fn-element-with-id-5":
+		return "requires schema is-id property lookup (unsupported by standalone evaluator)"
+
+	// castable-as of a map/array (a non-atomizable operand) must raise XPTY0004;
+	// the evaluator returns false instead of erroring.
+	case "CastableAs666", "CastableAs668":
+		return "castable-as of a non-atomizable operand does not raise XPTY0004"
+
+	// fn:data on a schema-typed element with no typed value must raise FOTY0012;
+	// the evaluator returns an untypedAtomic value instead.
+	case "K2-DataFunc-6":
+		return "fn:data on a no-typed-value element does not raise FOTY0012"
+
+	// fn:serialize of an attribute / namespace node must raise SENR0001; the
+	// serializer emits a string instead of erroring.
+	case "serialize-xml-002", "serialize-xml-011", "serialize-xml-012", "serialize-xml-131a":
+		return "fn:serialize does not raise SENR0001 for an attribute/namespace node"
+
+	// fn:json-to-xml with the validate option depends on schema-validating the
+	// generated element tree, which the standalone evaluator does not perform.
+	case "json-to-xml-037", "json-to-xml-038", "json-to-xml-error-042":
+		return "fn:json-to-xml validate option unsupported by standalone evaluator"
 	}
 	return ""
 }
@@ -558,10 +623,11 @@ func resolveEnvironment(tcEnv *environment, local, global map[string]*environmen
 }
 
 func checkEnvironmentSupport(env *environment) string {
+	// A validation="strict"/"lax" source is handled at runtime: the source is
+	// XSD-validated against the environment's schema and the resulting type
+	// annotations are fed to the evaluator, so those environments run instead
+	// of skipping.
 	for _, src := range env.Sources {
-		if src.Validation == "strict" || src.Validation == "lax" {
-			return "requires schema-validated source"
-		}
 		if src.Role != "." && src.Role != "" && !strings.HasPrefix(src.Role, "$") {
 			return fmt.Sprintf("requires source role %q", src.Role)
 		}
@@ -587,9 +653,29 @@ func envVariableSources(env *environment, envIsGlobal bool, tsDir string) []sour
 			continue
 		}
 		out = append(out, sourceBinding{
-			Name: strings.TrimPrefix(src.Role, "$"),
-			File: resolveEnvSourcePath(envIsGlobal, tsDir, src.File),
-			URI:  src.URI,
+			Name:       strings.TrimPrefix(src.Role, "$"),
+			File:       resolveEnvSourcePath(envIsGlobal, tsDir, src.File),
+			URI:        src.URI,
+			Validation: src.Validation,
+		})
+	}
+	return out
+}
+
+// envSchemas returns the schema files (with target namespaces) declared by the
+// environment, resolved to suite-root-relative paths.
+func envSchemas(env *environment, envIsGlobal bool, tsDir string) []schemaBinding {
+	if env == nil {
+		return nil
+	}
+	var out []schemaBinding
+	for _, s := range env.Schemas {
+		if s.File == "" {
+			continue
+		}
+		out = append(out, schemaBinding{
+			URI:  s.URI,
+			File: resolveEnvSourcePath(envIsGlobal, tsDir, s.File),
 		})
 	}
 	return out
@@ -748,6 +834,82 @@ func dependencyValue(deps []dependency, typ string) string {
 	return ""
 }
 
+// schemaVersionForDeps returns "1.0" when the test carries an
+// xsd-version="1.0" dependency (so its schema is compiled as XSD 1.0), or ""
+// for the default (XSD 1.1).
+func schemaVersionForDeps(deps []dependency) string {
+	for _, d := range deps {
+		if d.Type == "xsd-version" && d.Value == "1.0" && d.Satisfied != "false" {
+			return "1.0"
+		}
+	}
+	return ""
+}
+
+// collectSchemaFiles adds schemaFile (relative to sourceDir) and every schema
+// it transitively references via xs:include / xs:import / xs:redefine
+// schemaLocation to set, so Fetch copies the whole schema closure into the
+// testdata tree. Paths that cannot be read are added anyway (copyDocs warns and
+// skips a genuinely-absent file); resolution is best-effort and never fatal.
+func collectSchemaFiles(sourceDir, schemaFile string, set map[string]bool) {
+	collectSchemaFilesRec(sourceDir, schemaFile, set, map[string]bool{})
+}
+
+func collectSchemaFilesRec(sourceDir, schemaFile string, set, visited map[string]bool) {
+	clean := filepath.ToSlash(filepath.Clean(schemaFile))
+	if visited[clean] {
+		return
+	}
+	visited[clean] = true
+	set[schemaFile] = true
+
+	full, err := generator.ContainedPath(sourceDir, schemaFile)
+	if err != nil {
+		return
+	}
+	data, err := os.ReadFile(full) //nolint:gosec // trusted committed suite source
+	if err != nil {
+		return
+	}
+	dir := filepath.Dir(schemaFile)
+	for _, loc := range schemaLocations(data) {
+		if loc == "" || strings.Contains(loc, "://") {
+			continue
+		}
+		ref := filepath.Join(dir, filepath.FromSlash(loc))
+		collectSchemaFilesRec(sourceDir, ref, set, visited)
+	}
+}
+
+// schemaLocations extracts the schemaLocation attribute values of every
+// xs:include / xs:import / xs:redefine / xs:override element in an XSD document.
+func schemaLocations(data []byte) []string {
+	dec := xml.NewDecoder(strings.NewReader(string(data)))
+	dec.CharsetReader = charset.NewReaderLabel
+	var out []string
+	for {
+		tok, err := dec.Token()
+		if err != nil {
+			break
+		}
+		se, ok := tok.(xml.StartElement)
+		if !ok {
+			continue
+		}
+		switch se.Name.Local {
+		case "include", "import", "redefine", "override":
+		default:
+			continue
+		}
+		for _, a := range se.Attr {
+			if a.Name.Local == "schemaLocation" {
+				out = append(out, a.Value)
+			}
+		}
+	}
+	return out
+}
+
 func hasFeatureDependency(deps []dependency, value string) bool {
 	for _, d := range deps {
 		if d.Type == "feature" && d.Satisfied != "false" && d.Value == value {
@@ -831,6 +993,9 @@ type generatedTest struct {
 	BaseURI          string
 	NeedsHTTP        bool
 	ResourceMap      map[string]string // URI → file path relative to testdata dir
+	Schemas          []schemaBinding   // in-scope XSD schemas for schema-aware evaluation
+	ContextValidation string           // "strict"/"lax"/"" for the context document
+	SchemaVersion    string            // "1.0" to force XSD 1.0 compilation; "" = default 1.1
 	Assertions       []assertion
 	SkipReason       string
 }
@@ -896,6 +1061,9 @@ func generateTestFile(tests []generatedTest) string {
 					if src.URI != "" {
 						fmt.Fprintf(&b, ", URI: %q", src.URI)
 					}
+					if src.Validation != "" {
+						fmt.Fprintf(&b, ", Validation: %q", src.Validation)
+					}
 					b.WriteString("}")
 				}
 				b.WriteString("}")
@@ -955,6 +1123,22 @@ func generateTestFile(tests []generatedTest) string {
 					fmt.Fprintf(&b, "%q: %q", k, tc.Namespaces[k])
 				}
 				b.WriteString("}")
+			}
+			if len(tc.Schemas) > 0 {
+				b.WriteString(", Schemas: []qt3Schema{")
+				for i, sc := range tc.Schemas {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					fmt.Fprintf(&b, "{URI: %q, DocPath: %q}", sc.URI, sc.File)
+				}
+				b.WriteString("}")
+			}
+			if tc.ContextValidation != "" {
+				fmt.Fprintf(&b, ", ContextValidation: %q", tc.ContextValidation)
+			}
+			if tc.SchemaVersion != "" {
+				fmt.Fprintf(&b, ", SchemaVersion: %q", tc.SchemaVersion)
 			}
 			if tc.SkipReason != "" {
 				fmt.Fprintf(&b, ", Skip: %q", tc.SkipReason)

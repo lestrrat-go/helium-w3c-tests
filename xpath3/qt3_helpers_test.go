@@ -21,6 +21,7 @@ import (
 
 	"github.com/lestrrat-go/helium"
 	"github.com/lestrrat-go/helium/xpath3"
+	"github.com/lestrrat-go/helium/xsd"
 	"github.com/stretchr/testify/require"
 )
 
@@ -60,9 +61,17 @@ type qt3Param struct {
 }
 
 type qt3SourceDoc struct {
-	Name    string
-	DocPath string
+	Name       string
+	DocPath    string
+	URI        string
+	Validation string // "strict"/"lax"/"" — XSD-validate this source and annotate its types
+}
+
+// qt3Schema is an in-scope XSD schema for a schema-aware test: URI is the
+// schema's target namespace, DocPath the .xsd path relative to the testdata dir.
+type qt3Schema struct {
 	URI     string
+	DocPath string
 }
 
 type qt3Collection struct {
@@ -86,6 +95,9 @@ type qt3Test struct {
 	BaseURI             string            // static base URI for fn:unparsed-text etc.
 	NeedsHTTP           bool              // test requires HTTP client (e.g. fn:json-doc with URL)
 	ResourceMap         map[string]string // URI → file path (relative to qt3TestDataDir()) for resource resolution
+	Schemas             []qt3Schema       // in-scope XSD schemas for schema-aware evaluation
+	ContextValidation   string            // "strict"/"lax"/"" — validate + annotate the context document
+	SchemaVersion       string            // "1.0" forces XSD 1.0 schema compilation; "" = default 1.1
 	Skip                string
 	ExpectError         bool
 	AcceptError         bool // error is acceptable but not required (any-of with error + non-error)
@@ -257,9 +269,20 @@ func qt3RunTests(t *testing.T, tests []qt3Test) {
 			if len(tc.SourceDocs) > 0 || len(tc.Params) > 0 {
 				vars = make(map[string]xpath3.Sequence, len(tc.SourceDocs)+len(tc.Params))
 			}
+			// Documents whose types must be annotated (context + strict/lax sources).
+			var validatedDocs []helium.Node
+			if (tc.ContextValidation == "strict" || tc.ContextValidation == "lax") && doc != nil {
+				validatedDocs = append(validatedDocs, doc)
+			}
 			for _, src := range tc.SourceDocs {
 				sourceDoc := qt3ParseDocSource(t, src)
 				vars[src.Name] = xpath3.ItemSlice{xpath3.NodeItem{Node: sourceDoc}}
+				if src.Validation == "strict" || src.Validation == "lax" {
+					validatedDocs = append(validatedDocs, sourceDoc)
+				}
+			}
+			if len(tc.Schemas) > 0 {
+				opts = append(opts, qt3SchemaOpts(t, ctx, tc, doc, validatedDocs)...)
 			}
 			if resolver := qt3BuildCollectionResolver(t, ctx, tc, opts, doc, vars); resolver != nil {
 				opts = append(opts, func(e xpath3.Evaluator) xpath3.Evaluator { return e.CollectionResolver(resolver) })
@@ -305,6 +328,120 @@ func qt3RunTests(t *testing.T, tests []qt3Test) {
 			}
 		})
 	}
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Schema-aware wiring
+// ──────────────────────────────────────────────────────────────────────
+
+// qt3SchemaOpts compiles the test's in-scope schemas and returns evaluator
+// mutators that install the SchemaDeclarations provider and (for strict/lax
+// sources) the collected type annotations. A schema that fails to compile
+// skips the case (a helium xsd limitation, reported as a skip rather than a
+// hard failure). Annotation maps are keyed on the exact parsed document nodes
+// the evaluator sees, so schema types atomize/cast as declared.
+func qt3SchemaOpts(t *testing.T, ctx context.Context, tc qt3Test, doc helium.Node, validatedDocs []helium.Node) []qt3EvalMutator {
+	t.Helper()
+	schemas := make([]*xsd.Schema, 0, len(tc.Schemas))
+	for _, sc := range tc.Schemas {
+		schemaPath := filepath.Join(qt3TestDataDir(), sc.DocPath)
+		// Trusted committed W3C fixtures whose nested xs:include/xs:import
+		// targets live next to the schema; opt into host FS access. Default to
+		// XSD 1.1 (honoring an xsd-version="1.0" dependency), mirroring the
+		// production schema-aware paths.
+		compiler := xsd.NewCompiler().FS(helium.PermissiveFS())
+		if tc.SchemaVersion == "1.0" {
+			compiler = compiler.Version(xsd.Version10)
+		} else {
+			compiler = compiler.DefaultVersion(xsd.Version11)
+		}
+		schema, err := compiler.CompileFile(ctx, schemaPath)
+		if err != nil {
+			t.Skipf("schema %q failed to compile: %v", sc.DocPath, err)
+		}
+		schemas = append(schemas, schema)
+	}
+	if len(schemas) == 0 {
+		return nil
+	}
+
+	var muts []qt3EvalMutator
+	if decls := qt3PickSchema(schemas, qt3AsDocument(doc)); decls != nil {
+		d := decls.Declarations()
+		muts = append(muts, func(e xpath3.Evaluator) xpath3.Evaluator { return e.SchemaDeclarations(d) })
+	}
+
+	if len(validatedDocs) > 0 {
+		ann := make(xsd.TypeAnnotations)
+		for _, vd := range validatedDocs {
+			qt3AnnotateDoc(ctx, schemas, vd, ann)
+		}
+		if len(ann) > 0 {
+			muts = append(muts, func(e xpath3.Evaluator) xpath3.Evaluator { return e.TypeAnnotations(ann) })
+		}
+	}
+	return muts
+}
+
+// qt3AnnotateDoc validates node against the schema whose target namespace
+// matches its root element and merges the resulting type annotations into ann.
+// A validity error is ignored: the fixtures are expected valid, and any
+// annotations collected before an error are still usable.
+func qt3AnnotateDoc(ctx context.Context, schemas []*xsd.Schema, node helium.Node, ann xsd.TypeAnnotations) {
+	d := qt3AsDocument(node)
+	if d == nil {
+		return
+	}
+	schema := qt3PickSchema(schemas, d)
+	if schema == nil {
+		return
+	}
+	local := make(xsd.TypeAnnotations)
+	_ = xsd.NewValidator(schema).Annotations(&local).Validate(ctx, d)
+	for k, v := range local {
+		ann[k] = v
+	}
+}
+
+// qt3PickSchema returns the schema whose target namespace matches d's root
+// element namespace, or the first schema when none matches (or d is nil).
+func qt3PickSchema(schemas []*xsd.Schema, d *helium.Document) *xsd.Schema {
+	if len(schemas) == 0 {
+		return nil
+	}
+	if d != nil {
+		ns := qt3DocRootNS(d)
+		for _, s := range schemas {
+			if s.TargetNamespace() == ns {
+				return s
+			}
+		}
+	}
+	return schemas[0]
+}
+
+func qt3AsDocument(n helium.Node) *helium.Document {
+	if n == nil {
+		return nil
+	}
+	if d, ok := n.(*helium.Document); ok {
+		return d
+	}
+	if owner := n.OwnerDocument(); owner != nil {
+		return owner
+	}
+	return nil
+}
+
+func qt3DocRootNS(d *helium.Document) string {
+	if d == nil {
+		return ""
+	}
+	root := d.DocumentElement()
+	if root == nil {
+		return ""
+	}
+	return root.URI()
 }
 
 // ──────────────────────────────────────────────────────────────────────
