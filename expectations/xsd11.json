@@ -1,4 +1,6 @@
 {
   "skip": {},
-  "xfail": {}
+  "xfail": {
+    "saxonMeta/Simple.testSet/simple006": "disputed section 5.3 missing-component case: contradicts saxonMeta/Missing/missing006 (near-identical xs:list with a missing itemType, expected VALID). The test's own Description admits it could be valid under XSD 1.0 section 5.3 (missing components), so helium deterministically defers the missing anonymous-list itemType and accepts, matching missing006"
+  }
 }
