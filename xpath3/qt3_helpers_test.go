@@ -24,6 +24,7 @@ import (
 	"github.com/lestrrat-go/helium"
 	"github.com/lestrrat-go/helium/xpath3"
 	"github.com/lestrrat-go/helium/xsd"
+	"github.com/lestrrat-go/helium/xslt3"
 	"github.com/stretchr/testify/require"
 )
 
@@ -112,6 +113,38 @@ func qt3Resolver(client *http.Client) xpath3.URIResolver {
 	return &qt3CombinedResolver{
 		httpR: &qt3HTTPResolver{client: client},
 		fileR: &qt3FileURIResolver{baseDir: string(filepath.Separator)},
+	}
+}
+
+// qt3TransformBaseURI is the static base URI handed to the fn:transform adapter
+// for resolving a relative stylesheet-location. It mirrors the base URI the
+// evaluator itself is configured with (explicit tc.BaseURI, else the harness
+// default). Transform cases overwhelmingly pass absolute http(s) locations, so
+// this only matters for the few that rely on a relative one.
+func qt3TransformBaseURI(tc qt3Test) string {
+	if tc.BaseURI != "" {
+		return tc.BaseURI
+	}
+	return qt3DefaultBaseURI(tc)
+}
+
+// qt3TransformMutator registers the real xslt3 fn:transform over the xpath3 stub.
+// User functions take precedence over builtins, so this cleanly overrides the
+// {fn}transform stub for the QT3 harness. The adapter inherits the harness's
+// combined HTTP+filesystem resolver and shared HTTP client.
+func qt3TransformMutator(client *http.Client, baseURI string) qt3EvalMutator {
+	return func(e xpath3.Evaluator) xpath3.Evaluator {
+		transformOpts := []xslt3.TransformOption{
+			xslt3.WithTransformURIResolver(qt3Resolver(client)),
+			xslt3.WithTransformHTTPClient(client),
+		}
+		if baseURI != "" {
+			transformOpts = append(transformOpts, xslt3.WithTransformBaseURI(baseURI))
+		}
+		fn := xslt3.TransformFunction(transformOpts...)
+		return e.Functions(nil, map[xpath3.QualifiedName]xpath3.Function{
+			{URI: xpath3.NSFn, Name: "transform"}: fn,
+		})
 	}
 }
 
@@ -313,6 +346,10 @@ func qt3RunTests(t *testing.T, tests []qt3Test) {
 				func(e xpath3.Evaluator) xpath3.Evaluator { return e.ImplicitTimezone(qt3ImplicitTZ) },
 				func(e xpath3.Evaluator) xpath3.Evaluator { return e.HTTPClient(httpClient) },
 				func(e xpath3.Evaluator) xpath3.Evaluator { return e.URIResolver(qt3Resolver(httpClient)) },
+				// Override the fn:transform stub with the real xslt3 implementation,
+				// wired to the same HTTP+filesystem resolver fn:doc uses so
+				// stylesheet-location / source-node resources resolve identically.
+				qt3TransformMutator(httpClient, qt3TransformBaseURI(tc)),
 			}
 			if tc.DefaultDecimal != nil {
 				df := tc.DefaultDecimal.toXPath3()

@@ -698,7 +698,7 @@
       "test_id": "fn-function-lookup-766a",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform relative stylesheet/source URI resolution requires a base URI the harness does not supply"
     },
     {
       "test_id": "fn-function-name-010",
@@ -1295,724 +1295,184 @@
       "reason": "requires XML 1.1"
     },
     {
-      "test_id": "fn-transform-1",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
       "test_id": "fn-transform-10",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform namespaced initial-template lookup not supported"
     },
     {
       "test_id": "fn-transform-11",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-12",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-13",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-13a",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-14",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-15",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-16",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-17",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-18",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-1a",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-1b",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-1c",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-1d",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-1e",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-20",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-21",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform namespaced initial-template lookup not supported"
     },
     {
       "test_id": "fn-transform-22",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform relative stylesheet/source URI resolution requires a base URI the harness does not supply"
     },
     {
       "test_id": "fn-transform-23",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform relative stylesheet/source URI resolution requires a base URI the harness does not supply"
     },
     {
       "test_id": "fn-transform-24",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform relative stylesheet/source URI resolution requires a base URI the harness does not supply"
     },
     {
       "test_id": "fn-transform-25",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-26",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-27",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-28",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-29",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-3",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform relative stylesheet/source URI resolution requires a base URI the harness does not supply"
     },
     {
       "test_id": "fn-transform-30",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-31",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-32",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-33",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-34",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-35",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-36",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-36a",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-37",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-38",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-39",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-3a",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-4",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-40",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-41",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-42",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-43",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-44",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-45",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-46",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-47",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-48",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-5",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-50",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-51",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-52",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-53",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-54",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-55",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-56",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-57",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-58",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-6",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-60",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-61",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-62",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-63",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-64",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-65",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-66",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-67",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-68",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-69",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-7",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform serialization-params not applied to serialized output"
     },
     {
       "test_id": "fn-transform-70",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "requires XML Schema support"
     },
     {
       "test_id": "fn-transform-71",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-72",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform requested-properties option not enforced"
     },
     {
       "test_id": "fn-transform-73",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-74",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform requested-properties option not enforced"
     },
     {
       "test_id": "fn-transform-75",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-76",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform requested-properties option not enforced"
     },
     {
       "test_id": "fn-transform-77",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-78",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform requested-properties option not enforced"
     },
     {
       "test_id": "fn-transform-79",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-7a",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-7b",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-7c",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform post-process callback not supported"
     },
     {
       "test_id": "fn-transform-7d",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform simplified stylesheet (literal result element) from a stylesheet-node not supported"
     },
     {
       "test_id": "fn-transform-7e",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-8",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform simplified stylesheet (literal result element) from a stylesheet-node not supported"
     },
     {
       "test_id": "fn-transform-80",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform post-process callback not supported"
     },
     {
       "test_id": "fn-transform-81",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform post-process callback not supported"
     },
     {
-      "test_id": "fn-transform-82a",
+      "test_id": "fn-transform-901",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform does not raise FOXT0004 on transformation failure"
     },
     {
-      "test_id": "fn-transform-82b",
+      "test_id": "fn-transform-902",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-82c",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-82d",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-82e",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-83",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-84",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-85",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-86",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-87",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-88",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-9",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform does not raise FOXT0004 on transformation failure"
     },
     {
       "test_id": "fn-transform-err-1",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-err-10",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-err-11",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-err-12",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform option validation not enforced"
     },
     {
       "test_id": "fn-transform-err-13",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform option validation not enforced"
     },
     {
       "test_id": "fn-transform-err-14",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-err-15",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-err-16",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform option validation not enforced"
     },
     {
       "test_id": "fn-transform-err-17",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform option validation not enforced"
     },
     {
       "test_id": "fn-transform-err-18",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform option validation not enforced"
     },
     {
       "test_id": "fn-transform-err-2",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform option validation not enforced"
     },
     {
       "test_id": "fn-transform-err-3",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform option validation not enforced"
     },
     {
       "test_id": "fn-transform-err-4",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform option validation not enforced"
     },
     {
       "test_id": "fn-transform-err-5",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform option validation not enforced"
     },
     {
       "test_id": "fn-transform-err-6",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-err-7",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-err-8",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
-    },
-    {
-      "test_id": "fn-transform-err-9",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform option validation not enforced"
     },
     {
       "test_id": "fn-transform-err-9a",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "requires XSLT transform"
+      "reason": "fn:transform relative stylesheet/source URI resolution requires a base URI the harness does not supply"
     },
     {
       "test_id": "fn-unparsed-text-007",

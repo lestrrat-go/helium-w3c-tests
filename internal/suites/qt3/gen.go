@@ -534,8 +534,6 @@ func getSkipReason(deps []dependency) string {
 				return "requires collection stability"
 			case "directory-as-collection-uri":
 				return "requires directory as collection URI"
-			case "fn-transform-XSLT", "fn-transform-XSLT30":
-				return "requires XSLT transform"
 			case "fn-load-xquery-module":
 				return "requires XQuery load-xquery-module"
 			case "remote_http":
@@ -611,6 +609,69 @@ func getTestCaseSkipReason(_, caseName string) string {
 	case "fn-string-22", "fn-string-length-22", "fn-string-length-23",
 		"fn-normalize-space-23", "fn-normalize-space-24":
 		return "requires PSVI insignificant-whitespace-stripping construction (not supported)"
+
+	// fn:transform sub-feature gaps. The xslt3 fn:transform adapter (wired over
+	// the xpath3 stub in qt3_helpers_test.go) runs 92 of the 122 transform cases;
+	// the following need sub-features the adapter does not yet implement. All
+	// reasons carry the "fn:transform" substring so qt3SkipClass files them under
+	// the closeable "not-wired" class.
+
+	// requested-properties: fn:transform ignores the requested-properties option,
+	// so a stylesheet that uses a feature the caller asked NOT to support (schema
+	// awareness, backwards-compatibility, the namespace axis, streaming) runs
+	// instead of raising the FOXT0006 "requested properties cannot be satisfied"
+	// error these cases expect.
+	case "fn-transform-71", "fn-transform-73", "fn-transform-75", "fn-transform-77":
+		return "fn:transform requested-properties option not enforced"
+
+	// post-process: fn:transform ignores the post-process callback, so the result
+	// map's output entry is the raw transform result rather than the value the
+	// callback would have produced.
+	case "fn-transform-79", "fn-transform-80", "fn-transform-81":
+		return "fn:transform post-process callback not supported"
+
+	// serialization-params: fn:transform does not apply the serialization-params
+	// option to the serialized output, so indent yes/no produce identical strings
+	// (the case asserts they differ).
+	case "fn-transform-30":
+		return "fn:transform serialization-params not applied to serialized output"
+
+	// option validation: fn:transform does not reject invalid/mutually-exclusive
+	// option maps (missing source, stylesheet-text+location/node, initial-mode+
+	// initial-template, initial-match-selection+source-node, bad delivery-format,
+	// raw delivery-format on a non-3.0 processor, wrong-typed option values, or
+	// string-keyed stylesheet-params), so the FOXT0002/type errors these cases
+	// expect are not raised.
+	case "fn-transform-err-1", "fn-transform-err-2", "fn-transform-err-3",
+		"fn-transform-err-4", "fn-transform-err-5", "fn-transform-err-6",
+		"fn-transform-err-13", "fn-transform-err-14", "fn-transform-err-17",
+		"fn-transform-err-18":
+		return "fn:transform option validation not enforced"
+
+	// transformation-failure code: fn:transform completes rather than reporting a
+	// FOXT0004 transformation failure for these two dynamic-failure cases.
+	case "fn-transform-901", "fn-transform-902":
+		return "fn:transform does not raise FOXT0004 on transformation failure"
+
+	// simplified stylesheet from a node: fn:transform cannot compile a
+	// stylesheet-node that is a literal result element (simplified stylesheet);
+	// it reports XTSE0150 instead of running it.
+	case "fn-transform-7d", "fn-transform-7e":
+		return "fn:transform simplified stylesheet (literal result element) from a stylesheet-node not supported"
+
+	// namespaced initial-template: fn:transform's initial-template lookup ignores
+	// the QName namespace, so a named template in a non-null namespace is not
+	// found (XTDE0820).
+	case "fn-transform-10", "fn-transform-11":
+		return "fn:transform namespaced initial-template lookup not supported"
+
+	// relative URI resolution: these resolve a stylesheet-location / xsl:include /
+	// source doc through a relative reference whose base URI the harness does not
+	// supply (or via static-base-uri()/stylesheet-base-uri that maps to a
+	// location the harness cannot serve), so fn:transform cannot fetch them.
+	case "fn-transform-22", "fn-transform-23", "fn-transform-24", "fn-transform-25",
+		"fn-transform-err-9a", "fn-function-lookup-766a":
+		return "fn:transform relative stylesheet/source URI resolution requires a base URI the harness does not supply"
 	}
 	return ""
 }
