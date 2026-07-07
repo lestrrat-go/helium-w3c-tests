@@ -615,6 +615,15 @@ func getTestCaseSkipReason(_, caseName string) string {
 	case "fn-string-length-23", "fn-normalize-space-24":
 		return "requires PSVI insignificant-whitespace-stripping construction (not supported)"
 
+	// fn-transform-23 sets stylesheet-base-uri = string(base-uri($include)); the
+	// env source $include has no uri attribute, so its base URI is the local parse
+	// path rather than the http://www.w3.org/fots/ URL the resolver maps, and the
+	// stylesheet's relative xsl:include href="render.xsl" resolves to an unmapped
+	// URL (FOXT0003). Closing it needs the harness to give a no-uri env source the
+	// FOTS document base URI, beyond the fn:transform adapter base wiring.
+	case "fn-transform-23":
+		return "fn:transform stylesheet-base-uri from base-uri() of a no-uri env source is the local parse path, so the relative xsl:include does not map to a fixture"
+
 	// fn:transform sub-feature gaps. The xslt3 fn:transform adapter (wired over
 	// the xpath3 stub in qt3_helpers_test.go) runs the transform cases; the
 	// following need behavior the adapter does not provide. All reasons carry the
@@ -626,27 +635,6 @@ func getTestCaseSkipReason(_, caseName string) string {
 	// default document rather than raising the FOXT0002 error the case expects.
 	case "fn-transform-err-1":
 		return "fn:transform applies to an empty default document instead of raising FOXT0002"
-
-	// stylesheet-base-uri whose VALUE is a harness-computed base that does not map
-	// to a local fixture. fn-transform-22 passes stylesheet-base-uri =
-	// string(static-base-uri()); the harness static-base-uri() is the qt-fots
-	// catalog namespace, not the transform document URI, so the relative
-	// xsl:include resolves to an un-mapped catalog-relative URL rather than the
-	// testdata fixture. fn-transform-23 passes stylesheet-base-uri =
-	// string(base-uri($include)); the env source $include has no uri attribute, so
-	// its base URI is the local parse path, not the http://www.w3.org/fots/ URL
-	// the resolver maps. Both need the harness's evaluator/source base-URI model
-	// aligned with the fn:transform adapter base, beyond stylesheet-base-uri wiring.
-	case "fn-transform-22", "fn-transform-23":
-		return "fn:transform stylesheet-base-uri value is a harness base URI that does not map to a local fixture"
-
-	// evaluator-base-relative resolution: the argument evaluates a relative
-	// fn:doc() ("function-lookup/collection-1.xml") in the outer XPath context,
-	// which resolves against the global evaluator base URI. The FOTS test-set base
-	// URI is supplied only to the fn:transform adapter, not as the global evaluator
-	// base, so this relative reference cannot be resolved.
-	case "fn-function-lookup-766a":
-		return "fn:transform-adapter base URI does not cover evaluator-base-relative resolution"
 
 	}
 	return ""

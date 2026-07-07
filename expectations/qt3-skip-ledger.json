@@ -67,91 +67,91 @@
     {
       "test_id": "ST-Axes001",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "ST-Axes002",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "ST-Axes003",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "ST-Axes004",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "ST-Axes005",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "ST-Axes006",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "ST-Axes007",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "ST-Axes008",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "ST-Axes009",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "ST-Axes010",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "ST-Axes011",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "ST-Axes012",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "ST-Axes013",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "ST-Axes014",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "ST-Axes015",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
@@ -181,49 +181,49 @@
     {
       "test_id": "fn-filter-007",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-filter-016",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-filter-019",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-filter-022",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-for-each-pair-032",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-function-arity-010",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-function-arity-012",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-function-lookup-713",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
@@ -233,39 +233,33 @@
       "reason": "requires XQuery load-xquery-module"
     },
     {
-      "test_id": "fn-function-lookup-766a",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform-adapter base URI does not cover evaluator-base-relative resolution"
-    },
-    {
       "test_id": "fn-function-name-010",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-has-children-012",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-has-children-013",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-innermost-008",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-innermost-010",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
@@ -703,13 +697,13 @@
     {
       "test_id": "fn-outermost-008",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-outermost-010",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
@@ -719,16 +713,10 @@
       "reason": "requires PSVI insignificant-whitespace-stripping construction (not supported)"
     },
     {
-      "test_id": "fn-transform-22",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform stylesheet-base-uri value is a harness base URI that does not map to a local fixture"
-    },
-    {
       "test_id": "fn-transform-23",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "fn:transform stylesheet-base-uri value is a harness base URI that does not map to a local fixture"
+      "reason": "fn:transform stylesheet-base-uri from base-uri() of a no-uri env source is the local parse path, so the relative xsl:include does not map to a fixture"
     },
     {
       "test_id": "fn-transform-err-1",
@@ -739,25 +727,25 @@
     {
       "test_id": "fn-unparsed-text-007",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-unparsed-text-009",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-unparsed-text-011",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-unparsed-text-012",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
@@ -775,49 +763,49 @@
     {
       "test_id": "fn-unparsed-text-available-007",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-unparsed-text-available-009",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-unparsed-text-available-011",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-unparsed-text-available-012",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-unparsed-text-lines-007",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-unparsed-text-lines-009",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-unparsed-text-lines-011",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
       "test_id": "fn-unparsed-text-lines-012",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {
@@ -829,7 +817,7 @@
     {
       "test_id": "parse-xml-fragment-022-st",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
+      "skip_class": "out-of-scope",
       "reason": "requires static typing"
     },
     {

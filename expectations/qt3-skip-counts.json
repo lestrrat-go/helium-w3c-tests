@@ -3,10 +3,10 @@
   "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
   "total_cases": 22469,
   "expected_fail": 2,
-  "skipped": 143,
+  "skipped": 141,
   "by_class": {
-    "not-wired": 5,
-    "out-of-scope": 93,
-    "standalone-limitation": 45
+    "not-wired": 3,
+    "out-of-scope": 136,
+    "standalone-limitation": 2
   }
 }
