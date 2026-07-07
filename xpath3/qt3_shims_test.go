@@ -33,6 +33,13 @@ const (
 var qt3AllCases []qt3Test
 
 func TestQT3W3C(t *testing.T) {
+	// Guard the hand-authored expectations before the expensive run so a bare
+	// conformance run (cmd/w3ctest) also fails fast on a skip/xfail entry that
+	// names no runnable case — otherwise a stale/typoed xfail would silently
+	// never exercise the unexpected-pass tripwire.
+	for _, p := range qt3ValidateExpectations(qt3LoadExpectations(), qt3AllCases) {
+		t.Fatalf("expectations/qt3.json: %s", p)
+	}
 	// qt3RunTests skips when fixtures are unfetched.
 	qt3RunTests(t, qt3AllCases)
 }
