@@ -237,7 +237,7 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]bool, map[strin
 				}
 			}
 			if skipReason == "" {
-				skipReason = schemaAwareSkip(mergedDeps, env, len(schemas) > 0)
+				skipReason = schemaAwareSkip(env, len(schemas) > 0)
 			}
 			// A subset of "requires static typing" cases raise the expected type
 			// error DYNAMICALLY in helium's evaluator (or take an any-of branch
@@ -752,22 +752,24 @@ func checkEnvironmentSupport(env *environment) string {
 }
 
 // schemaAwareSkip gates schema-dependent cases on the presence of at least one
-// <schema> binding in the resolved environment. A case that requires XML Schema
-// support — a schemaImport/schemaAware feature dependency, or a
-// validation="strict"/"lax" source whose types must be annotated — cannot run
-// schema-aware without a schema to compile, so it stays skipped when hasSchema
-// is false. When a schema is present the case runs (SchemaDeclarations +
-// validated-source TypeAnnotations are wired at runtime). This is the shared
-// gate used by both the generator (gen.go) and the manifest planner (plan.go)
-// so the emitted case tables and the reported runnable/skipped counts agree.
-func schemaAwareSkip(deps []dependency, env *environment, hasSchema bool) string {
+// <schema> binding in the resolved environment. A validation="strict"/"lax"
+// source whose types must be annotated cannot run schema-aware without a schema
+// to compile, so it stays skipped when hasSchema is false. When a schema is
+// present the case runs (SchemaDeclarations + validated-source TypeAnnotations
+// are wired at runtime). This is the shared gate used by both the generator
+// (gen.go) and the manifest planner (plan.go) so the emitted case tables and
+// the reported runnable/skipped counts agree.
+//
+// A schemaImport/schemaAware/schemaValidation FEATURE dependency is NOT gated
+// here: in FOTS it is the spec's "schema-aware processor" conformance marker,
+// not a requirement for a user-supplied compilable schema. helium supports the
+// built-in list types (xs:ENTITIES/xs:IDREFS/xs:NMTOKENS) and the built-in
+// json/analyze-string namespaces natively, so those cases run and their FOTS
+// expected-result decides; the ones that genuinely need schema-validated PSVI
+// type annotations are recorded as xfail in expectations/qt3.json.
+func schemaAwareSkip(env *environment, hasSchema bool) string {
 	if hasSchema {
 		return ""
-	}
-	if hasFeatureDependency(deps, "schemaImport") ||
-		hasFeatureDependency(deps, "schemaAware") ||
-		hasFeatureDependency(deps, "schemaValidation") {
-		return "requires XML Schema support"
 	}
 	if env != nil {
 		for _, src := range env.Sources {
