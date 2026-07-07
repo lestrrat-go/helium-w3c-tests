@@ -116,14 +116,27 @@ func qt3Resolver(client *http.Client) xpath3.URIResolver {
 	}
 }
 
-// qt3TransformBaseURI is the static base URI handed to the fn:transform adapter
-// for resolving a relative stylesheet-location. It mirrors the base URI the
-// evaluator itself is configured with (explicit tc.BaseURI, else the harness
-// default). Transform cases overwhelmingly pass absolute http(s) locations, so
-// this only matters for the few that rely on a relative one.
+// qt3TransformBaseURI is the static base URI handed to the fn:transform adapter,
+// used to resolve a relative stylesheet-location (the FOTS-correct behavior: a
+// relative stylesheet-location resolves against the transform call's static base
+// URI). An explicit environment static-base-uri wins; otherwise the FOTS
+// test-set document URI is used, which is where the fixtures live.
+//
+// It is deliberately NOT supplied for a stylesheet-text case. xslt3 uses this
+// base URI as the base of an inline stylesheet-text too (rather than honoring
+// the stylesheet-base-uri option), so supplying it would let a relative
+// xsl:include in stylesheet-text resolve even when the case supplies no
+// stylesheet-base-uri and expects the include to be unresolvable (e.g.
+// fn-transform-err-9, which asserts XTSE0165). Withholding the base there keeps
+// that error-detection case correct; the flip side is that a stylesheet-text
+// case that legitimately supplies stylesheet-base-uri (fn-transform-22) stays
+// skipped until xslt3 honors that option.
 func qt3TransformBaseURI(tc qt3Test) string {
 	if tc.BaseURI != "" {
 		return tc.BaseURI
+	}
+	if tc.FOTSBaseURI != "" && !strings.Contains(tc.XPath, "stylesheet-text") {
+		return tc.FOTSBaseURI
 	}
 	return qt3DefaultBaseURI(tc)
 }
@@ -206,6 +219,7 @@ type qt3Test struct {
 	SourceDocs          []qt3SourceDoc
 	Collections         []qt3Collection
 	BaseURI             string            // static base URI for fn:unparsed-text etc.
+	FOTSBaseURI         string            // FOTS test-set document URI; fn:transform-adapter base for relative stylesheet-location resolution only (never the global evaluator base)
 	NeedsHTTP           bool              // test requires HTTP client (e.g. fn:json-doc with URL)
 	ResourceMap         map[string]string // URI → file path (relative to qt3TestDataDir()) for resource resolution
 	Schemas             []qt3Schema       // in-scope XSD schemas for schema-aware evaluation

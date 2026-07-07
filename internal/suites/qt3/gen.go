@@ -285,6 +285,24 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]bool, map[strin
 				baseURI = env.StaticBaseURI.URI
 			}
 
+			// The FOTS static base URI of a test defaults to the URI of its
+			// test-set document; the harness serves fixtures under
+			// http://www.w3.org/fots/<path>. It is threaded to the fn:transform
+			// adapter (WithTransformBaseURI) as the base for resolving a relative
+			// stylesheet-location, so such a location resolves against the test-set
+			// location where the fixtures live. Only an fn:transform case consults it,
+			// so it is emitted only for the transform feature — a document-URI base on
+			// every one of the ~22k cases would be dead weight. A test whose
+			// environment declares the static base URI as #UNDEFINED keeps an
+			// undefined (empty) base (a relative reference there must be unresolvable).
+			var fotsBaseURI string
+			usesTransform := hasFeatureDependency(mergedDeps, "fn-transform-XSLT") ||
+				hasFeatureDependency(mergedDeps, "fn-transform-XSLT30")
+			undefinedBase := env != nil && env.StaticBaseURI != nil && env.StaticBaseURI.URI == "#UNDEFINED"
+			if usesTransform && !undefinedBase {
+				fotsBaseURI = "http://www.w3.org/fots/" + filepath.ToSlash(tsRef.File)
+			}
+
 			// Detect resource environments (e.g., fn:json-doc/doc tests with URI-mapped files)
 			needsHTTP := false
 			var resMap map[string]string
@@ -336,6 +354,7 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]bool, map[strin
 				Collections:       envCollections(env, envIsGlobal, tsDir),
 				VariableSources:   envVariableSources(env, envIsGlobal, tsDir),
 				BaseURI:           baseURI,
+				FOTSBaseURI:       fotsBaseURI,
 				NeedsHTTP:         needsHTTP,
 				ResourceMap:       resMap,
 				Schemas:           schemas,
@@ -665,13 +684,24 @@ func getTestCaseSkipReason(_, caseName string) string {
 	case "fn-transform-10", "fn-transform-11":
 		return "fn:transform namespaced initial-template lookup not supported"
 
-	// relative URI resolution: these resolve a stylesheet-location / xsl:include /
-	// source doc through a relative reference whose base URI the harness does not
-	// supply (or via static-base-uri()/stylesheet-base-uri that maps to a
-	// location the harness cannot serve), so fn:transform cannot fetch them.
-	case "fn-transform-22", "fn-transform-23", "fn-transform-24", "fn-transform-25",
-		"fn-transform-err-9a", "fn-function-lookup-766a":
-		return "fn:transform relative stylesheet/source URI resolution requires a base URI the harness does not supply"
+	// stylesheet-base-uri option not honored: xslt3.TransformFunction ignores the
+	// stylesheet-base-uri option and the base URI of a stylesheet-node's own
+	// document, so a relative xsl:include cannot be resolved. 22/err-9a supply a
+	// stylesheet-base-uri for an inline stylesheet-text; 23/24 rely on the
+	// stylesheet-node document's base URI (23 also passes it as stylesheet-base-uri).
+	// (fn-transform-25 resolves its relative stylesheet-location against the FOTS
+	// test-set base URI supplied to the transform adapter, so it is not skipped.)
+	case "fn-transform-22", "fn-transform-23", "fn-transform-24", "fn-transform-err-9a":
+		return "fn:transform stylesheet-base-uri option not honored by xslt3.TransformFunction"
+
+	// evaluator-base-relative resolution: the argument evaluates a relative
+	// fn:doc() ("function-lookup/collection-1.xml") in the outer XPath context,
+	// which resolves against the global evaluator base URI. The FOTS test-set base
+	// URI is supplied only to the fn:transform adapter, not as the global evaluator
+	// base, so this relative reference cannot be resolved.
+	case "fn-function-lookup-766a":
+		return "fn:transform-adapter base URI does not cover evaluator-base-relative resolution"
+
 	}
 	return ""
 }
@@ -1121,6 +1151,7 @@ type generatedTest struct {
 	Collections       []collectionBinding
 	VariableSources   []sourceBinding
 	BaseURI           string
+	FOTSBaseURI       string
 	NeedsHTTP         bool
 	ResourceMap       map[string]string // URI → file path relative to testdata dir
 	Schemas           []schemaBinding   // in-scope XSD schemas for schema-aware evaluation
@@ -1228,6 +1259,9 @@ func generateTestFile(tests []generatedTest) string {
 			}
 			if tc.BaseURI != "" {
 				fmt.Fprintf(&b, ", BaseURI: %q", tc.BaseURI)
+			}
+			if tc.FOTSBaseURI != "" {
+				fmt.Fprintf(&b, ", FOTSBaseURI: %q", tc.FOTSBaseURI)
 			}
 			if tc.NeedsHTTP {
 				b.WriteString(", NeedsHTTP: true")

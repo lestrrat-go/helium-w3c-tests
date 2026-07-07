@@ -698,7 +698,7 @@
       "test_id": "fn-function-lookup-766a",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "fn:transform relative stylesheet/source URI resolution requires a base URI the harness does not supply"
+      "reason": "fn:transform-adapter base URI does not cover evaluator-base-relative resolution"
     },
     {
       "test_id": "fn-function-name-010",
@@ -1310,25 +1310,19 @@
       "test_id": "fn-transform-22",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "fn:transform relative stylesheet/source URI resolution requires a base URI the harness does not supply"
+      "reason": "fn:transform stylesheet-base-uri option not honored by xslt3.TransformFunction"
     },
     {
       "test_id": "fn-transform-23",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "fn:transform relative stylesheet/source URI resolution requires a base URI the harness does not supply"
+      "reason": "fn:transform stylesheet-base-uri option not honored by xslt3.TransformFunction"
     },
     {
       "test_id": "fn-transform-24",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "fn:transform relative stylesheet/source URI resolution requires a base URI the harness does not supply"
-    },
-    {
-      "test_id": "fn-transform-25",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform relative stylesheet/source URI resolution requires a base URI the harness does not supply"
+      "reason": "fn:transform stylesheet-base-uri option not honored by xslt3.TransformFunction"
     },
     {
       "test_id": "fn-transform-30",
@@ -1472,7 +1466,7 @@
       "test_id": "fn-transform-err-9a",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "fn:transform relative stylesheet/source URI resolution requires a base URI the harness does not supply"
+      "reason": "fn:transform stylesheet-base-uri option not honored by xslt3.TransformFunction"
     },
     {
       "test_id": "fn-unparsed-text-007",
