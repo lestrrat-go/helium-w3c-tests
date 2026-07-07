@@ -316,18 +316,18 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]bool, map[strin
 			}
 
 			allTests = append(allTests, generatedTest{
-				SetName:          tsRef.Name,
-				CaseName:         tc.Name,
-				XPath:            strings.TrimSpace(tc.Test),
-				ContextDocPath:   contextDocPath,
-				Namespaces:       collectNamespaces(env),
-				DefaultLanguage:  dependencyValue(mergedDeps, "default-language"),
-				DefaultCollation: envDefaultCollation(env),
-				DefaultDecimal:   envDefaultDecimalFormat(env),
-				DecimalFormats:   envNamedDecimalFormats(env),
-				Params:           envParams(env),
-				Collections:      envCollections(env, envIsGlobal, tsDir),
-				VariableSources:  envVariableSources(env, envIsGlobal, tsDir),
+				SetName:           tsRef.Name,
+				CaseName:          tc.Name,
+				XPath:             strings.TrimSpace(tc.Test),
+				ContextDocPath:    contextDocPath,
+				Namespaces:        collectNamespaces(env),
+				DefaultLanguage:   dependencyValue(mergedDeps, "default-language"),
+				DefaultCollation:  envDefaultCollation(env),
+				DefaultDecimal:    envDefaultDecimalFormat(env),
+				DecimalFormats:    envNamedDecimalFormats(env),
+				Params:            envParams(env),
+				Collections:       envCollections(env, envIsGlobal, tsDir),
+				VariableSources:   envVariableSources(env, envIsGlobal, tsDir),
 				BaseURI:           baseURI,
 				NeedsHTTP:         needsHTTP,
 				ResourceMap:       resMap,
@@ -581,11 +581,6 @@ func getTestCaseSkipReason(_, caseName string) string {
 	// which the standalone evaluator does not derive from type annotations.
 	case "fn-element-with-id-4", "fn-element-with-id-5":
 		return "requires schema is-id property lookup (unsupported by standalone evaluator)"
-
-	// castable-as of a map/array (a non-atomizable operand) must raise XPTY0004;
-	// the evaluator returns false instead of erroring.
-	case "CastableAs666", "CastableAs668":
-		return "castable-as of a non-atomizable operand does not raise XPTY0004"
 
 	// fn:data on a schema-typed element with no typed value must raise FOTY0012;
 	// the evaluator returns an untypedAtomic value instead.
@@ -1027,26 +1022,26 @@ func convertAssertion(xa xmlAssertion) assertion {
 // ──────────────────────────────────────────────────────────────────────
 
 type generatedTest struct {
-	SetName          string
-	CaseName         string
-	XPath            string
-	ContextDocPath   string
-	Namespaces       map[string]string
-	DefaultLanguage  string
-	DefaultCollation string
-	DefaultDecimal   *decimalFormat
-	DecimalFormats   []namedDecimalFormat
-	Params           []param
-	Collections      []collectionBinding
-	VariableSources  []sourceBinding
-	BaseURI          string
-	NeedsHTTP        bool
-	ResourceMap      map[string]string // URI → file path relative to testdata dir
-	Schemas          []schemaBinding   // in-scope XSD schemas for schema-aware evaluation
-	ContextValidation string           // "strict"/"lax"/"" for the context document
-	SchemaVersion    string            // "1.0" to force XSD 1.0 compilation; "" = default 1.1
-	Assertions       []assertion
-	SkipReason       string
+	SetName           string
+	CaseName          string
+	XPath             string
+	ContextDocPath    string
+	Namespaces        map[string]string
+	DefaultLanguage   string
+	DefaultCollation  string
+	DefaultDecimal    *decimalFormat
+	DecimalFormats    []namedDecimalFormat
+	Params            []param
+	Collections       []collectionBinding
+	VariableSources   []sourceBinding
+	BaseURI           string
+	NeedsHTTP         bool
+	ResourceMap       map[string]string // URI → file path relative to testdata dir
+	Schemas           []schemaBinding   // in-scope XSD schemas for schema-aware evaluation
+	ContextValidation string            // "strict"/"lax"/"" for the context document
+	SchemaVersion     string            // "1.0" to force XSD 1.0 compilation; "" = default 1.1
+	Assertions        []assertion
+	SkipReason        string
 }
 
 func generateTestFile(tests []generatedTest) string {
