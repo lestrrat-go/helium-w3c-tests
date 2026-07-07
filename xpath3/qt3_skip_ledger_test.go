@@ -1,7 +1,7 @@
 package xpath3_test
 
 // This file is the machine-readable, CI-enforced conformance skip contract for
-// the W3C QT3 (XPath 3.1) suite. The 383 skips are dependency-derived by the
+// the W3C QT3 (XPath 3.1) suite. The dependency-derived skips are produced by the
 // generator (internal/suites/qt3/gen.go) and materialized as the Skip field on
 // every generated qt3Test; this test turns them into an auditable, committed,
 // drift-checked artifact so that closing a skip category (wiring an adapter,

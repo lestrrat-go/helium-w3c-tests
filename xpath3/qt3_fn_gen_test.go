@@ -2614,14 +2614,14 @@ it put its sooty foot."
                             fn:dateTime( fn:current-date(),
                                          fn:current-time() ))
                          then 1
-                         else fn:exists#1 ) )`, Skip: "requires static typing", ExpectError: true},
+                         else fn:exists#1 ) )`, ExpectError: true},
 		{Name: "fn-filter-007", XPath: `fn:filter( (), if ( fn:current-dateTime() eq
                           fn:dateTime( fn:current-date(),
                                        fn:current-time() ))
                        then fn:exists#1
                        else 1 )`, Skip: "requires static typing", ExpectError: true},
-		{Name: "fn-filter-008", XPath: "fn:filter( (), fn:true() )", Skip: "requires static typing", ExpectError: true},
-		{Name: "fn-filter-009", XPath: "fn:filter( (), fn:true() )", Skip: "requires static typing", ExpectError: true},
+		{Name: "fn-filter-008", XPath: "fn:filter( (), fn:true() )", ExpectError: true},
+		{Name: "fn-filter-009", XPath: "fn:filter( (), fn:true() )", ExpectError: true},
 		{Name: "fn-filter-010", XPath: "fn:filter( (), function($a as item()) as xs:boolean* { fn:boolean($a), fn:boolean($a) } )", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckEmpty())}},
 		{Name: "fn-filter-011", XPath: "fn:filter( (), function($a as item()) as xs:boolean? { () } )", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckEmpty())}},
 		{Name: "fn-filter-012", XPath: "fn:filter( (), fn:string#1 )", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckEmpty())}},
@@ -2635,7 +2635,7 @@ it put its sooty foot."
 		{Name: "fn-filter-020", XPath: "fn:filter( 1 to 10, function($arg) { if ($arg eq 100) then (fn:true(), fn:false()) else fn:true()})", Assertions: []qt3Assertion{qt3AssertCount(10)}},
 		{Name: "fn-filter-021", XPath: "fn:filter( 1 to 10, function($arg) { if ($arg eq 10) then (fn:true(), fn:false()) else fn:true()})", ExpectError: true},
 		{Name: "fn-filter-022", XPath: "fn:filter( 1 to 10, function($arg) { if ($arg eq 100) then (fn:true(), fn:false()) else fn:true()})", Skip: "requires static typing", ExpectError: true},
-		{Name: "fn-filter-023", XPath: "fn:filter( (\"1\", \"2\", \"3\"), function($arg as xs:integer) as xs:boolean { $arg eq 100 } )", Skip: "requires static typing", ExpectError: true},
+		{Name: "fn-filter-023", XPath: "fn:filter( (\"1\", \"2\", \"3\"), function($arg as xs:integer) as xs:boolean { $arg eq 100 } )", ExpectError: true},
 		{Name: "fn-floorint1args-1", XPath: "fn:floor(xs:int(\"-2147483648\"))", Assertions: []qt3Assertion{qt3AssertStringValue("-2147483648")}},
 		{Name: "fn-floorint1args-2", XPath: "fn:floor(xs:int(\"-1873914410\"))", Assertions: []qt3Assertion{qt3AssertStringValue("-1873914410")}},
 		{Name: "fn-floorint1args-3", XPath: "fn:floor(xs:int(\"2147483647\"))", Assertions: []qt3Assertion{qt3AssertStringValue("2147483647")}},
@@ -2833,7 +2833,7 @@ it put its sooty foot."
                           fn:dateTime( fn:current-date(),
                                        fn:current-time() ))
                           then fn:concat#2
-                          else () )`, Skip: "requires static typing", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckEmpty())}},
+                          else () )`, AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckEmpty())}},
 		{Name: "fn-for-each-pair-011", XPath: "fn:for-each-pair( (), (), (fn:concat#2, fn:concat#2) )", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckEmpty())}},
 		{Name: "fn-for-each-pair-012", XPath: "fn:for-each-pair( (), (), fn:true() )", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckEmpty())}},
 		{Name: "fn-for-each-pair-013", XPath: "fn:for-each-pair( (), (), /root )", DocPath: "fn/for-each-pair/fn-for-each-pair-013.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckEmpty())}},
@@ -4656,7 +4656,7 @@ string')`, Assertions: []qt3Assertion{qt3AssertStringValue("normalized string")}
                                     fn:dateTime( fn:current-date(),
                                                  fn:current-time() ))
                                then ()
-                               else 1 )`, Skip: "requires static typing", ExpectError: true},
+                               else 1 )`, ExpectError: true},
 		{Name: "fn-function-lookup-712", XPath: `( fn:function-lookup(fn:QName('http://www.w3.org/2005/xpath-functions', 'node-name'),
                                  if (current-date() eq xs:date('1900-01-01'))
                                  then ()
@@ -12302,7 +12302,7 @@ tab	space ','
               fn:unparsed-text-available( 
                 if (current-date() eq xs:date('1900-01-01'))
                 then 1
-                else "http://www.w3.org/fots/unparsed-text/text-plain-utf-8.txt") )`, Skip: "requires static typing", ExpectError: true},
+                else "http://www.w3.org/fots/unparsed-text/text-plain-utf-8.txt") )`, ExpectError: true},
 		{Name: "fn-unparsed-text-available-009", XPath: `fn:unparsed-text-available( 
               "http://www.w3.org/fots/unparsed-text/text-plain-utf-8.txt",
               if ( fn:current-dateTime() eq fn:dateTime( fn:current-date(),
@@ -12318,7 +12318,7 @@ tab	space ','
                 "http://www.w3.org/fots/unparsed-text/text-plain-utf-8.txt",
                 if (current-date() eq xs:date('1900-01-01'))
                 then 1
-                else "utf-8") )`, Skip: "requires static typing", ExpectError: true},
+                else "utf-8") )`, ExpectError: true},
 		{Name: "fn-unparsed-text-available-011", XPath: `fn:unparsed-text-available( 
               "http://www.w3.org/fots/unparsed-text/text-plain-utf-8.txt",
               if ( fn:current-dateTime() eq fn:dateTime( fn:current-date(),

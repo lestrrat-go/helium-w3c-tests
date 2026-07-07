@@ -239,6 +239,13 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]bool, map[strin
 			if skipReason == "" {
 				skipReason = schemaAwareSkip(mergedDeps, env, len(schemas) > 0)
 			}
+			// A subset of "requires static typing" cases raise the expected type
+			// error DYNAMICALLY in helium's evaluator (or take an any-of branch
+			// that holds), so the optional static-typing feature isn't actually
+			// needed — un-skip them.
+			if skipReason == "requires static typing" && qt3StaticTypingRaisesDynamically(tc.Name) {
+				skipReason = ""
+			}
 
 			var contextDocPath string
 			var contextValidation string
@@ -610,6 +617,24 @@ func getTestCaseSkipReason(_, caseName string) string {
 
 func getTestSetSkipReason(name string) string {
 	return ""
+}
+
+// qt3StaticTypingRaisesDynamically lists "requires static typing" cases whose
+// expected type error helium already raises at evaluation time (or whose any-of
+// result branch helium already satisfies), so they pass without the optional
+// static-typing feature and need not be skipped. Each was verified by evaluating
+// its expression against helium's xpath3 engine. The remaining static-typing
+// cases genuinely need compile-time analysis (they expect XPST0005 on an
+// always-empty path, or guard the type mismatch behind an always-true condition
+// so the offending branch is never evaluated) and stay skipped.
+func qt3StaticTypingRaisesDynamically(caseName string) bool {
+	switch caseName {
+	case "fn-filter-006", "fn-filter-008", "fn-filter-009", "fn-filter-023",
+		"fn-function-lookup-711", "fn-for-each-pair-010",
+		"fn-unparsed-text-available-008", "fn-unparsed-text-available-010":
+		return true
+	}
+	return false
 }
 
 // ──────────────────────────────────────────────────────────────────────
