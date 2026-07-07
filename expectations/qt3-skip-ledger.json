@@ -5,18 +5,6 @@
   "note": "machine-generated conformance skip contract; do not hand-edit. Skips are dependency-derived in internal/suites/qt3/gen.go and materialized onto each generated qt3Test. Regenerate from the sources with the command in generated_by.",
   "rows": [
     {
-      "test_id": "CastableAs666",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "helium-divergence",
-      "reason": "castable-as of a non-atomizable operand does not raise XPTY0004"
-    },
-    {
-      "test_id": "CastableAs668",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "helium-divergence",
-      "reason": "castable-as of a non-atomizable operand does not raise XPTY0004"
-    },
-    {
       "test_id": "K-CodepointToStringFunc-1",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "out-of-scope",

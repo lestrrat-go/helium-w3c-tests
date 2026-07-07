@@ -589,11 +589,6 @@ func getTestCaseSkipReason(_, caseName string) string {
 	case "fn-element-with-id-4", "fn-element-with-id-5":
 		return "requires schema is-id property lookup (unsupported by standalone evaluator)"
 
-	// castable-as of a map/array (a non-atomizable operand) must raise XPTY0004;
-	// the evaluator returns false instead of erroring.
-	case "CastableAs666", "CastableAs668":
-		return "castable-as of a non-atomizable operand does not raise XPTY0004"
-
 	// fn:data on a schema-typed element with no typed value must raise FOTY0012;
 	// the evaluator returns an untypedAtomic value instead.
 	case "K2-DataFunc-6":
