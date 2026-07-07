@@ -653,25 +653,7 @@
       "reason": "requires schema is-id property lookup (unsupported by standalone evaluator)"
     },
     {
-      "test_id": "fn-filter-006",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
-      "reason": "requires static typing"
-    },
-    {
       "test_id": "fn-filter-007",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
-      "reason": "requires static typing"
-    },
-    {
-      "test_id": "fn-filter-008",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
-      "reason": "requires static typing"
-    },
-    {
-      "test_id": "fn-filter-009",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "standalone-limitation",
       "reason": "requires static typing"
@@ -695,18 +677,6 @@
       "reason": "requires static typing"
     },
     {
-      "test_id": "fn-filter-023",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
-      "reason": "requires static typing"
-    },
-    {
-      "test_id": "fn-for-each-pair-010",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
-      "reason": "requires static typing"
-    },
-    {
       "test_id": "fn-for-each-pair-032",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "standalone-limitation",
@@ -720,12 +690,6 @@
     },
     {
       "test_id": "fn-function-arity-012",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
-      "reason": "requires static typing"
-    },
-    {
-      "test_id": "fn-function-lookup-711",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "standalone-limitation",
       "reason": "requires static typing"
@@ -2105,19 +2069,7 @@
       "reason": "requires static typing"
     },
     {
-      "test_id": "fn-unparsed-text-available-008",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
-      "reason": "requires static typing"
-    },
-    {
       "test_id": "fn-unparsed-text-available-009",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
-      "reason": "requires static typing"
-    },
-    {
-      "test_id": "fn-unparsed-text-available-010",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "standalone-limitation",
       "reason": "requires static typing"
