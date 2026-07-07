@@ -1,12 +1,12 @@
 {
   "suite": "qt3",
   "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-  "total_cases": 22473,
+  "total_cases": 22469,
   "expected_fail": 2,
-  "skipped": 189,
+  "skipped": 143,
   "by_class": {
-    "not-wired": 28,
-    "out-of-scope": 116,
+    "not-wired": 5,
+    "out-of-scope": 93,
     "standalone-limitation": 45
   }
 }

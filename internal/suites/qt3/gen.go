@@ -247,6 +247,13 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]bool, map[strin
 			if skipReason == "requires static typing" && qt3StaticTypingRaisesDynamically(tc.Name) {
 				skipReason = ""
 			}
+			// A subset of xsd-version="1.0" cases assert a result that holds in
+			// both XSD 1.0 and 1.1, so the 1.0 gate is not actually needed —
+			// un-skip them (the genuine 1.0-vs-1.1 datatype/regex divergences
+			// stay skipped).
+			if skipReason == "requires XSD 1.0" && qt3XSD10VersionNeutral(tc.Name) {
+				skipReason = ""
+			}
 
 			var contextDocPath string
 			var contextValidation string
@@ -361,6 +368,7 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]bool, map[strin
 				Schemas:           schemas,
 				ContextValidation: contextValidation,
 				SchemaVersion:     schemaVersionForDeps(mergedDeps),
+				XML11:             hasXML11Dependency(mergedDeps),
 				Assertions:        assertions,
 				SkipReason:        skipReason,
 			})
@@ -477,14 +485,19 @@ func mergeDeps(setDeps, caseDeps []dependency) []dependency {
 }
 
 func isXPathApplicable(deps []dependency) bool {
-	hasSpecDep := false
+	// Exclude tests that require the ABSENCE of a feature we support (e.g.
+	// unicode-normalization-form value="FULLY-NORMALIZED" satisfied="false", or
+	// fn-transform-XSLT satisfied="false"). This must be a pre-pass: an
+	// applicable spec token below returns true on first match, so a supported-
+	// feature exclusion ordered after the spec dependency would otherwise never
+	// fire.
 	for _, d := range deps {
-		// Exclude tests that require the absence of a feature we support.
-		// E.g. unicode-normalization-form value="FULLY-NORMALIZED" satisfied="false"
-		// means the test is for processors that do NOT support that form.
 		if d.Satisfied == "false" && isSupportedFeature(d) { //nolint:goconst
 			return false
 		}
+	}
+	hasSpecDep := false
+	for _, d := range deps {
 		if d.Type != "spec" {
 			continue
 		}
@@ -519,6 +532,17 @@ func isSupportedFeature(d dependency) bool {
 		}
 	case "xsd-version":
 		return d.Value == "1.1"
+	case "feature":
+		// helium's xslt3 fn:transform adapter supports both XSLT 1.0/2.0 and
+		// XSLT 3.0 stylesheets, so a case that carries these features with
+		// satisfied="false" — it targets a processor that does NOT support
+		// fn:transform / XSLT 3.0 and expects the corresponding failure — is
+		// dependency-excluded rather than run (its expected FOXT0004 failure
+		// would be wrong for a supporting processor).
+		switch d.Value {
+		case "fn-transform-XSLT", "fn-transform-XSLT30":
+			return true
+		}
 	}
 	return false
 }
@@ -562,16 +586,6 @@ func getSkipReason(deps []dependency) string {
 				return "requires static typing"
 			}
 		}
-		if d.Type == "spec" {
-			for v := range strings.FieldsSeq(d.Value) {
-				if v == "XP20" && d.Satisfied != "false" {
-					return "requires XPath 2.0 only behavior"
-				}
-			}
-		}
-		if d.Type == "xml-version" && d.Value == "1.1" {
-			return "requires XML 1.1"
-		}
 		if d.Type == "unicode-version" && d.Value != qt3UnicodeVersion && d.Satisfied != "false" {
 			return fmt.Sprintf("requires Unicode %s", d.Value)
 		}
@@ -602,59 +616,16 @@ func getTestCaseSkipReason(_, caseName string) string {
 		return "requires PSVI insignificant-whitespace-stripping construction (not supported)"
 
 	// fn:transform sub-feature gaps. The xslt3 fn:transform adapter (wired over
-	// the xpath3 stub in qt3_helpers_test.go) runs 92 of the 122 transform cases;
-	// the following need sub-features the adapter does not yet implement. All
-	// reasons carry the "fn:transform" substring so qt3SkipClass files them under
-	// the closeable "not-wired" class.
+	// the xpath3 stub in qt3_helpers_test.go) runs the transform cases; the
+	// following need behavior the adapter does not provide. All reasons carry the
+	// "fn:transform" substring so qt3SkipClass files them under the closeable
+	// "not-wired" class.
 
-	// requested-properties: fn:transform ignores the requested-properties option,
-	// so a stylesheet that uses a feature the caller asked NOT to support (schema
-	// awareness, backwards-compatibility, the namespace axis, streaming) runs
-	// instead of raising the FOXT0006 "requested properties cannot be satisfied"
-	// error these cases expect.
-	case "fn-transform-71", "fn-transform-73", "fn-transform-75", "fn-transform-77":
-		return "fn:transform requested-properties option not enforced"
-
-	// post-process: fn:transform ignores the post-process callback, so the result
-	// map's output entry is the raw transform result rather than the value the
-	// callback would have produced.
-	case "fn-transform-79", "fn-transform-80", "fn-transform-81":
-		return "fn:transform post-process callback not supported"
-
-	// serialization-params: fn:transform does not apply the serialization-params
-	// option to the serialized output, so indent yes/no produce identical strings
-	// (the case asserts they differ).
-	case "fn-transform-30":
-		return "fn:transform serialization-params not applied to serialized output"
-
-	// option validation: fn:transform does not reject invalid/mutually-exclusive
-	// option maps (missing source, stylesheet-text+location/node, initial-mode+
-	// initial-template, initial-match-selection+source-node, bad delivery-format,
-	// raw delivery-format on a non-3.0 processor, wrong-typed option values, or
-	// string-keyed stylesheet-params), so the FOXT0002/type errors these cases
-	// expect are not raised.
-	case "fn-transform-err-1", "fn-transform-err-2", "fn-transform-err-3",
-		"fn-transform-err-4", "fn-transform-err-5", "fn-transform-err-6",
-		"fn-transform-err-13", "fn-transform-err-14", "fn-transform-err-17",
-		"fn-transform-err-18":
-		return "fn:transform option validation not enforced"
-
-	// transformation-failure code: fn:transform completes rather than reporting a
-	// FOXT0004 transformation failure for these two dynamic-failure cases.
-	case "fn-transform-901", "fn-transform-902":
-		return "fn:transform does not raise FOXT0004 on transformation failure"
-
-	// simplified stylesheet from a node: fn:transform cannot compile a
-	// stylesheet-node that is a literal result element (simplified stylesheet);
-	// it reports XTSE0150 instead of running it.
-	case "fn-transform-7d", "fn-transform-7e":
-		return "fn:transform simplified stylesheet (literal result element) from a stylesheet-node not supported"
-
-	// namespaced initial-template: fn:transform's initial-template lookup ignores
-	// the QName namespace, so a named template in a non-null namespace is not
-	// found (XTDE0820).
-	case "fn-transform-10", "fn-transform-11":
-		return "fn:transform namespaced initial-template lookup not supported"
+	// option validation on the empty default source: fn:transform-err-1 supplies
+	// no source and no entry point; helium applies the stylesheet to an empty
+	// default document rather than raising the FOXT0002 error the case expects.
+	case "fn-transform-err-1":
+		return "fn:transform applies to an empty default document instead of raising FOXT0002"
 
 	// stylesheet-base-uri whose VALUE is a harness-computed base that does not map
 	// to a local fixture. fn-transform-22 passes stylesheet-base-uri =
@@ -701,6 +672,18 @@ func qt3StaticTypingRaisesDynamically(caseName string) bool {
 		return true
 	}
 	return false
+}
+
+// qt3XSD10VersionNeutral lists cases skipped as "requires XSD 1.0" whose sole
+// assertion holds identically in XSD 1.0 and 1.1, so helium's XSD-1.1 datatype
+// semantics satisfy them and the 1.0 gate is spurious. xs-double-005 casts a
+// boundary subnormal to xs:double and asserts only assert-type xs:double, which
+// is true in both versions. The remaining XSD-1.0 cases encode genuine
+// 1.0-vs-1.1 divergences (+INF for double/float, relaxed xs:anyURI lexical
+// space, year 0000 in gYear/gYearMonth, XSD-regex character-class dash rules)
+// and stay skipped.
+func qt3XSD10VersionNeutral(caseName string) bool {
+	return caseName == "xs-double-005"
 }
 
 // ──────────────────────────────────────────────────────────────────────
@@ -1066,6 +1049,20 @@ func hasFeatureDependency(deps []dependency, value string) bool {
 	return false
 }
 
+// hasXML11Dependency reports whether the case declares an xml-version="1.1"
+// dependency. helium's parser already honors the 1.1 relaxations these cases
+// exercise (version decl, prefix undeclaration, control-char refs); the runner
+// builds the evaluator with AllowXML11Chars() so codepoints-to-string accepts
+// the 1.1 restricted characters.
+func hasXML11Dependency(deps []dependency) bool {
+	for _, d := range deps {
+		if d.Type == "xml-version" && d.Value == "1.1" && d.Satisfied != "false" {
+			return true
+		}
+	}
+	return false
+}
+
 // ──────────────────────────────────────────────────────────────────────
 // Assertion parsing
 // ──────────────────────────────────────────────────────────────────────
@@ -1144,6 +1141,7 @@ type generatedTest struct {
 	Schemas           []schemaBinding   // in-scope XSD schemas for schema-aware evaluation
 	ContextValidation string            // "strict"/"lax"/"" for the context document
 	SchemaVersion     string            // "1.0" to force XSD 1.0 compilation; "" = default 1.1
+	XML11             bool              // xml-version="1.1" dependency: run under AllowXML11Chars()
 	Assertions        []assertion
 	SkipReason        string
 }
@@ -1290,6 +1288,9 @@ func generateTestFile(tests []generatedTest) string {
 			}
 			if tc.SchemaVersion != "" {
 				fmt.Fprintf(&b, ", SchemaVersion: %q", tc.SchemaVersion)
+			}
+			if tc.XML11 {
+				b.WriteString(", XML11: true")
 			}
 			if tc.SkipReason != "" {
 				fmt.Fprintf(&b, ", Skip: %q", tc.SkipReason)

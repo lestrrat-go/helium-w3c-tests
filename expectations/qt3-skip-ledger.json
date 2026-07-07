@@ -5,60 +5,6 @@
   "note": "machine-generated conformance skip contract; do not hand-edit. Skips are dependency-derived in internal/suites/qt3/gen.go and materialized onto each generated qt3Test. Regenerate from the sources with the command in generated_by.",
   "rows": [
     {
-      "test_id": "K-CodepointToStringFunc-1",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XPath 2.0 only behavior"
-    },
-    {
-      "test_id": "K-CodepointToStringFunc-11b",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XML 1.1"
-    },
-    {
-      "test_id": "K-CodepointToStringFunc-12b",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XML 1.1"
-    },
-    {
-      "test_id": "K-CodepointToStringFunc-8a",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XML 1.1"
-    },
-    {
-      "test_id": "K-ConcatFunc-1",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XPath 2.0 only behavior"
-    },
-    {
-      "test_id": "K-ConcatFunc-2",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XPath 2.0 only behavior"
-    },
-    {
-      "test_id": "K2-ConcatFunc-1",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XPath 2.0 only behavior"
-    },
-    {
-      "test_id": "K2-ConcatFunc-2",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XPath 2.0 only behavior"
-    },
-    {
-      "test_id": "K2-ConcatFunc-3",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XPath 2.0 only behavior"
-    },
-    {
       "test_id": "K2-MatchesFunc-16a",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "out-of-scope",
@@ -233,24 +179,6 @@
       "reason": "requires directory as collection URI"
     },
     {
-      "test_id": "fn-codepoints-to-string1args-4",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XPath 2.0 only behavior"
-    },
-    {
-      "test_id": "fn-contains-token-20",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XML 1.1"
-    },
-    {
-      "test_id": "fn-contains-token-50",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XML 1.1"
-    },
-    {
       "test_id": "fn-filter-007",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "standalone-limitation",
@@ -327,30 +255,6 @@
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "standalone-limitation",
       "reason": "requires static typing"
-    },
-    {
-      "test_id": "fn-in-scope-prefixes-27",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XML 1.1"
-    },
-    {
-      "test_id": "fn-in-scope-prefixes-28",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XML 1.1"
-    },
-    {
-      "test_id": "fn-in-scope-prefixes-29",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XML 1.1"
-    },
-    {
-      "test_id": "fn-in-scope-prefixes-30",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XML 1.1"
     },
     {
       "test_id": "fn-innermost-008",
@@ -815,24 +719,6 @@
       "reason": "requires PSVI insignificant-whitespace-stripping construction (not supported)"
     },
     {
-      "test_id": "fn-tokenize-50",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XML 1.1"
-    },
-    {
-      "test_id": "fn-transform-10",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform namespaced initial-template lookup not supported"
-    },
-    {
-      "test_id": "fn-transform-11",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform namespaced initial-template lookup not supported"
-    },
-    {
       "test_id": "fn-transform-22",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
@@ -845,136 +731,10 @@
       "reason": "fn:transform stylesheet-base-uri value is a harness base URI that does not map to a local fixture"
     },
     {
-      "test_id": "fn-transform-30",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform serialization-params not applied to serialized output"
-    },
-    {
-      "test_id": "fn-transform-71",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform requested-properties option not enforced"
-    },
-    {
-      "test_id": "fn-transform-73",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform requested-properties option not enforced"
-    },
-    {
-      "test_id": "fn-transform-75",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform requested-properties option not enforced"
-    },
-    {
-      "test_id": "fn-transform-77",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform requested-properties option not enforced"
-    },
-    {
-      "test_id": "fn-transform-79",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform post-process callback not supported"
-    },
-    {
-      "test_id": "fn-transform-7d",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform simplified stylesheet (literal result element) from a stylesheet-node not supported"
-    },
-    {
-      "test_id": "fn-transform-7e",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform simplified stylesheet (literal result element) from a stylesheet-node not supported"
-    },
-    {
-      "test_id": "fn-transform-80",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform post-process callback not supported"
-    },
-    {
-      "test_id": "fn-transform-81",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform post-process callback not supported"
-    },
-    {
-      "test_id": "fn-transform-901",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform does not raise FOXT0004 on transformation failure"
-    },
-    {
-      "test_id": "fn-transform-902",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform does not raise FOXT0004 on transformation failure"
-    },
-    {
       "test_id": "fn-transform-err-1",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "fn:transform option validation not enforced"
-    },
-    {
-      "test_id": "fn-transform-err-13",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform option validation not enforced"
-    },
-    {
-      "test_id": "fn-transform-err-14",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform option validation not enforced"
-    },
-    {
-      "test_id": "fn-transform-err-17",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform option validation not enforced"
-    },
-    {
-      "test_id": "fn-transform-err-18",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform option validation not enforced"
-    },
-    {
-      "test_id": "fn-transform-err-2",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform option validation not enforced"
-    },
-    {
-      "test_id": "fn-transform-err-3",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform option validation not enforced"
-    },
-    {
-      "test_id": "fn-transform-err-4",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform option validation not enforced"
-    },
-    {
-      "test_id": "fn-transform-err-5",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform option validation not enforced"
-    },
-    {
-      "test_id": "fn-transform-err-6",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "not-wired",
-      "reason": "fn:transform option validation not enforced"
+      "reason": "fn:transform applies to an empty default document instead of raising FOXT0002"
     },
     {
       "test_id": "fn-unparsed-text-007",
@@ -1067,12 +827,6 @@
       "reason": "requires Unicode 7.0"
     },
     {
-      "test_id": "json-to-xml-error-027",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XML 1.1"
-    },
-    {
       "test_id": "parse-xml-fragment-022-st",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "standalone-limitation",
@@ -1097,37 +851,7 @@
       "reason": "requires XSD 1.0"
     },
     {
-      "test_id": "serialize-xml-035b",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XML 1.1"
-    },
-    {
-      "test_id": "serialize-xml-036b",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XML 1.1"
-    },
-    {
-      "test_id": "serialize-xml-135",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XML 1.1"
-    },
-    {
-      "test_id": "serialize-xml-136",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XML 1.1"
-    },
-    {
       "test_id": "xs-double-004",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "out-of-scope",
-      "reason": "requires XSD 1.0"
-    },
-    {
-      "test_id": "xs-double-005",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "out-of-scope",
       "reason": "requires XSD 1.0"

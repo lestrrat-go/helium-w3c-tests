@@ -228,6 +228,7 @@ type qt3Test struct {
 	Schemas             []qt3Schema       // in-scope XSD schemas for schema-aware evaluation
 	ContextValidation   string            // "strict"/"lax"/"" — validate + annotate the context document
 	SchemaVersion       string            // "1.0" forces XSD 1.0 schema compilation; "" = default 1.1
+	XML11               bool              // run under AllowXML11Chars() (xml-version="1.1" dependency)
 	Skip                string
 	ExpectError         bool
 	AcceptError         bool // error is acceptable but not required (any-of with error + non-error)
@@ -392,6 +393,9 @@ func qt3RunTests(t *testing.T, tests []qt3Test) {
 			if len(tc.Namespaces) > 0 {
 				ns := tc.Namespaces
 				opts = append(opts, func(e xpath3.Evaluator) xpath3.Evaluator { return e.Namespaces(ns) })
+			}
+			if tc.XML11 {
+				opts = append(opts, func(e xpath3.Evaluator) xpath3.Evaluator { return e.AllowXML11Chars() })
 			}
 			if tc.BaseURI != "" {
 				uri := tc.BaseURI
