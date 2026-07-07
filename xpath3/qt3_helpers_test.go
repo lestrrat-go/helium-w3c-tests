@@ -2,6 +2,7 @@ package xpath3_test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"math"
@@ -13,6 +14,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"testing"
@@ -24,6 +26,77 @@ import (
 	"github.com/lestrrat-go/helium/xsd"
 	"github.com/stretchr/testify/require"
 )
+
+// qt3Expectations is the hand-authored skip/xfail contract read from
+// expectations/qt3.json. Skip force-skips a case by name (a hand override on top
+// of the generator's dependency-derived Skip). XFail names cases helium should
+// support but currently diverges on: the case runs, is expected to fail, and an
+// unexpected PASS is a hard error (mirrors the xsd10 harness), so a divergence
+// that gets fixed can never be silently left green-listed.
+type qt3Expectations struct {
+	Skip  map[string]string `json:"skip"`
+	XFail map[string]string `json:"xfail"`
+}
+
+var (
+	qt3ExpectationsOnce sync.Once
+	qt3ExpectationsData qt3Expectations
+)
+
+// qt3LoadExpectations loads expectations/qt3.json exactly once. QT3_EXPECTATIONS
+// overrides the default path so parallel chunks can each point at their own
+// copy. A missing file yields empty maps; a present-but-malformed file panics (a
+// silent parse failure would disable every hand skip/xfail and surface as
+// confusing test outcomes).
+func qt3LoadExpectations() qt3Expectations {
+	qt3ExpectationsOnce.Do(func() {
+		p := os.Getenv("QT3_EXPECTATIONS")
+		if p == "" {
+			p = filepath.Join("..", "expectations", "qt3.json")
+		}
+		data, err := os.ReadFile(p)
+		if err != nil {
+			if os.IsNotExist(err) {
+				return
+			}
+			panic(fmt.Sprintf("read expectations %s: %v", p, err))
+		}
+		if err := json.Unmarshal(data, &qt3ExpectationsData); err != nil {
+			panic(fmt.Sprintf("parse expectations %s: %v", p, err))
+		}
+	})
+	return qt3ExpectationsData
+}
+
+// qt3TB is the subset of *testing.T the result-check phase and the assertion
+// factories use. Abstracting it lets an xfail case run against a recorder that
+// captures failures instead of propagating them to the go test runner, while
+// the normal path passes the real *testing.T for byte-identical behavior.
+type qt3TB interface {
+	require.TestingT // Errorf(format string, args ...any); FailNow()
+	Helper()
+	Fatalf(format string, args ...any)
+	Context() context.Context
+}
+
+// qt3Recorder is a qt3TB that records failures instead of reporting them, used
+// to run an xfail case and detect whether it (unexpectedly) passed. FailNow and
+// Fatalf call runtime.Goexit exactly like *testing.T, so a case body must run in
+// a dedicated goroutine (see qt3RunXFail).
+type qt3Recorder struct {
+	ctx    context.Context
+	failed bool
+	msgs   []string
+}
+
+func (r *qt3Recorder) Helper()                  {}
+func (r *qt3Recorder) Context() context.Context { return r.ctx }
+func (r *qt3Recorder) FailNow()                 { r.failed = true; runtime.Goexit() }
+func (r *qt3Recorder) Errorf(format string, args ...any) {
+	r.failed = true
+	r.msgs = append(r.msgs, fmt.Sprintf(format, args...))
+}
+func (r *qt3Recorder) Fatalf(format string, args ...any) { r.Errorf(format, args...); runtime.Goexit() }
 
 // qt3Resolver returns a URIResolver that lets QT3 tests reach both the
 // shared HTTP fixture server and the local testdata tree. It's the QT3
@@ -49,7 +122,7 @@ func (r *qt3CombinedResolver) ResolveURI(uri string) (io.ReadCloser, error) {
 }
 
 // qt3Assertion checks a result sequence, calling t.Fatal on failure.
-type qt3Assertion func(t *testing.T, seq xpath3.Sequence)
+type qt3Assertion func(t qt3TB, seq xpath3.Sequence)
 
 // qt3Check returns true if a result sequence satisfies a condition (for any-of).
 type qt3Check func(seq xpath3.Sequence) bool
@@ -216,9 +289,13 @@ func qt3RunTests(t *testing.T, tests []qt3Test) {
 		}
 	}
 	httpClient := qt3GetSharedClient()
+	exp := qt3LoadExpectations()
 	for _, tc := range tests {
 		t.Run(tc.Name, func(t *testing.T) {
 			t.Parallel()
+			if reason, ok := exp.Skip[tc.Name]; ok {
+				t.Skip(reason)
+			}
 			if tc.Skip != "" {
 				t.Skip(tc.Skip)
 			}
@@ -305,29 +382,68 @@ func qt3RunTests(t *testing.T, tests []qt3Test) {
 				opts = append(opts, func(e xpath3.Evaluator) xpath3.Evaluator { return e.Variables(v) })
 			}
 			eval := qt3ApplyEval(xpath3.NewEvaluator(xpath3.DefaultEvaluatorOptions), opts)
-			compiled, err := xpath3.NewCompiler().Compile(tc.XPath)
-			if err != nil {
-				if tc.ExpectError || tc.AcceptError {
-					return
-				}
-				require.NoError(t, err, "compile: %s", tc.XPath)
+			if reason, ok := exp.XFail[tc.Name]; ok {
+				qt3RunXFail(t, ctx, tc, eval, doc, reason)
+				return
 			}
-			result, err := eval.Evaluate(ctx, compiled, doc)
-			if err != nil {
-				if tc.ExpectError || tc.AcceptError {
-					return
-				}
-				require.NoError(t, err, "eval: %s", tc.XPath)
-			}
-			if tc.ExpectError {
-				t.Fatalf("expected error but got result: %v", result.Sequence())
-			}
-			seq := result.Sequence()
-			for _, a := range tc.Assertions {
-				a(t, seq)
-			}
+			qt3CheckResult(t, ctx, tc, eval, doc)
 		})
 	}
+}
+
+// qt3CheckResult runs a case's compile/evaluate/assert phase, reporting failures
+// through t. t is the subtest's *testing.T on the normal path and a qt3Recorder
+// on the xfail path (see qt3RunXFail).
+func qt3CheckResult(t qt3TB, ctx context.Context, tc qt3Test, eval xpath3.Evaluator, doc helium.Node) {
+	t.Helper()
+	compiled, err := xpath3.NewCompiler().Compile(tc.XPath)
+	if err != nil {
+		if tc.ExpectError || tc.AcceptError {
+			return
+		}
+		require.NoError(t, err, "compile: %s", tc.XPath)
+	}
+	result, err := eval.Evaluate(ctx, compiled, doc)
+	if err != nil {
+		if tc.ExpectError || tc.AcceptError {
+			return
+		}
+		require.NoError(t, err, "eval: %s", tc.XPath)
+	}
+	if tc.ExpectError {
+		t.Fatalf("expected error but got result: %v", result.Sequence())
+	}
+	seq := result.Sequence()
+	for _, a := range tc.Assertions {
+		a(t, seq)
+	}
+}
+
+// qt3RunXFail runs an xfail-listed case's result-check phase against a recorder
+// in a dedicated goroutine (so a require FailNow / t.Fatalf Goexit stays
+// contained instead of ending the subtest), then asserts the case did NOT pass.
+// An xfail that now passes is a hard error: the divergence is resolved and the
+// entry must be removed from expectations/qt3.json (mirrors the xsd10 harness).
+func qt3RunXFail(t *testing.T, ctx context.Context, tc qt3Test, eval xpath3.Evaluator, doc helium.Node, reason string) {
+	t.Helper()
+	rec := &qt3Recorder{ctx: ctx}
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		defer func() {
+			if r := recover(); r != nil {
+				rec.failed = true
+				rec.msgs = append(rec.msgs, fmt.Sprintf("panic: %v", r))
+			}
+		}()
+		qt3CheckResult(rec, ctx, tc, eval, doc)
+	}()
+	<-done
+	if !rec.failed {
+		t.Errorf("XFAIL %s unexpectedly PASSED — divergence resolved; remove it from expectations/qt3.json xfail (%s)", tc.Name, reason)
+		return
+	}
+	t.Logf("xfail (%s): %s", reason, strings.Join(rec.msgs, "; "))
 }
 
 // ──────────────────────────────────────────────────────────────────────
@@ -843,7 +959,7 @@ func qt3EBV(seq xpath3.Sequence) (bool, error) {
 // ──────────────────────────────────────────────────────────────────────
 
 func qt3AssertEq(expected string) qt3Assertion {
-	return func(t *testing.T, seq xpath3.Sequence) {
+	return func(t qt3TB, seq xpath3.Sequence) {
 		t.Helper()
 		// assert-eq: expected is an XPath expression; evaluate it and compare using eq operator
 		compiled, err := xpath3.NewCompiler().Compile(expected)
@@ -877,14 +993,14 @@ func qt3AssertEq(expected string) qt3Assertion {
 }
 
 func qt3AssertStringValue(expected string) qt3Assertion {
-	return func(t *testing.T, seq xpath3.Sequence) {
+	return func(t qt3TB, seq xpath3.Sequence) {
 		t.Helper()
 		require.Equal(t, expected, qt3StringValue(seq))
 	}
 }
 
 func qt3AssertStringValueNS(expected string) qt3Assertion {
-	return func(t *testing.T, seq xpath3.Sequence) {
+	return func(t qt3TB, seq xpath3.Sequence) {
 		t.Helper()
 		expected = strings.Join(strings.Fields(expected), " ")
 		got := strings.Join(strings.Fields(qt3StringValue(seq)), " ")
@@ -893,7 +1009,7 @@ func qt3AssertStringValueNS(expected string) qt3Assertion {
 }
 
 func qt3AssertTrue() qt3Assertion {
-	return func(t *testing.T, seq xpath3.Sequence) {
+	return func(t qt3TB, seq xpath3.Sequence) {
 		t.Helper()
 		ebv, err := qt3EBV(seq)
 		require.NoError(t, err)
@@ -902,7 +1018,7 @@ func qt3AssertTrue() qt3Assertion {
 }
 
 func qt3AssertFalse() qt3Assertion {
-	return func(t *testing.T, seq xpath3.Sequence) {
+	return func(t qt3TB, seq xpath3.Sequence) {
 		t.Helper()
 		ebv, err := qt3EBV(seq)
 		require.NoError(t, err)
@@ -911,14 +1027,14 @@ func qt3AssertFalse() qt3Assertion {
 }
 
 func qt3AssertEmpty() qt3Assertion {
-	return func(t *testing.T, seq xpath3.Sequence) {
+	return func(t qt3TB, seq xpath3.Sequence) {
 		t.Helper()
 		require.True(t, seq == nil || seq.Len() == 0, "expected empty sequence")
 	}
 }
 
 func qt3AssertCount(n int) qt3Assertion {
-	return func(t *testing.T, seq xpath3.Sequence) {
+	return func(t qt3TB, seq xpath3.Sequence) {
 		t.Helper()
 		if seq == nil {
 			require.Equal(t, 0, n)
@@ -929,13 +1045,13 @@ func qt3AssertCount(n int) qt3Assertion {
 }
 
 func qt3AssertType(_ string) qt3Assertion {
-	return func(_ *testing.T, _ xpath3.Sequence) {
+	return func(_ qt3TB, _ xpath3.Sequence) {
 		// Type checking not yet implemented; pass unconditionally.
 	}
 }
 
 func qt3AssertDeepEq(expected string) qt3Assertion {
-	return func(t *testing.T, seq xpath3.Sequence) {
+	return func(t qt3TB, seq xpath3.Sequence) {
 		t.Helper()
 		compiled, err := xpath3.NewCompiler().Compile(expected)
 		if err != nil {
@@ -957,7 +1073,7 @@ func qt3AssertDeepEq(expected string) qt3Assertion {
 
 // qt3AssertSkip is a no-op assertion for unimplemented assertion types.
 func qt3AssertSkip() qt3Assertion {
-	return func(_ *testing.T, _ xpath3.Sequence) {}
+	return func(_ qt3TB, _ xpath3.Sequence) {}
 }
 
 // ──────────────────────────────────────────────────────────────────────
@@ -1049,7 +1165,7 @@ func qt3CheckSkip() qt3Check {
 
 // qt3AnyOf passes if any check succeeds.
 func qt3AnyOf(checks ...qt3Check) qt3Assertion {
-	return func(t *testing.T, seq xpath3.Sequence) {
+	return func(t qt3TB, seq xpath3.Sequence) {
 		t.Helper()
 		for _, c := range checks {
 			if c(seq) {
