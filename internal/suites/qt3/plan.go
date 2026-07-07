@@ -90,6 +90,9 @@ func readCatalogPlan(root string, suiteLock generator.SuiteLock) (info generator
 			if skipReason == "requires static typing" && qt3StaticTypingRaisesDynamically(tc.Name) {
 				skipReason = ""
 			}
+			if skipReason == "requires XSD 1.0" && qt3XSD10VersionNeutral(tc.Name) {
+				skipReason = ""
+			}
 
 			if skipReason != "" {
 				info.SkippedCount++

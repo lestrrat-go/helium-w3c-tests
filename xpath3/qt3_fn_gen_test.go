@@ -950,7 +950,7 @@ it put its sooty foot."
 		{Name: "fn-codepoints-to-string1args-1", XPath: "codepoints-to-string((98,223,1682,12365,63744))", Assertions: []qt3Assertion{qt3AssertStringValue("bßڒき豈")}},
 		{Name: "fn-codepoints-to-string1args-2", XPath: "codepoints-to-string(())", Assertions: []qt3Assertion{qt3AssertStringValue("")}},
 		{Name: "fn-codepoints-to-string1args-3", XPath: "codepoints-to-string('hello')", ExpectError: true},
-		{Name: "fn-codepoints-to-string1args-4", XPath: "codepoints-to-string((),())", Skip: "requires XPath 2.0 only behavior", ExpectError: true},
+		{Name: "fn-codepoints-to-string1args-4", XPath: "codepoints-to-string((),())", ExpectError: true},
 		{Name: "fn-codepoints-to-string-1", XPath: "fn:codepoints-to-string(0)", ExpectError: true},
 		{Name: "fn-codepoints-to-string-2", XPath: "fn:codepoints-to-string(10000000)", ExpectError: true},
 		{Name: "fn-codepoints-to-string-3", XPath: "fn:codepoints-to-string(49)", Assertions: []qt3Assertion{qt3AssertStringValue("1")}},
@@ -967,7 +967,7 @@ it put its sooty foot."
 		{Name: "fn-codepoints-to-string-14", XPath: "fn:string-to-codepoints(fn:codepoints-to-string((49,97)))", Assertions: []qt3Assertion{qt3AssertDeepEq("49, 97")}},
 		{Name: "fn-codepoints-to-string-15", XPath: "fn:string-length(fn:codepoints-to-string((49,97)))", Assertions: []qt3Assertion{qt3AssertEq("2")}},
 		{Name: "fn-codepoints-to-string-16", XPath: "fn:string-join((fn:codepoints-to-string((49,97)),'ab'),'')", Assertions: []qt3Assertion{qt3AssertStringValue("1aab")}},
-		{Name: "K-CodepointToStringFunc-1", XPath: "codepoints-to-string()", Skip: "requires XPath 2.0 only behavior", ExpectError: true},
+		{Name: "K-CodepointToStringFunc-1", XPath: "codepoints-to-string()", ExpectError: true},
 		{Name: "K-CodepointToStringFunc-2", XPath: "codepoints-to-string((84, 104), \"INVALID\")", ExpectError: true},
 		{Name: "K-CodepointToStringFunc-3", XPath: "codepoints-to-string(()) eq \"\"", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "K-CodepointToStringFunc-4", XPath: "codepoints-to-string((87, 36, 56, 87, 102, 96)) eq \"W$8Wf`\"", Assertions: []qt3Assertion{qt3AssertTrue()}},
@@ -975,14 +975,14 @@ it put its sooty foot."
 		{Name: "K-CodepointToStringFunc-6", XPath: "codepoints-to-string(-500)", ExpectError: true},
 		{Name: "K-CodepointToStringFunc-7", XPath: "codepoints-to-string(0)", ExpectError: true},
 		{Name: "K-CodepointToStringFunc-8", XPath: "codepoints-to-string(8)", ExpectError: true},
-		{Name: "K-CodepointToStringFunc-8a", XPath: "codepoints-to-string(8)", Skip: "requires XML 1.1", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "K-CodepointToStringFunc-8a", XPath: "codepoints-to-string(8)", XML11: true, Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "K-CodepointToStringFunc-9", XPath: "codepoints-to-string(9) eq \"\t\"", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "K-CodepointToStringFunc-10", XPath: `codepoints-to-string(10) eq "
 "`, Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "K-CodepointToStringFunc-11", XPath: "codepoints-to-string(11)", ExpectError: true},
-		{Name: "K-CodepointToStringFunc-11b", XPath: "string-to-codepoints(codepoints-to-string(11))", Skip: "requires XML 1.1", Assertions: []qt3Assertion{qt3AssertEq("11")}},
+		{Name: "K-CodepointToStringFunc-11b", XPath: "string-to-codepoints(codepoints-to-string(11))", XML11: true, Assertions: []qt3Assertion{qt3AssertEq("11")}},
 		{Name: "K-CodepointToStringFunc-12", XPath: "codepoints-to-string(12)", ExpectError: true},
-		{Name: "K-CodepointToStringFunc-12b", XPath: "string-to-codepoints(codepoints-to-string(12))", Skip: "requires XML 1.1", Assertions: []qt3Assertion{qt3AssertEq("12")}},
+		{Name: "K-CodepointToStringFunc-12b", XPath: "string-to-codepoints(codepoints-to-string(12))", XML11: true, Assertions: []qt3Assertion{qt3AssertEq("12")}},
 		{Name: "K-CodepointToStringFunc-14", XPath: "string-to-codepoints(codepoints-to-string(14))", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckEq("14"))}},
 		{Name: "K-CodepointToStringFunc-15", XPath: "string-to-codepoints(codepoints-to-string(31))", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckEq("31"))}},
 		{Name: "K-CodepointToStringFunc-16", XPath: "codepoints-to-string(32) eq \" \"", Assertions: []qt3Assertion{qt3AssertTrue()}},
@@ -1290,8 +1290,8 @@ it put its sooty foot."
 		{Name: "fn-concat-16", XPath: "fn:concat(\"concat\",\"concat\")", Assertions: []qt3Assertion{qt3AssertStringValue("concatconcat")}},
 		{Name: "fn-concat-17", XPath: "fn:concat(\"abc\",\"abc\") and fn:concat(\"abc\",\"abc\")", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "fn-concat-18", XPath: "fn:concat(\"abc\",\"abc\", fn:concat#3)", ExpectError: true},
-		{Name: "K-ConcatFunc-1", XPath: "concat()", Skip: "requires XPath 2.0 only behavior", ExpectError: true},
-		{Name: "K-ConcatFunc-2", XPath: "concat(\"a string\")", Skip: "requires XPath 2.0 only behavior", ExpectError: true},
+		{Name: "K-ConcatFunc-1", XPath: "concat()", ExpectError: true},
+		{Name: "K-ConcatFunc-2", XPath: "concat(\"a string\")", ExpectError: true},
 		{Name: "K-ConcatFunc-3", XPath: "concat(\"ab\", \"c\") eq \"abc\"", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "K-ConcatFunc-4", XPath: "concat(\"ab\", \"c\") instance of xs:string", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "K-ConcatFunc-5", XPath: "concat((), ()) instance of xs:string", Assertions: []qt3Assertion{qt3AssertTrue()}},
@@ -1299,9 +1299,9 @@ it put its sooty foot."
 		{Name: "K-ConcatFunc-7", XPath: "concat('a', 'b', 'c', (), 'd', 'e', 'f', 'g', 'h', ' ', 'i', 'j', 'k l') eq \"abcdefgh ijk l\"", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "K-ConcatFunc-8", XPath: "concat(1, 2, 3) eq \"123\"", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "K-ConcatFunc-9", XPath: "concat(1, \"2\", 3) eq \"123\"", Assertions: []qt3Assertion{qt3AssertTrue()}},
-		{Name: "K2-ConcatFunc-1", XPath: "concat((\"a\", \"b\"), \"c\")", Skip: "requires XPath 2.0 only behavior", ExpectError: true},
-		{Name: "K2-ConcatFunc-2", XPath: "concat(\"1\", \"2\", \"3\", (\"a\", \"b\"), \"c\")", Skip: "requires XPath 2.0 only behavior", ExpectError: true},
-		{Name: "K2-ConcatFunc-3", XPath: "concat(\"1\", \"2\", \"3\", \"c\", (\"a\", \"b\"))", Skip: "requires XPath 2.0 only behavior", ExpectError: true},
+		{Name: "K2-ConcatFunc-1", XPath: "concat((\"a\", \"b\"), \"c\")", ExpectError: true},
+		{Name: "K2-ConcatFunc-2", XPath: "concat(\"1\", \"2\", \"3\", (\"a\", \"b\"), \"c\")", ExpectError: true},
+		{Name: "K2-ConcatFunc-3", XPath: "concat(\"1\", \"2\", \"3\", \"c\", (\"a\", \"b\"))", ExpectError: true},
 		{Name: "cbcl-concat-001", XPath: "fn:boolean(fn:concat('', ''))", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "fn-contains2args-1", XPath: "fn:contains(xs:string(\"This is a characte\"),xs:string(\"This is a characte\"))", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "fn-contains2args-2", XPath: "fn:contains(xs:string(\"This is a characte\"),xs:string(\"This is a characte\"))", Assertions: []qt3Assertion{qt3AssertTrue()}},
@@ -1393,7 +1393,7 @@ it put its sooty foot."
 		{Name: "fn-contains-token-17", XPath: "contains-token(codepoints-to-string((97, 98, 99, 13, 32, 10, 100, 101, 102)), \"def\")", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "fn-contains-token-18", XPath: "contains-token(codepoints-to-string((9, 9, 97, 98, 99, 13, 32, 10, 100, 101, 102, 10, 10)), \"abc\")", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "fn-contains-token-19", XPath: "contains-token(\" the quick brown fox jumped over the lazy dog \", 'fox')", Assertions: []qt3Assertion{qt3AssertTrue()}},
-		{Name: "fn-contains-token-20", XPath: "contains-token(codepoints-to-string((97, 98, 99, 12, 100, 101, 102)), \"def\")", Skip: "requires XML 1.1", Assertions: []qt3Assertion{qt3AssertFalse()}},
+		{Name: "fn-contains-token-20", XPath: "contains-token(codepoints-to-string((97, 98, 99, 12, 100, 101, 102)), \"def\")", XML11: true, Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "fn-contains-token-21", XPath: "contains-token(codepoints-to-string((97, 98, 99, 160, 100, 101, 102)), \"abc\")", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "fn-contains-token-22", XPath: "(contains-token#2, starts-with#2, ends-with#2)!.(\"abc def\", \"def\")", Assertions: []qt3Assertion{qt3AssertDeepEq("true(), false(), true()")}},
 		{Name: "fn-contains-token-39", XPath: "contains-token(\"\", \"zz\")", Assertions: []qt3Assertion{qt3AssertFalse()}},
@@ -1407,7 +1407,7 @@ it put its sooty foot."
 		{Name: "fn-contains-token-47", XPath: "contains-token(codepoints-to-string((97, 98, 99, 13, 32, 10, 100, 101, 102)), \"zz\")", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "fn-contains-token-48", XPath: "contains-token(codepoints-to-string((9, 9, 97, 98, 99, 13, 32, 10, 100, 101, 102, 10, 10)), \"zz\")", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "fn-contains-token-49", XPath: "contains-token(\" the quick brown fox jumped over the lazy dog \", 'zz')", Assertions: []qt3Assertion{qt3AssertFalse()}},
-		{Name: "fn-contains-token-50", XPath: "contains-token(codepoints-to-string((97, 98, 99, 12, 100, 101, 102)), \"abc\")", Skip: "requires XML 1.1", Assertions: []qt3Assertion{qt3AssertFalse()}},
+		{Name: "fn-contains-token-50", XPath: "contains-token(codepoints-to-string((97, 98, 99, 12, 100, 101, 102)), \"abc\")", XML11: true, Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "fn-contains-token-51", XPath: "contains-token(codepoints-to-string((97, 98, 99, 160, 100, 101, 102)), \"abc\")", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "fn-contains-token-52", XPath: "(contains-token#2, substring-before#2, substring-after#2)[1](\"abc def\", \"zz\")", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "fn-contains-token-60", XPath: "contains-token((\"abc\", \"def\"), \"\")", Assertions: []qt3Assertion{qt3AssertFalse()}},
@@ -4737,7 +4737,6 @@ string')`, Assertions: []qt3Assertion{qt3AssertStringValue("normalized string")}
         'stylesheet-text': '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"><xsl:template match="/"><out/></xsl:template></xsl:stylesheet>',
         'source-node': doc("function-lookup/collection-1.xml")
       } )`, FOTSBaseURI: "http://www.w3.org/fots/fn/function-lookup.xml", Skip: "fn:transform-adapter base URI does not cover evaluator-base-relative resolution", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertType("map(xs:string, item())"), qt3AssertSkip(), qt3AssertSkip()}},
-		{Name: "fn-function-lookup-766b", XPath: "function-lookup(fn:QName('http://www.w3.org/2005/xpath-functions', 'transform'), 1)( map{} )", ExpectError: true},
 		{Name: "fn-function-lookup-767", XPath: "exists(function-lookup(fn:QName('http://www.w3.org/2005/xpath-functions/array', 'append'), 2))", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "fn-function-lookup-768", XPath: "function-lookup(fn:QName('http://www.w3.org/2005/xpath-functions/array', 'append'), 2)([], 3)", Assertions: []qt3Assertion{qt3AssertType("array(*)"), qt3AssertSkip(), qt3AssertCount(1), qt3AssertDeepEq("[3]")}},
 		{Name: "fn-function-lookup-769", XPath: "exists(function-lookup(fn:QName('http://www.w3.org/2005/xpath-functions/array', 'filter'), 2))", Assertions: []qt3Assertion{qt3AssertTrue()}},
@@ -5337,10 +5336,10 @@ string')`, Assertions: []qt3Assertion{qt3AssertStringValue("normalized string")}
 		{Name: "fn-in-scope-prefixes-24", XPath: "in-scope-prefixes(/*)", DocPath: "docs/QName-source.xml", Namespaces: map[string]string{"": "http://www.example.com/QNameXSD"}, Schemas: []qt3Schema{{URI: "http://www.example.com/QNameXSD", DocPath: "docs/QName-schema.xsd"}}, ContextValidation: "strict", Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "fn-in-scope-prefixes-25", XPath: "in-scope-prefixes(/*)", DocPath: "fn/in-scope-prefixes/NamespaceSuppliedInternally.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "fn-in-scope-prefixes-26", XPath: "in-scope-prefixes(/*/p)", DocPath: "fn/path/pathdata.xml", Assertions: []qt3Assertion{qt3AssertStringValue("xml")}},
-		{Name: "fn-in-scope-prefixes-27", XPath: "in-scope-prefixes(//*:outer)", DocPath: "fn/in-scope-prefixes/namespaces11.xml", Skip: "requires XML 1.1", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "fn-in-scope-prefixes-28", XPath: "in-scope-prefixes(//*:inner)", DocPath: "fn/in-scope-prefixes/namespaces11.xml", Skip: "requires XML 1.1", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "fn-in-scope-prefixes-29", XPath: "in-scope-prefixes(//*:magpie)", DocPath: "fn/in-scope-prefixes/namespaces11.xml", Skip: "requires XML 1.1", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "fn-in-scope-prefixes-30", XPath: "in-scope-prefixes(//*:magpie)", DocPath: "fn/in-scope-prefixes/namespaces11.xml", Skip: "requires XML 1.1", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "fn-in-scope-prefixes-27", XPath: "in-scope-prefixes(//*:outer)", DocPath: "fn/in-scope-prefixes/namespaces11.xml", XML11: true, Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "fn-in-scope-prefixes-28", XPath: "in-scope-prefixes(//*:inner)", DocPath: "fn/in-scope-prefixes/namespaces11.xml", XML11: true, Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "fn-in-scope-prefixes-29", XPath: "in-scope-prefixes(//*:magpie)", DocPath: "fn/in-scope-prefixes/namespaces11.xml", XML11: true, Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "fn-in-scope-prefixes-30", XPath: "in-scope-prefixes(//*:magpie)", DocPath: "fn/in-scope-prefixes/namespaces11.xml", XML11: true, Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "K-InScopePrefixesFunc-1", XPath: "in-scope-prefixes()", ExpectError: true},
 		{Name: "K-InScopePrefixesFunc-2", XPath: "in-scope-prefixes(\"string\", \"nodetest\", \"wrong param\")", ExpectError: true},
 		{Name: "fn-iri-to-uri1args-1", XPath: "iri-to-uri(\"http://www.example.com/00/Weather/CA/Los%20Angeles#ocean\")", Assertions: []qt3Assertion{qt3AssertStringValue("http://www.example.com/00/Weather/CA/Los%20Angeles#ocean")}},
@@ -5541,7 +5540,7 @@ string')`, Assertions: []qt3Assertion{qt3AssertStringValue("normalized string")}
 		{Name: "json-to-xml-error-024", XPath: "fn:json-to-xml('[\"String\"]', map{'escape':(true(),true())})", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Schemas: []qt3Schema{{URI: "http://www.w3.org/2005/xpath-functions", DocPath: "fn/json-to-xml/schema-for-json.xsd"}}, ExpectError: true},
 		{Name: "json-to-xml-error-025", XPath: "fn:json-to-xml('[\"String\"]', map{'escape':'EMCA-262'})", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Schemas: []qt3Schema{{URI: "http://www.w3.org/2005/xpath-functions", DocPath: "fn/json-to-xml/schema-for-json.xsd"}}, ExpectError: true},
 		{Name: "json-to-xml-error-026", XPath: "fn:json-to-xml('[\"String\"]', map{'fallback':'dummy'})", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Schemas: []qt3Schema{{URI: "http://www.w3.org/2005/xpath-functions", DocPath: "fn/json-to-xml/schema-for-json.xsd"}}, ExpectError: true},
-		{Name: "json-to-xml-error-027", XPath: "fn:json-to-xml('[' || codepoints-to-string(12) || '1]')", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Schemas: []qt3Schema{{URI: "http://www.w3.org/2005/xpath-functions", DocPath: "fn/json-to-xml/schema-for-json.xsd"}}, Skip: "requires XML 1.1", ExpectError: true},
+		{Name: "json-to-xml-error-027", XPath: "fn:json-to-xml('[' || codepoints-to-string(12) || '1]')", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Schemas: []qt3Schema{{URI: "http://www.w3.org/2005/xpath-functions", DocPath: "fn/json-to-xml/schema-for-json.xsd"}}, XML11: true, ExpectError: true},
 		{Name: "json-to-xml-error-028", XPath: "fn:json-to-xml('{\"a\":3, \"b\":4, \"a\":3}', map{'validate':true()})", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Schemas: []qt3Schema{{URI: "http://www.w3.org/2005/xpath-functions", DocPath: "fn/json-to-xml/schema-for-json.xsd"}}, ExpectError: true},
 		{Name: "json-to-xml-error-029", XPath: "fn:json-to-xml('-00')", ExpectError: true},
 		{Name: "json-to-xml-error-030", XPath: "fn:json-to-xml('+10')", ExpectError: true},
@@ -9658,8 +9657,8 @@ abracadabra", "\n","with")`, Assertions: []qt3Assertion{qt3AssertStringValue("ab
 		{Name: "serialize-xml-032b", XPath: "serialize(., $params/*)", DocPath: "fn/serialize/serialize-032-src.xml", SourceDocs: []qt3SourceDoc{{Name: "params", DocPath: "fn/serialize/params-032.xml"}}, Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "serialize-xml-033b", XPath: "serialize(1 to 10, $params/*)", SourceDocs: []qt3SourceDoc{{Name: "params", DocPath: "fn/serialize/params-033.xml"}}, Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "serialize-xml-034b", XPath: "serialize(./doc/x/text(), $params/*)", DocPath: "fn/serialize/serialize-034-src.xml", SourceDocs: []qt3SourceDoc{{Name: "params", DocPath: "fn/serialize/params-034.xml"}}, Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "serialize-xml-035b", XPath: "serialize(., $params/*)", DocPath: "fn/serialize/serialize-035-src.xml", SourceDocs: []qt3SourceDoc{{Name: "params", DocPath: "fn/serialize/params-035.xml"}}, Skip: "requires XML 1.1", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "serialize-xml-036b", XPath: "serialize(., $params/*)", DocPath: "fn/serialize/serialize-035-src.xml", SourceDocs: []qt3SourceDoc{{Name: "params", DocPath: "fn/serialize/params-036.xml"}}, Skip: "requires XML 1.1", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip()}},
+		{Name: "serialize-xml-035b", XPath: "serialize(., $params/*)", DocPath: "fn/serialize/serialize-035-src.xml", SourceDocs: []qt3SourceDoc{{Name: "params", DocPath: "fn/serialize/params-035.xml"}}, XML11: true, Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "serialize-xml-036b", XPath: "serialize(., $params/*)", DocPath: "fn/serialize/serialize-035-src.xml", SourceDocs: []qt3SourceDoc{{Name: "params", DocPath: "fn/serialize/params-036.xml"}}, XML11: true, Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "serialize-xml-101", XPath: "serialize(., map{})", DocPath: "docs/atomic.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/atomic.xml": "docs/atomic.xml"}, Schemas: []qt3Schema{{URI: "http://www.w3.org/XQueryTest", DocPath: "docs/atomic.xsd"}}, ContextValidation: "strict", Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "serialize-xml-102", XPath: `let $params := map {
             "method" : "xml",
@@ -9788,14 +9787,14 @@ abracadabra", "\n","with")`, Assertions: []qt3Assertion{qt3AssertStringValue("ab
             "version" : "1.1",
             "undeclare-prefixes" : true()
             }
-            return serialize(., $params)`, DocPath: "fn/serialize/serialize-035-src.xml", Skip: "requires XML 1.1", Assertions: []qt3Assertion{qt3AssertSkip()}},
+            return serialize(., $params)`, DocPath: "fn/serialize/serialize-035-src.xml", XML11: true, Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "serialize-xml-136", XPath: `let $params := map {
             "method" : "xml",
             "version" : "1.1",
             "omit-xml-declaration" : false(),
             "undeclare-prefixes" : false()
             }
-            return serialize(., $params)`, DocPath: "fn/serialize/serialize-035-src.xml", Skip: "requires XML 1.1", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip()}},
+            return serialize(., $params)`, DocPath: "fn/serialize/serialize-035-src.xml", XML11: true, Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "serialize-xml-137b", XPath: "serialize(., ())", DocPath: "fn/serialize/serialize-xml-137-src.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "serialize-xml-138b", XPath: "serialize(., parse-json('{\"method\" : \"xml\", \"indent\" : true, \"use-character-maps\" : { \"x\" : \"j\", \"m\" : \"so\", \"l\" : \"n\" } }'))", DocPath: "fn/serialize/serialize-xml-138-src.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "serialize-xml-139b", XPath: "serialize(., map { 'use-character-maps' : map { QName(\"http://example.org\",\"xyz\") : \"abc\" } })", DocPath: "fn/serialize/serialize-xml-138-src.xml", ExpectError: true},
@@ -10890,7 +10889,7 @@ abracadabra", "\n")`, Assertions: []qt3Assertion{qt3AssertDeepEq("\"abracadabra\
 		{Name: "fn-tokenize-47", XPath: "tokenize(codepoints-to-string((97, 98, 99, 13, 32, 10, 100, 101, 102)))", Assertions: []qt3Assertion{qt3AssertDeepEq("\"abc\", \"def\"")}},
 		{Name: "fn-tokenize-48", XPath: "tokenize(codepoints-to-string((9, 9, 97, 98, 99, 13, 32, 10, 100, 101, 102, 10, 10)))", Assertions: []qt3Assertion{qt3AssertDeepEq("\"abc\", \"def\"")}},
 		{Name: "fn-tokenize-49", XPath: "string-join(tokenize(\" the quick brown fox jumped over the lazy dog \"), '|')", Assertions: []qt3Assertion{qt3AssertEq("\"the|quick|brown|fox|jumped|over|the|lazy|dog\"")}},
-		{Name: "fn-tokenize-50", XPath: "count(tokenize(codepoints-to-string((97, 98, 99, 12, 100, 101, 102))))", Skip: "requires XML 1.1", Assertions: []qt3Assertion{qt3AssertEq("1")}},
+		{Name: "fn-tokenize-50", XPath: "count(tokenize(codepoints-to-string((97, 98, 99, 12, 100, 101, 102))))", XML11: true, Assertions: []qt3Assertion{qt3AssertEq("1")}},
 		{Name: "fn-tokenize-51", XPath: "count(fn:tokenize(codepoints-to-string((97, 98, 99, 160, 100, 101, 102))))", Assertions: []qt3Assertion{qt3AssertEq("1")}},
 		{Name: "fn-tokenize-52", XPath: "(tokenize#1, upper-case#1, lower-case#1)[1](\"abc def\")", Assertions: []qt3Assertion{qt3AssertDeepEq("\"abc\", \"def\"")}},
 		{Name: "K-TokenizeFunc-2", XPath: "tokenize(\"input\", ())", ExpectError: true},
@@ -11047,13 +11046,13 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style }
                           <xsl:value-of select='.' />
                          </out>"
             return
-            transform(map{"stylesheet-node":parse-xml-fragment($xsl)/out, "source-node":parse-xml("<doc>this</doc>") })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform simplified stylesheet (literal result element) from a stylesheet-node not supported", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            transform(map{"stylesheet-node":parse-xml-fragment($xsl)/out, "source-node":parse-xml("<doc>this</doc>") })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-7e", XPath: `let $src  := parse-xml-fragment("<doc>this</doc>
                          <out xmlns:xsl='http://www.w3.org/1999/XSL/Transform' xsl:version='2.0'>
                           <xsl:value-of select='/doc' />
                          </out>")
             return
-            transform(map{"stylesheet-node":$src/out, "source-node":$src })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform simplified stylesheet (literal result element) from a stylesheet-node not supported", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            transform(map{"stylesheet-node":$src/out, "source-node":$src })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-8", XPath: `transform(map{"stylesheet-node":fn:parse-xml("<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='2.0'>
                 <xsl:template match='/'>
                     <out>
@@ -11082,7 +11081,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style }
                 </xsl:template>
             </xsl:stylesheet>"
             return
-            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "initial-template": fn:QName('http://www.example.com','main') })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform namespaced initial-template lookup not supported", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "initial-template": fn:QName('http://www.example.com','main') })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-11", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='2.0'
             xmlns:app='http://www.example.com'>
             <xsl:template match='/'>
@@ -11093,7 +11092,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style }
                 </xsl:template>
             </xsl:stylesheet>"
             return
-            transform(map{"stylesheet-text":$xsl, "initial-template": fn:QName('http://www.example.com','main') })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform namespaced initial-template lookup not supported", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            transform(map{"stylesheet-text":$xsl, "initial-template": fn:QName('http://www.example.com','main') })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-12", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='2.0'>
             <xsl:template match='/'>
                 <x><xsl:value-of select='.' /></x>
@@ -11224,7 +11223,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style }
             "serialization-params" : map { "indent":true() } })("output"),
             $out2 := fn:transform(map {"stylesheet-location" : $render, "source-node" : fn:doc($uri), "delivery-format" : "serialized",
             "serialization-params" : map { "indent":false() } })("output")
-            return $out1 eq $out2`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "fn:transform serialization-params not applied to serialized output", Assertions: []qt3Assertion{qt3AssertFalse()}},
+            return $out1 eq $out2`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "fn-transform-31", XPath: `let $in := xs:string("<books>
     <book>
         <title>XSLT Programmer?s Reference</title>
@@ -11714,7 +11713,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "initial-template": fn:QName('','main'),
             "delivery-format" : "serialized",
             "requested-properties" : map{fn:QName('http://www.w3.org/1999/XSL/Transform','is-schema-aware'):false()}
-            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform requested-properties option not enforced", ExpectError: true},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", ExpectError: true},
 		{Name: "fn-transform-72", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='2.0'>
             <xsl:template name='main'>
@@ -11736,7 +11735,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "initial-template": fn:QName('','main'),
             "delivery-format" : "serialized",
             "requested-properties" : map{fn:QName('http://www.w3.org/1999/XSL/Transform','supports-backwards-compatibility'):false()}
-            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform requested-properties option not enforced", ExpectError: true},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", ExpectError: true},
 		{Name: "fn-transform-74", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='2.0'>
             <xsl:template match='/'>
@@ -11758,7 +11757,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "source-node": parse-xml($xsl),
             "delivery-format" : "serialized",
             "requested-properties" : map{fn:QName('http://www.w3.org/1999/XSL/Transform','supports-namespace-axis'):false()}
-            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform requested-properties option not enforced", ExpectError: true},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", ExpectError: true},
 		{Name: "fn-transform-76", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='3.0'>
             <xsl:mode streamable='yes'/>
@@ -11788,7 +11787,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "delivery-format" : "serialized",
             "initial-template": fn:QName('','main'),
             "requested-properties" : map{fn:QName('http://www.w3.org/1999/XSL/Transform','supports-streaming'):true()}
-            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform requested-properties option not enforced", ExpectError: true},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", ExpectError: true},
 		{Name: "fn-transform-78", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='3.0'> 
             <xsl:template name='main'>
@@ -11812,7 +11811,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "source-node": parse-xml('<a><b>89</b></a>'),
             "post-process" : function($uri, $doc) { $doc/out/a/b }
             }) return
-        deep-equal(trace($trans-result("output"), 'actual'), $expected)`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform post-process callback not supported", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckTrue())}},
+        deep-equal(trace($trans-result("output"), 'actual'), $expected)`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckTrue())}},
 		{Name: "fn-transform-80", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='1.0'> 
             <xsl:template match='/'>
@@ -11826,7 +11825,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "source-node": parse-xml('<a><b>89</b></a>'),
             "post-process" : function($uri, $out) { concat(substring($out, 1, 12), '...') }
             }) return
-        deep-equal(trace($trans-result("output"), 'actual'), "<out><a><b>8...")`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform post-process callback not supported", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckTrue())}},
+        deep-equal(trace($trans-result("output"), 'actual'), "<out><a><b>8...")`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckTrue())}},
 		{Name: "fn-transform-81", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='1.0'> 
             <xsl:template match='/'>
@@ -11840,7 +11839,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "source-node": parse-xml('<a><b>89</b></a>'),
             "post-process" : function($uri, $out) { $out + 3 }
             }) return
-        deep-equal(trace($trans-result("output"), 'actual'), 45)`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform post-process callback not supported", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckTrue())}},
+        deep-equal(trace($trans-result("output"), 'actual'), 45)`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckTrue())}},
 		{Name: "fn-transform-82a", XPath: `let $in := parse-xml("<dummy/>")
            return transform(map{
               "source-node": $in, 
@@ -11946,7 +11945,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
                              "base-output-uri" : "http://example.com/",
                              "source-node"     : parse-xml('<a><b>89</b></a>')
                             })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "fn-transform-err-1", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render})return $result(\"output\")", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "fn:transform option validation not enforced", ExpectError: true},
+		{Name: "fn-transform-err-1", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render})return $result(\"output\")", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "fn:transform applies to an empty default document instead of raising FOXT0002", ExpectError: true},
 		{Name: "fn-transform-err-2", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'
                                                                  xmlns:app='http://www.example.com'>
                                                 <xsl:template name='app:main' > <xsl:for-each select='section'>
@@ -11959,7 +11958,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
                                                    </doc>"
                     return
 
-            let $result := fn:transform(map {"stylesheet-text": $xsl,"stylesheet-location" : $render, "source-node":fn:parse-xml($xml)})return $result?output`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "fn:transform option validation not enforced", ExpectError: true},
+            let $result := fn:transform(map {"stylesheet-text": $xsl,"stylesheet-location" : $render, "source-node":fn:parse-xml($xml)})return $result?output`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, ExpectError: true},
 		{Name: "fn-transform-err-3", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'
                                                                  xmlns:app='http://www.example.com'>
                                                 <xsl:template name='app:main' > <xsl:for-each select='section'>
@@ -11968,7 +11967,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
                                                 </xsl:template> </xsl:stylesheet>"
                     return
 
-            let $result := fn:transform(map {"stylesheet-text": $xsl,"stylesheet-node" : fn:doc($render), "source-node" : fn:doc($uri)})return $result?output`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "fn:transform option validation not enforced", ExpectError: true},
+            let $result := fn:transform(map {"stylesheet-text": $xsl,"stylesheet-node" : fn:doc($render), "source-node" : fn:doc($uri)})return $result?output`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, ExpectError: true},
 		{Name: "fn-transform-err-4", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='2.0'>
                 <xsl:template match='/'>
                     <out>
@@ -11977,7 +11976,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
                 </xsl:template>
             </xsl:stylesheet>"
             return
-            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "xslt-version":"2.0" })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform option validation not enforced", ExpectError: true},
+            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "xslt-version":"2.0" })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", ExpectError: true},
 		{Name: "fn-transform-err-5", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='2.0'>
                 <xsl:template match='/'>
                     <out>
@@ -11986,7 +11985,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
                 </xsl:template>
             </xsl:stylesheet>"
             return
-            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "stylesheet-params":"v" })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform option validation not enforced", ExpectError: true},
+            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "stylesheet-params":"v" })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", ExpectError: true},
 		{Name: "fn-transform-err-6", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='2.0'>
             <xsl:template name='start'>
                 <x><xsl:value-of select='.' /></x>
@@ -11998,7 +11997,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
                 </xsl:template>
             </xsl:stylesheet>"
             return
-            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "initial-mode": fn:QName('','main'), "initial-template": fn:QName('','start') })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform option validation not enforced", ExpectError: true},
+            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "initial-mode": fn:QName('','main'), "initial-template": fn:QName('','start') })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", ExpectError: true},
 		{Name: "fn-transform-err-7", XPath: "transform(map{})(\"output\")", FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", ExpectError: true},
 		{Name: "fn-transform-err-8", XPath: `fn:transform(map {"stylesheet-node" : $sbu, 
                                 "source-node" : $sections,
@@ -12025,9 +12024,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
 		{Name: "fn-transform-err-12", XPath: `let $res := fn:transform(map {"stylesheet-node":$multipledocs, "source-node":$sections,
             "delivery-format":"document"}) return map:keys($res)[.!='output']!tokenize(., '/')[last()]`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs", DocPath: "fn/transform/multipledocs.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
 		{Name: "fn-transform-err-13", XPath: `fn:transform(map {"stylesheet-node":$multipledocs2, "source-node":$sections,
-            "delivery-format":"doc"})("output")`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs2", DocPath: "fn/transform/multipledocs2.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform option validation not enforced", ExpectError: true},
-		{Name: "fn-transform-err-14", XPath: `fn:transform(map {"stylesheet-node":$multipledocs2, "source-node":$sections,
-            "delivery-format":"raw"})("output")`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs2", DocPath: "fn/transform/multipledocs2.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform option validation not enforced", ExpectError: true},
+            "delivery-format":"doc"})("output")`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs2", DocPath: "fn/transform/multipledocs2.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", ExpectError: true},
 		{Name: "fn-transform-err-15", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>
                 <xsl:template name='main'>
                 <xsl:param name='param1' select='&quot;old1&quot;'/>
@@ -12064,22 +12061,11 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"),
             "initial-function": fn:QName('http://www.w3.org/fots/fn/transform/myfunctions','user-function')
             })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", ExpectError: true},
-		{Name: "fn-transform-err-17", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"initial-match-selection\" : fn:doc($uri), \"source-node\" : fn:doc($uri)})return $result?output", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "fn:transform option validation not enforced", ExpectError: true},
+		{Name: "fn-transform-err-17", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"initial-match-selection\" : fn:doc($uri), \"source-node\" : fn:doc($uri)})return $result?output", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, ExpectError: true},
 		{Name: "fn-transform-err-18", XPath: `let $result := fn:transform(map {"stylesheet-location" : $render, 
                                                "source-node" : fn:doc($uri), 
                                                "stylesheet-params" : map{ "debug": true()}
-                                          }) return $result?output`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "fn:transform option validation not enforced", ExpectError: true},
-		{Name: "fn-transform-901", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"source-node\" : fn:doc($uri)})return $result(\"output\")", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "fn:transform does not raise FOXT0004 on transformation failure", ExpectError: true},
-		{Name: "fn-transform-902", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>
-                <xsl:param name='static-param' static='yes' select='&quot;success&quot;'/>
-                <xsl:template match='/'>
-                    <out><xsl:value-of select='$static-param'/></out>
-                </xsl:template>
-            </xsl:stylesheet>"
-            return
-            transform(map{"stylesheet-node":parse-xml($xsl), "source-node":parse-xml("<doc>this</doc>"), 
-            "static-params":map{QName('','static-param'):"Hello World"}
-            })`, Skip: "fn:transform does not raise FOXT0004 on transformation failure", ExpectError: true},
+                                          }) return $result?output`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, ExpectError: true},
 		{Name: "fn-translate3args-1", XPath: "translate('---abcABCxyz---','-abcABCxyz','1ABCabcXYZ')", Assertions: []qt3Assertion{qt3AssertStringValue("111ABCabcXYZ111")}},
 		{Name: "fn-translate3args-2", XPath: `translate('newline
 tab	space ','

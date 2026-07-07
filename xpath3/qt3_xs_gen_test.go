@@ -67,7 +67,7 @@ func init() {
 		{Name: "xs-double-002", XPath: "1 div xs:double(\"-0\") ne 1 div xs:double(\"0\")", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "xs-double-003", XPath: "exists(xs:double(\"+INF\"))", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "xs-double-004", XPath: "exists(xs:double(\"+INF\"))", SchemaVersion: "1.0", Skip: "requires XSD 1.0", ExpectError: true},
-		{Name: "xs-double-005", XPath: "xs:double(\"2.2250738585072012e-308\")", SchemaVersion: "1.0", Skip: "requires XSD 1.0", Assertions: []qt3Assertion{qt3AssertType("xs:double")}},
+		{Name: "xs-double-005", XPath: "xs:double(\"2.2250738585072012e-308\")", SchemaVersion: "1.0", Assertions: []qt3Assertion{qt3AssertType("xs:double")}},
 		{Name: "xs-error-001", XPath: "xs:error()", ExpectError: true},
 		{Name: "xs-error-002", XPath: "xs:error#0", ExpectError: true},
 		{Name: "xs-error-003", XPath: "xs:error( (), () )", ExpectError: true},
