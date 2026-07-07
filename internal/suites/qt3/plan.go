@@ -87,6 +87,9 @@ func readCatalogPlan(root string, suiteLock generator.SuiteLock) (info generator
 			if skipReason == "" {
 				skipReason = schemaAwareSkip(mergedDeps, env, len(envSchemas(env, envIsGlobal, tsDir)) > 0)
 			}
+			if skipReason == "requires static typing" && qt3StaticTypingRaisesDynamically(tc.Name) {
+				skipReason = ""
+			}
 
 			if skipReason != "" {
 				info.SkippedCount++
