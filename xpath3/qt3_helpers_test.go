@@ -660,6 +660,23 @@ func (a qt3AggregateDecls) UnionMemberTypes(typeName string) []string {
 	return nil
 }
 
+// SchemaTypeContentKind satisfies the optional xpath3.ContentTypeKindProvider
+// interface so fn:data can raise FOTY0012 for a complex-content element with no
+// typed value. It consults each wrapped provider that implements the interface
+// and returns the first that reports a hit, mirroring the first-hit lookups.
+func (a qt3AggregateDecls) SchemaTypeContentKind(typeName string) (xpath3.ContentTypeKind, bool) {
+	for _, d := range a {
+		provider, ok := d.(xpath3.ContentTypeKindProvider)
+		if !ok {
+			continue
+		}
+		if kind, found := provider.SchemaTypeContentKind(typeName); found {
+			return kind, true
+		}
+	}
+	return 0, false
+}
+
 // qt3AnnotateDoc validates node against the schema whose target namespace
 // matches its root element and merges the resulting type annotations into ann.
 // The fixtures are expected valid; a strict/lax source that FAILS validation is
