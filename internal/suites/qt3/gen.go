@@ -607,14 +607,6 @@ func getTestCaseSkipReason(_, caseName string) string {
 		"fn-unparsed-text-lines-012":
 		return "requires static typing"
 
-	// These schemaValidation cases assert results that depend on PSVI
-	// insignificant-whitespace stripping of element-only content. string-length-23
-	// and normalize-space-24 additionally need xs:string?-argument atomization to
-	// route through the element-only-content FOTY0012 check (a separate coercion
-	// batch).
-	case "fn-string-length-23", "fn-normalize-space-24":
-		return "requires PSVI insignificant-whitespace-stripping construction (not supported)"
-
 	// fn-transform-23 sets stylesheet-base-uri = string(base-uri($include)); the
 	// env source $include has no uri attribute, so its base URI is the local parse
 	// path rather than the http://www.w3.org/fots/ URL the resolver maps, and the
@@ -623,6 +615,15 @@ func getTestCaseSkipReason(_, caseName string) string {
 	// FOTS document base URI, beyond the fn:transform adapter base wiring.
 	case "fn-transform-23":
 		return "fn:transform stylesheet-base-uri from base-uri() of a no-uri env source is the local parse path, so the relative xsl:include does not map to a fixture"
+
+	// fn-transform-22 and fn-function-lookup-766a have only generic <assert>
+	// result assertions, which the generator emits as a no-op (qt3AssertSkip),
+	// so un-skipping them would produce a green false-pass that verifies nothing
+	// but "evaluation did not error". Keep them skipped until the generator
+	// supports generic <assert>. The "fn:transform" / "function-lookup"
+	// substrings file them under the closeable "not-wired" class.
+	case "fn-transform-22", "fn-function-lookup-766a":
+		return "fn:transform/function-lookup assertions degrade to no-op (generic <assert>); pending generic-<assert> harness support"
 
 	// fn:transform sub-feature gaps. The xslt3 fn:transform adapter (wired over
 	// the xpath3 stub in qt3_helpers_test.go) runs the transform cases; the

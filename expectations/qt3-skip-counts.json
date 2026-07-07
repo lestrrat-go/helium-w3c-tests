@@ -5,8 +5,7 @@
   "expected_fail": 2,
   "skipped": 141,
   "by_class": {
-    "not-wired": 3,
-    "out-of-scope": 136,
-    "standalone-limitation": 2
+    "not-wired": 5,
+    "out-of-scope": 136
   }
 }

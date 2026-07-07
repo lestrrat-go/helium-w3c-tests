@@ -794,23 +794,7 @@ func qt3DefaultBaseURI(tc qt3Test) string {
 		return "http://www.w3.org/fots/fn/"
 	}
 	if strings.Contains(tc.XPath, "static-base-uri()") {
-		// A transform case that feeds static-base-uri() into stylesheet-base-uri
-		// (fn-transform-22) needs static-base-uri() to be the FOTS test-set
-		// document URI, so its relative xsl:include resolves against the fixtures.
-		// Only fn:transform cases carry a FOTSBaseURI, so every other
-		// static-base-uri() case still gets the qt-fots catalog namespace.
-		if tc.FOTSBaseURI != "" {
-			return tc.FOTSBaseURI
-		}
 		return qtFotsCatalogNS
-	}
-	// A transform case whose outer expression makes a relative string-literal
-	// fn:doc() call (fn-function-lookup-766a: doc("function-lookup/...")) resolves
-	// it against the global evaluator base URI, which must be the FOTS test-set
-	// document URI where the fixture lives. Transform cases that source their
-	// input via fn:doc($uri) (an environment variable) do not match this shape.
-	if tc.FOTSBaseURI != "" && qt3NeedsRelativeDocBaseURI(tc.XPath) {
-		return tc.FOTSBaseURI
 	}
 	if baseURI := qt3ResourceMapBaseURI(tc); baseURI != "" {
 		return baseURI
@@ -897,30 +881,6 @@ func qt3NeedsRelativeParseJSONFixtureBaseURI(expr string) bool {
 func qt3NeedsParseXMLBaseURI(expr string) bool {
 	return strings.Contains(expr, "parse-xml(") ||
 		strings.Contains(expr, "parse-xml-fragment(")
-}
-
-// qt3NeedsRelativeDocBaseURI reports whether expr makes a relative
-// string-literal fn:doc() call — doc("rel/path") / doc('rel/path') / fn:doc(...)
-// — whose argument is a relative reference (no URI scheme). Such a call resolves
-// against the global evaluator base URI. A doc($var) form (input supplied via an
-// environment variable) is deliberately not matched.
-func qt3NeedsRelativeDocBaseURI(expr string) bool {
-	for _, call := range []string{`doc("`, `doc('`} {
-		rest := expr
-		for {
-			_, after, found := strings.Cut(rest, call)
-			if !found {
-				break
-			}
-			quote := call[len(call)-1]
-			arg, tail, ok := strings.Cut(after, string(quote))
-			if ok && arg != "" && !strings.Contains(arg, "://") && !strings.HasPrefix(arg, "/") {
-				return true
-			}
-			rest = tail
-		}
-	}
-	return false
 }
 
 func qt3ParseDoc(t *testing.T, p string) helium.Node {

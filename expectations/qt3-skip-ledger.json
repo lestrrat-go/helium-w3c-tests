@@ -233,6 +233,12 @@
       "reason": "requires XQuery load-xquery-module"
     },
     {
+      "test_id": "fn-function-lookup-766a",
+      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
+      "skip_class": "not-wired",
+      "reason": "fn:transform/function-lookup assertions degrade to no-op (generic \u003cassert\u003e); pending generic-\u003cassert\u003e harness support"
+    },
+    {
       "test_id": "fn-function-name-010",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "out-of-scope",
@@ -689,12 +695,6 @@
       "reason": "requires Unicode 7.0"
     },
     {
-      "test_id": "fn-normalize-space-24",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
-      "reason": "requires PSVI insignificant-whitespace-stripping construction (not supported)"
-    },
-    {
       "test_id": "fn-outermost-008",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "out-of-scope",
@@ -707,10 +707,10 @@
       "reason": "requires static typing"
     },
     {
-      "test_id": "fn-string-length-23",
+      "test_id": "fn-transform-22",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "standalone-limitation",
-      "reason": "requires PSVI insignificant-whitespace-stripping construction (not supported)"
+      "skip_class": "not-wired",
+      "reason": "fn:transform/function-lookup assertions degrade to no-op (generic \u003cassert\u003e); pending generic-\u003cassert\u003e harness support"
     },
     {
       "test_id": "fn-transform-23",
