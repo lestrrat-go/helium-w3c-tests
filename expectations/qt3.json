@@ -1,4 +1,7 @@
 {
   "skip": {},
-  "xfail": {}
+  "xfail": {
+    "analyzeString-020": "requires schema-validated PSVI type annotation: the built-in fn:analyze-string-result schema types @nr as xs:positiveInteger, but helium leaves the constructed attribute untyped without a compiled schema",
+    "analyzeString-021": "requires schema-validated PSVI type annotation: the built-in fn:analyze-string-result schema gives the result element a named complex type, but helium leaves it xs:untyped without a compiled schema"
+  }
 }

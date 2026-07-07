@@ -375,8 +375,8 @@ it put its sooty foot."
 		{Name: "analyzeString-018", XPath: "analyze-string(\"banana\", \"(?:b(an)*a)\")", Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "analyzeString-019", XPath: "analyze-string(\"((banana))\", \"(banana)\", \"q\")", Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "analyzeString-020", XPath: `let $result := analyze-string("banana", "(b)(anana)") 
-        return ($result//@nr)[1] instance of attribute(nr, xs:positiveInteger)`, Skip: "requires XML Schema support", Assertions: []qt3Assertion{qt3AssertTrue()}},
-		{Name: "analyzeString-021", XPath: "let $result := analyze-string(\"banana\", \"(b)(anana)\") return $result instance of element(*, xs:untyped)", Skip: "requires XML Schema support", Assertions: []qt3Assertion{qt3AssertFalse()}},
+        return ($result//@nr)[1] instance of attribute(nr, xs:positiveInteger)`, Assertions: []qt3Assertion{qt3AssertTrue()}},
+		{Name: "analyzeString-021", XPath: "let $result := analyze-string(\"banana\", \"(b)(anana)\") return $result instance of element(*, xs:untyped)", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "analyzeString-022", XPath: "let $result := analyze-string(\"banana\", \"(b)(anana)\") return string($result)", Assertions: []qt3Assertion{qt3AssertStringValue("banana")}},
 		{Name: "analyzeString-023", XPath: "let $result := analyze-string(\"banana\", \"(b)(anana)\") return string($result/fn:match[1])", Assertions: []qt3Assertion{qt3AssertStringValue("banana")}},
 		{Name: "analyzeString-901", XPath: "analyze-string(\"abc\", \")-(\")", ExpectError: true},
@@ -5477,8 +5477,8 @@ string')`, Assertions: []qt3Assertion{qt3AssertStringValue("normalized string")}
 		{Name: "json-to-xml-013", XPath: "fn:json-to-xml('[\"Data with \\\" within it\"]')//j:string", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Assertions: []qt3Assertion{qt3AssertType("element(j:string)"), qt3AssertSkip()}},
 		{Name: "json-to-xml-014", XPath: "fn:json-to-xml('{\"Key \\\" with quote\":\"Data with \\\" within it\"}')//j:string", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Assertions: []qt3Assertion{qt3AssertType("element(j:string)"), qt3AssertSkip()}},
 		{Name: "json-to-xml-015", XPath: "fn:json-to-xml(codepoints-to-string(65279)||'[1]')", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "json-to-xml-016", XPath: "fn:json-to-xml('[1]', map{'validate':true()})", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Skip: "requires XML Schema support", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "json-to-xml-017", XPath: "fn:json-to-xml('[1]', map{'validate':true()}) instance of document-node(schema-element(j:array))", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Skip: "requires XML Schema support", Assertions: []qt3Assertion{qt3AssertTrue()}},
+		{Name: "json-to-xml-016", XPath: "fn:json-to-xml('[1]', map{'validate':true()})", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "json-to-xml-017", XPath: "fn:json-to-xml('[1]', map{'validate':true()}) instance of document-node(schema-element(j:array))", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "json-to-xml-018", XPath: "fn:json-to-xml('{\"a\":3, \"b\":4, \"a\":5}')", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "json-to-xml-019", XPath: "fn:json-to-xml('{\"a\\\\\":3, \"b\\\\\":4}', map{'escape':true()})", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "json-to-xml-020", XPath: "fn:json-to-xml('{\"a\\\\\":3, \"b\\\\\":4}', map{'escape':false()})", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Assertions: []qt3Assertion{qt3AssertSkip()}},
@@ -5542,7 +5542,7 @@ string')`, Assertions: []qt3Assertion{qt3AssertStringValue("normalized string")}
 		{Name: "json-to-xml-error-025", XPath: "fn:json-to-xml('[\"String\"]', map{'escape':'EMCA-262'})", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, ExpectError: true},
 		{Name: "json-to-xml-error-026", XPath: "fn:json-to-xml('[\"String\"]', map{'fallback':'dummy'})", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, ExpectError: true},
 		{Name: "json-to-xml-error-027", XPath: "fn:json-to-xml('[' || codepoints-to-string(12) || '1]')", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Skip: "requires XML 1.1", ExpectError: true},
-		{Name: "json-to-xml-error-028", XPath: "fn:json-to-xml('{\"a\":3, \"b\":4, \"a\":3}', map{'validate':true()})", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Skip: "requires XML Schema support", ExpectError: true},
+		{Name: "json-to-xml-error-028", XPath: "fn:json-to-xml('{\"a\":3, \"b\":4, \"a\":3}', map{'validate':true()})", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, ExpectError: true},
 		{Name: "json-to-xml-error-029", XPath: "fn:json-to-xml('-00')", ExpectError: true},
 		{Name: "json-to-xml-error-030", XPath: "fn:json-to-xml('+10')", ExpectError: true},
 		{Name: "json-to-xml-error-031", XPath: "fn:json-to-xml('.1')", ExpectError: true},
@@ -5556,7 +5556,7 @@ string')`, Assertions: []qt3Assertion{qt3AssertStringValue("normalized string")}
 		{Name: "json-to-xml-error-040", XPath: "fn:json-to-xml('{\"a\":3, \"b\":4, \"c\":5}', map{\"duplicates\":\"use-last\"})", ExpectError: true},
 		{Name: "json-to-xml-error-041", XPath: "fn:json-to-xml('\"\\uFFFF\"', map{'fallback':concat#2})", ExpectError: true},
 		{Name: "json-to-xml-error-042", XPath: "fn:json-to-xml('{\"A\":1, \"A\":2}', map{'validate':true(), 'duplicates':'retain'})", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Skip: "fn:json-to-xml validate option unsupported by standalone evaluator", ExpectError: true},
-		{Name: "json-to-xml-error-043", XPath: "fn:json-to-xml('{\"\\n\":1, \"\\u000A\":2}', map{'duplicates':'reject'})", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, Skip: "requires XML Schema support", ExpectError: true},
+		{Name: "json-to-xml-error-043", XPath: "fn:json-to-xml('{\"\\n\":1, \"\\u000A\":2}', map{'duplicates':'reject'})", Namespaces: map[string]string{"j": "http://www.w3.org/2005/xpath-functions"}, ExpectError: true},
 		{Name: "fn-lang1args-1", XPath: "fn:lang(xs:string(\"en\"),/root[1]/time[1])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "fn-lang1args-2", XPath: "fn:lang(xs:string(\"EN\"),./root[1]/time[1])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "fn-lang1args-3", XPath: "fn:lang(xs:string(\"eN\"),./root[1]/time[1])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertFalse()}},
@@ -11693,7 +11693,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "initial-template": fn:QName('','main'),
             "delivery-format" : "serialized",
             "requested-properties" : map{fn:QName('http://www.w3.org/1999/XSL/Transform','is-schema-aware'):true()}
-            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "requires XML Schema support", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
 		{Name: "fn-transform-71", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             xmlns:xs='http://www.w3.org/2001/XMLSchema'
             xmlns:chrono='http://chronology.com/' version='2.0'>
