@@ -57,18 +57,20 @@ const (
 // zero as adapters are wired and divergences fixed, leaving only out-of-scope.
 // qt3ClassUnclassified is the sentinel the drift-check rejects.
 const (
-	// out-of-scope: not XPath 3.1, or environment — a legitimate permanent skip.
-	// XQuery module/library loading, XSD 1.0-only behavior (xpath3 targets XSD
-	// 1.1), XPath 2.0-only behavior, XML 1.1, remote HTTP, an unsupported
-	// Unicode version.
+	// out-of-scope: not required for the target conformance level, or an
+	// environment concern — a legitimate permanent skip. XQuery module/library
+	// loading, XSD 1.0-only behavior (xpath3 targets XSD 1.1), XPath 2.0-only
+	// behavior, XML 1.1, remote HTTP, an unsupported Unicode version, and the
+	// optional Static Typing Feature (a dynamically-typed processor need not
+	// raise the compile-time XPTY0004/XPST0005 these cases expect).
 	qt3ClassOutOfScope = "out-of-scope"
 	// not-wired: helium has the capability in another package but it is not
 	// wired into the standalone qt3 evaluator path yet (fn:transform via xslt3,
 	// XML Schema support, directory/stability collections). Closeable.
 	qt3ClassNotWired = "not-wired"
 	// standalone-limitation: the standalone xpath3 evaluator lacks a
-	// schema/PSVI/static-analysis property a schema-aware path would supply
-	// (static typing, PSVI nilled/is-id/whitespace, json-to-xml validate).
+	// schema/PSVI property a schema-aware path would supply (PSVI
+	// nilled/is-id/whitespace-stripping construction, json-to-xml validate).
 	qt3ClassStandaloneLimit = "standalone-limitation"
 	// helium-divergence: helium supports the feature but returns a
 	// non-conformant result (a missing error code). A genuine bug; fix it.
@@ -82,14 +84,15 @@ const (
 // reason strings are produced by internal/suites/qt3/gen.go (getSkipReason,
 // getTestCaseSkipReason, checkEnvironmentSupport, schemaAwareSkip). Order
 // matters: the most specific signals (error codes, then standalone-evaluator /
-// PSVI / static typing) are tested before the coarser scope buckets.
+// PSVI) are tested before the coarser scope buckets (which include the optional
+// static-typing feature).
 func qt3SkipClass(reason string) string {
 	switch {
 	case containsAny(reason, "SENR0001", "XPTY0004", "FOTY0012"):
 		return qt3ClassHeliumDivergence
-	case containsAny(reason, "static typing", "PSVI", "standalone evaluator"):
+	case containsAny(reason, "PSVI", "standalone evaluator"):
 		return qt3ClassStandaloneLimit
-	case containsAny(reason, "XQuery", "XSD 1.0", "XML 1.1", "XPath 2.0", "remote HTTP"),
+	case containsAny(reason, "static typing", "XQuery", "XSD 1.0", "XML 1.1", "XPath 2.0", "remote HTTP"),
 		strings.HasPrefix(reason, "requires Unicode "):
 		return qt3ClassOutOfScope
 	case containsAny(reason, "XSLT transform", "fn:transform", "XML Schema support", "collection"),
