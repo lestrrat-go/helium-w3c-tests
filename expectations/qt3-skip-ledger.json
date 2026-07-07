@@ -59,12 +59,6 @@
       "reason": "requires XPath 2.0 only behavior"
     },
     {
-      "test_id": "K2-DataFunc-6",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "helium-divergence",
-      "reason": "fn:data on a no-typed-value element does not raise FOTY0012"
-    },
-    {
       "test_id": "K2-MatchesFunc-16a",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "out-of-scope",
@@ -1631,24 +1625,6 @@
       "reason": "requires XSD 1.0"
     },
     {
-      "test_id": "serialize-xml-002",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "helium-divergence",
-      "reason": "fn:serialize does not raise SENR0001 for an attribute/namespace node"
-    },
-    {
-      "test_id": "serialize-xml-011",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "helium-divergence",
-      "reason": "fn:serialize does not raise SENR0001 for an attribute/namespace node"
-    },
-    {
-      "test_id": "serialize-xml-012",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "helium-divergence",
-      "reason": "fn:serialize does not raise SENR0001 for an attribute/namespace node"
-    },
-    {
       "test_id": "serialize-xml-035b",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "out-of-scope",
@@ -1659,12 +1635,6 @@
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "out-of-scope",
       "reason": "requires XML 1.1"
-    },
-    {
-      "test_id": "serialize-xml-131a",
-      "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
-      "skip_class": "helium-divergence",
-      "reason": "fn:serialize does not raise SENR0001 for an attribute/namespace node"
     },
     {
       "test_id": "serialize-xml-135",

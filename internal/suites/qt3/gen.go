@@ -606,16 +606,6 @@ func getTestCaseSkipReason(_, caseName string) string {
 	case "fn-element-with-id-4", "fn-element-with-id-5":
 		return "requires schema is-id property lookup (unsupported by standalone evaluator)"
 
-	// fn:data on a schema-typed element with no typed value must raise FOTY0012;
-	// the evaluator returns an untypedAtomic value instead.
-	case "K2-DataFunc-6":
-		return "fn:data on a no-typed-value element does not raise FOTY0012"
-
-	// fn:serialize of an attribute / namespace node must raise SENR0001; the
-	// serializer emits a string instead of erroring.
-	case "serialize-xml-002", "serialize-xml-011", "serialize-xml-012", "serialize-xml-131a":
-		return "fn:serialize does not raise SENR0001 for an attribute/namespace node"
-
 	// fn:json-to-xml with the validate option depends on schema-validating the
 	// generated element tree, which the standalone evaluator does not perform.
 	case "json-to-xml-037", "json-to-xml-038", "json-to-xml-error-042":
