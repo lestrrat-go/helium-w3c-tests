@@ -51,12 +51,19 @@ var (
 func qt3LoadExpectations() qt3Expectations {
 	qt3ExpectationsOnce.Do(func() {
 		p := os.Getenv("QT3_EXPECTATIONS")
-		if p == "" {
+		override := p != ""
+		if !override {
 			p = filepath.Join("..", "expectations", "qt3.json")
 		}
 		data, err := os.ReadFile(p)
 		if err != nil {
-			if os.IsNotExist(err) {
+			// Only the default path may legitimately be absent (e.g. an unusual
+			// CWD) → empty maps. An explicit QT3_EXPECTATIONS override that
+			// can't be read is operator error (a typo, or a relative path that
+			// resolved against the package dir): fail loudly rather than
+			// silently disabling every hand skip/xfail, which would make the
+			// unexpected-pass tripwire vacuous.
+			if os.IsNotExist(err) && !override {
 				return
 			}
 			panic(fmt.Sprintf("read expectations %s: %v", p, err))
