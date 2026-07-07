@@ -24,6 +24,7 @@ import (
 	"github.com/lestrrat-go/helium"
 	"github.com/lestrrat-go/helium/xpath3"
 	"github.com/lestrrat-go/helium/xsd"
+	"github.com/lestrrat-go/helium/xslt3"
 	"github.com/stretchr/testify/require"
 )
 
@@ -115,6 +116,51 @@ func qt3Resolver(client *http.Client) xpath3.URIResolver {
 	}
 }
 
+// qt3TransformBaseURI is the static base URI handed to the fn:transform adapter,
+// used to resolve a relative stylesheet-location (the FOTS-correct behavior: a
+// relative stylesheet-location resolves against the transform call's static base
+// URI). An explicit environment static-base-uri wins; otherwise the FOTS
+// test-set document URI is used, which is where the fixtures live.
+//
+// It is deliberately NOT supplied for a stylesheet-text case. xslt3 uses this
+// base URI as the base of an inline stylesheet-text too (rather than honoring
+// the stylesheet-base-uri option), so supplying it would let a relative
+// xsl:include in stylesheet-text resolve even when the case supplies no
+// stylesheet-base-uri and expects the include to be unresolvable (e.g.
+// fn-transform-err-9, which asserts XTSE0165). Withholding the base there keeps
+// that error-detection case correct; the flip side is that a stylesheet-text
+// case that legitimately supplies stylesheet-base-uri (fn-transform-22) stays
+// skipped until xslt3 honors that option.
+func qt3TransformBaseURI(tc qt3Test) string {
+	if tc.BaseURI != "" {
+		return tc.BaseURI
+	}
+	if tc.FOTSBaseURI != "" && !strings.Contains(tc.XPath, "stylesheet-text") {
+		return tc.FOTSBaseURI
+	}
+	return qt3DefaultBaseURI(tc)
+}
+
+// qt3TransformMutator registers the real xslt3 fn:transform over the xpath3 stub.
+// User functions take precedence over builtins, so this cleanly overrides the
+// {fn}transform stub for the QT3 harness. The adapter inherits the harness's
+// combined HTTP+filesystem resolver and shared HTTP client.
+func qt3TransformMutator(client *http.Client, baseURI string) qt3EvalMutator {
+	return func(e xpath3.Evaluator) xpath3.Evaluator {
+		transformOpts := []xslt3.TransformOption{
+			xslt3.WithTransformURIResolver(qt3Resolver(client)),
+			xslt3.WithTransformHTTPClient(client),
+		}
+		if baseURI != "" {
+			transformOpts = append(transformOpts, xslt3.WithTransformBaseURI(baseURI))
+		}
+		fn := xslt3.TransformFunction(transformOpts...)
+		return e.Functions(nil, map[xpath3.QualifiedName]xpath3.Function{
+			{URI: xpath3.NSFn, Name: "transform"}: fn,
+		})
+	}
+}
+
 type qt3CombinedResolver struct {
 	httpR xpath3.URIResolver
 	fileR xpath3.URIResolver
@@ -173,6 +219,7 @@ type qt3Test struct {
 	SourceDocs          []qt3SourceDoc
 	Collections         []qt3Collection
 	BaseURI             string            // static base URI for fn:unparsed-text etc.
+	FOTSBaseURI         string            // FOTS test-set document URI; fn:transform-adapter base for relative stylesheet-location resolution only (never the global evaluator base)
 	NeedsHTTP           bool              // test requires HTTP client (e.g. fn:json-doc with URL)
 	ResourceMap         map[string]string // URI → file path (relative to qt3TestDataDir()) for resource resolution
 	Schemas             []qt3Schema       // in-scope XSD schemas for schema-aware evaluation
@@ -313,6 +360,10 @@ func qt3RunTests(t *testing.T, tests []qt3Test) {
 				func(e xpath3.Evaluator) xpath3.Evaluator { return e.ImplicitTimezone(qt3ImplicitTZ) },
 				func(e xpath3.Evaluator) xpath3.Evaluator { return e.HTTPClient(httpClient) },
 				func(e xpath3.Evaluator) xpath3.Evaluator { return e.URIResolver(qt3Resolver(httpClient)) },
+				// Override the fn:transform stub with the real xslt3 implementation,
+				// wired to the same HTTP+filesystem resolver fn:doc uses so
+				// stylesheet-location / source-node resources resolve identically.
+				qt3TransformMutator(httpClient, qt3TransformBaseURI(tc)),
 			}
 			if tc.DefaultDecimal != nil {
 				df := tc.DefaultDecimal.toXPath3()

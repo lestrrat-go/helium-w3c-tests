@@ -92,7 +92,7 @@ func qt3SkipClass(reason string) string {
 	case containsAny(reason, "XQuery", "XSD 1.0", "XML 1.1", "XPath 2.0", "remote HTTP"),
 		strings.HasPrefix(reason, "requires Unicode "):
 		return qt3ClassOutOfScope
-	case containsAny(reason, "XSLT transform", "XML Schema support", "collection"),
+	case containsAny(reason, "XSLT transform", "fn:transform", "XML Schema support", "collection"),
 		strings.HasPrefix(reason, "requires source role "):
 		return qt3ClassNotWired
 	default:

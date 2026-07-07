@@ -4736,7 +4736,7 @@ string')`, Assertions: []qt3Assertion{qt3AssertStringValue("normalized string")}
 		{Name: "fn-function-lookup-766a", XPath: `function-lookup(fn:QName('http://www.w3.org/2005/xpath-functions', 'transform'), 1)( map{
         'stylesheet-text': '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"><xsl:template match="/"><out/></xsl:template></xsl:stylesheet>',
         'source-node': doc("function-lookup/collection-1.xml")
-      } )`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertType("map(xs:string, item())"), qt3AssertSkip(), qt3AssertSkip()}},
+      } )`, FOTSBaseURI: "http://www.w3.org/fots/fn/function-lookup.xml", Skip: "fn:transform-adapter base URI does not cover evaluator-base-relative resolution", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertType("map(xs:string, item())"), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-function-lookup-766b", XPath: "function-lookup(fn:QName('http://www.w3.org/2005/xpath-functions', 'transform'), 1)( map{} )", ExpectError: true},
 		{Name: "fn-function-lookup-767", XPath: "exists(function-lookup(fn:QName('http://www.w3.org/2005/xpath-functions/array', 'append'), 2))", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "fn-function-lookup-768", XPath: "function-lookup(fn:QName('http://www.w3.org/2005/xpath-functions/array', 'append'), 2)([], 3)", Assertions: []qt3Assertion{qt3AssertType("array(*)"), qt3AssertSkip(), qt3AssertCount(1), qt3AssertDeepEq("[3]")}},
@@ -10937,18 +10937,18 @@ abracadabra", "\n")`, Assertions: []qt3Assertion{qt3AssertDeepEq("\"abracadabra\
 		{Name: "K-TraceFunc-4", XPath: "trace(\"a string\", \"trace message\")", Assertions: []qt3Assertion{qt3AssertStringValue("a string")}},
 		{Name: "K-TraceFunc-5", XPath: "empty(trace((), \"trace message\"))", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckTrue())}},
 		{Name: "K-TraceFunc-6", XPath: "empty(trace(error(), \"trace message\"))", ExpectError: true},
-		{Name: "fn-transform-1", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"source-node\" : fn:doc($uri)})return $result?output", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "fn-transform-1a", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"source-node\" : fn:doc($uri), \"delivery-format\" : \"serialized\"})return $result?output instance of xs:string", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertTrue()}},
-		{Name: "fn-transform-1b", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"source-node\" : fn:doc($uri), \"delivery-format\" : \"document\"})return $result?output instance of node()", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertTrue()}},
-		{Name: "fn-transform-1c", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"source-node\" : fn:doc($uri)})return $result(\"output\")", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "fn-transform-1d", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"source-node\" : fn:doc($uri), \"delivery-format\" : \"serialized\"})return $result(\"output\") instance of xs:string", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertTrue()}},
-		{Name: "fn-transform-1e", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"source-node\" : fn:doc($uri), \"delivery-format\" : \"document\"})return $result(\"output\") instance of node()", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertTrue()}},
+		{Name: "fn-transform-1", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"source-node\" : fn:doc($uri)})return $result?output", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "fn-transform-1a", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"source-node\" : fn:doc($uri), \"delivery-format\" : \"serialized\"})return $result?output instance of xs:string", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertTrue()}},
+		{Name: "fn-transform-1b", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"source-node\" : fn:doc($uri), \"delivery-format\" : \"document\"})return $result?output instance of node()", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertTrue()}},
+		{Name: "fn-transform-1c", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"source-node\" : fn:doc($uri)})return $result(\"output\")", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "fn-transform-1d", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"source-node\" : fn:doc($uri), \"delivery-format\" : \"serialized\"})return $result(\"output\") instance of xs:string", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertTrue()}},
+		{Name: "fn-transform-1e", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"source-node\" : fn:doc($uri), \"delivery-format\" : \"document\"})return $result(\"output\") instance of node()", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "fn-transform-3", XPath: `let $in := parse-xml("<dummy/>"),
                         $style := doc($variable-uri) return (
-                    transform(map{"source-node":$in, "stylesheet-node":$style, "stylesheet-params": map { QName("","v"): "2" } } ) )?output`, DocPath: "fn/transform/variable.xsl", Params: []qt3Param{{Name: "variable-uri", Select: "'http://www.w3.org/fots/fn/transform/variable.xsl'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/fn/transform/variable.xsl": "fn/transform/variable.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip()}},
+                    transform(map{"source-node":$in, "stylesheet-node":$style, "stylesheet-params": map { QName("","v"): "2" } } ) )?output`, DocPath: "fn/transform/variable.xsl", Params: []qt3Param{{Name: "variable-uri", Select: "'http://www.w3.org/fots/fn/transform/variable.xsl'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/fn/transform/variable.xsl": "fn/transform/variable.xsl"}, Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-3a", XPath: `let $in := parse-xml("<dummy/>"),
                         $style := doc($variable-uri) return (
-                    transform(map{"source-node":$in, "stylesheet-node":$style, "stylesheet-params": map { QName("","v"): "2" } } ) )("output")`, DocPath: "fn/transform/variable.xsl", Params: []qt3Param{{Name: "variable-uri", Select: "'http://www.w3.org/fots/fn/transform/variable.xsl'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/fn/transform/variable.xsl": "fn/transform/variable.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip()}},
+                    transform(map{"source-node":$in, "stylesheet-node":$style, "stylesheet-params": map { QName("","v"): "2" } } ) )("output")`, DocPath: "fn/transform/variable.xsl", Params: []qt3Param{{Name: "variable-uri", Select: "'http://www.w3.org/fots/fn/transform/variable.xsl'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/fn/transform/variable.xsl": "fn/transform/variable.xsl"}, Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-4", XPath: `let $in := xs:string("<books>
     <book>
         <title>XSLT Programmer?s Reference</title>
@@ -10976,7 +10976,7 @@ abracadabra", "\n")`, Assertions: []qt3Assertion{qt3AssertDeepEq("\"abracadabra\
         </html>
     </xsl:template>
 </xsl:stylesheet>')
-return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, "serialization-params": map{"indent": true()} } )("output")`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
+return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, "serialization-params": map{"indent": true()} } )("output")`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "fn-transform-5", XPath: `let $in := xs:string("<books>
     <book>
         <title>XSLT Programmer?s Reference</title>
@@ -11004,7 +11004,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
         </html>
     </xsl:template>
 </xsl:stylesheet>')
-return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style } )("output")`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
+return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style } )("output")`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "fn-transform-6", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='2.0'>
                 <xsl:template match='/'>
                     <out>
@@ -11013,7 +11013,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style }
                 </xsl:template>
             </xsl:stylesheet>"
             return
-            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>") })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>") })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-7", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='2.0'>
                 <xsl:template match='/'>
                     <out>
@@ -11022,7 +11022,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style }
                 </xsl:template>
             </xsl:stylesheet>"
             return
-            transform(map{"stylesheet-node":parse-xml($xsl), "source-node":parse-xml("<doc>this</doc>") })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            transform(map{"stylesheet-node":parse-xml($xsl), "source-node":parse-xml("<doc>this</doc>") })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-7a", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='2.0'>
                 <xsl:template match='/'>
                     <out>
@@ -11031,36 +11031,36 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style }
                 </xsl:template>
             </xsl:stylesheet>"
             return
-            transform(map{"stylesheet-node":parse-xml($xsl)/*, "source-node":parse-xml("<doc>this</doc>") })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            transform(map{"stylesheet-node":parse-xml($xsl)/*, "source-node":parse-xml("<doc>this</doc>") })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-7b", XPath: `let $xsl  :="<out xmlns:xsl='http://www.w3.org/1999/XSL/Transform' xsl:version='2.0'>
                           <xsl:value-of select='.' />
                          </out>"
             return
-            transform(map{"stylesheet-node":parse-xml($xsl), "source-node":parse-xml("<doc>this</doc>") })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            transform(map{"stylesheet-node":parse-xml($xsl), "source-node":parse-xml("<doc>this</doc>") })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-7c", XPath: `let $xsl  :="<out xmlns:xsl='http://www.w3.org/1999/XSL/Transform' xsl:version='2.0'>
                           <xsl:value-of select='.' />
                          </out>"
             return
-            transform(map{"stylesheet-node":parse-xml($xsl)/*, "source-node":parse-xml("<doc>this</doc>") })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            transform(map{"stylesheet-node":parse-xml($xsl)/*, "source-node":parse-xml("<doc>this</doc>") })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-7d", XPath: `let $xsl  :="<noise/>
                          <out xmlns:xsl='http://www.w3.org/1999/XSL/Transform' xsl:version='2.0'>
                           <xsl:value-of select='.' />
                          </out>"
             return
-            transform(map{"stylesheet-node":parse-xml-fragment($xsl)/out, "source-node":parse-xml("<doc>this</doc>") })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            transform(map{"stylesheet-node":parse-xml-fragment($xsl)/out, "source-node":parse-xml("<doc>this</doc>") })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform simplified stylesheet (literal result element) from a stylesheet-node not supported", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-7e", XPath: `let $src  := parse-xml-fragment("<doc>this</doc>
                          <out xmlns:xsl='http://www.w3.org/1999/XSL/Transform' xsl:version='2.0'>
                           <xsl:value-of select='/doc' />
                          </out>")
             return
-            transform(map{"stylesheet-node":$src/out, "source-node":$src })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            transform(map{"stylesheet-node":$src/out, "source-node":$src })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform simplified stylesheet (literal result element) from a stylesheet-node not supported", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-8", XPath: `transform(map{"stylesheet-node":fn:parse-xml("<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='2.0'>
                 <xsl:template match='/'>
                     <out>
                         <xsl:value-of select='.' />
                     </out>
                 </xsl:template>
-            </xsl:stylesheet>"), "source-node":parse-xml("<doc>this</doc>") })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            </xsl:stylesheet>"), "source-node":parse-xml("<doc>this</doc>") })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-9", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='2.0'>
                 <xsl:template name='main'>
                     <out>
@@ -11069,7 +11069,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style }
                 </xsl:template>
             </xsl:stylesheet>"
             return
-            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "initial-template": fn:QName('','main') })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "initial-template": fn:QName('','main') })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-10", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='2.0'
             xmlns:app='http://www.example.com'>
             <xsl:template match='/'>
@@ -11082,7 +11082,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style }
                 </xsl:template>
             </xsl:stylesheet>"
             return
-            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "initial-template": fn:QName('http://www.example.com','main') })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "initial-template": fn:QName('http://www.example.com','main') })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform namespaced initial-template lookup not supported", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-11", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='2.0'
             xmlns:app='http://www.example.com'>
             <xsl:template match='/'>
@@ -11093,7 +11093,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style }
                 </xsl:template>
             </xsl:stylesheet>"
             return
-            transform(map{"stylesheet-text":$xsl, "initial-template": fn:QName('http://www.example.com','main') })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            transform(map{"stylesheet-text":$xsl, "initial-template": fn:QName('http://www.example.com','main') })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform namespaced initial-template lookup not supported", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-12", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='2.0'>
             <xsl:template match='/'>
                 <x><xsl:value-of select='.' /></x>
@@ -11105,7 +11105,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style }
                 </xsl:template>
             </xsl:stylesheet>"
             return
-            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "initial-mode": fn:QName('','main') })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "initial-mode": fn:QName('','main') })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-13", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>
                                     <xsl:template match='/'>
                                        <xsl:for-each select='//section'>
@@ -11124,7 +11124,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style }
                        fn:transform(map {"stylesheet-text": $xsl, 
                                          "source-node": parse-xml($xml),
                                          "base-output-uri":"http://www.w3.org/fots/fn/transform/output-doc.xml"}) 
-                            => map:remove("http://www.w3.org/fots/fn/transform/output-doc.xml")`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+                            => map:remove("http://www.w3.org/fots/fn/transform/output-doc.xml")`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-13a", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>
                                     <xsl:template match='/'> 
                                        <xsl:for-each select='//section'>
@@ -11157,10 +11157,10 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style }
                       fn:transform(map {"stylesheet-text": $xsl, 
                                         "source-node": parse-xml($xml),
                                         "base-output-uri":"http://www.w3.org/fots/fn/transform/output-doc.xml"})
-                         => map:remove("http://www.w3.org/fots/fn/transform/output-doc.xml")`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+                         => map:remove("http://www.w3.org/fots/fn/transform/output-doc.xml")`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-14", XPath: `fn:transform(map {"stylesheet-node":$multipledocs, "source-node":$sections, "base-output-uri": "http://www.w3.org/fots/fn/transform/output-doc.xml"})
             => map:remove("http://www.w3.org/fots/fn/transform/output-doc.xml")
-            => map:keys()`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs", DocPath: "fn/transform/multipledocs.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
+            => map:keys()`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs", DocPath: "fn/transform/multipledocs.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "fn-transform-15", XPath: `let $in := parse-xml("<dummy/>")/*,
                         $style := parse-xml("<xsl:stylesheet version='1.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>
                         <xsl:param name='v'/>
@@ -11176,28 +11176,28 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style }
                             </out>
                         </xsl:template>
                     </xsl:stylesheet>")
-                    return (transform(map{"source-node":$in, "stylesheet-node":$style, "stylesheet-params": map { QName("","v"): "2", QName("","w"): "3", QName("","y"): "5", QName("","x"): "4" } } ) )("output")`, DocPath: "fn/transform/variable.xsl", Params: []qt3Param{{Name: "variable-uri", Select: "'http://www.w3.org/fots/fn/transform/variable.xsl'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/fn/transform/variable.xsl": "fn/transform/variable.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip()}},
-		{Name: "fn-transform-16", XPath: "fn:transform(map {\"stylesheet-location\" : $render, \"source-node\" : fn:doc($uri), \"delivery-format\" : \"document\", \"base-output-uri\" : $base-uri})($base-uri)", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "fn-transform-17", XPath: "fn:transform(map {\"stylesheet-location\" : $render, \"source-node\" : fn:doc($uri), \"delivery-format\" : \"document\", \"base-output-uri\" : $base-uri})", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+                    return (transform(map{"source-node":$in, "stylesheet-node":$style, "stylesheet-params": map { QName("","v"): "2", QName("","w"): "3", QName("","y"): "5", QName("","x"): "4" } } ) )("output")`, DocPath: "fn/transform/variable.xsl", Params: []qt3Param{{Name: "variable-uri", Select: "'http://www.w3.org/fots/fn/transform/variable.xsl'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/fn/transform/variable.xsl": "fn/transform/variable.xsl"}, Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip()}},
+		{Name: "fn-transform-16", XPath: "fn:transform(map {\"stylesheet-location\" : $render, \"source-node\" : fn:doc($uri), \"delivery-format\" : \"document\", \"base-output-uri\" : $base-uri})($base-uri)", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "fn-transform-17", XPath: "fn:transform(map {\"stylesheet-location\" : $render, \"source-node\" : fn:doc($uri), \"delivery-format\" : \"document\", \"base-output-uri\" : $base-uri})", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-18", XPath: `let $xsl  :="<xsl:stylesheet version='2.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>
                     <xsl:template name='main'>
                     <x><xsl:value-of select='static-base-uri()'/></x>
                     </xsl:template>
                     </xsl:stylesheet>"
             return
-            fn:transform(map {"stylesheet-text" : $xsl, "initial-template" : QName('','main'), "stylesheet-base-uri": "http://www.example.com"})?output`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
+            fn:transform(map {"stylesheet-text" : $xsl, "initial-template" : QName('','main'), "stylesheet-base-uri": "http://www.example.com"})?output`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "fn-transform-20", XPath: `fn:transform(map {"stylesheet-location" : "http://www.w3.org/fots/fn/transform/staticbaseuri.xsl", 
                                 "initial-template" : QName('','main'), 
-                                "stylesheet-base-uri": "http://www.example.com"})("output")`, SourceDocs: []qt3SourceDoc{{Name: "staticbaseuri", DocPath: "fn/transform/staticbaseuri.xsl", URI: "http://www.w3.org/fots/fn/transform/staticbaseuri.xsl"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/fn/transform/staticbaseuri.xsl": "fn/transform/staticbaseuri.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip(), qt3CheckSkip())}},
-		{Name: "fn-transform-21", XPath: "fn:transform(map {\"stylesheet-location\" : \"http://www.w3.org/fots/fn/transform/staticbaseuri.xsl\", \"initial-template\" : QName('','main')})(\"output\")", SourceDocs: []qt3SourceDoc{{Name: "staticbaseuri", DocPath: "fn/transform/staticbaseuri.xsl", URI: "http://www.w3.org/fots/fn/transform/staticbaseuri.xsl"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/fn/transform/staticbaseuri.xsl": "fn/transform/staticbaseuri.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
+                                "stylesheet-base-uri": "http://www.example.com"})("output")`, SourceDocs: []qt3SourceDoc{{Name: "staticbaseuri", DocPath: "fn/transform/staticbaseuri.xsl", URI: "http://www.w3.org/fots/fn/transform/staticbaseuri.xsl"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/fn/transform/staticbaseuri.xsl": "fn/transform/staticbaseuri.xsl"}, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip(), qt3CheckSkip())}},
+		{Name: "fn-transform-21", XPath: "fn:transform(map {\"stylesheet-location\" : \"http://www.w3.org/fots/fn/transform/staticbaseuri.xsl\", \"initial-template\" : QName('','main')})(\"output\")", SourceDocs: []qt3SourceDoc{{Name: "staticbaseuri", DocPath: "fn/transform/staticbaseuri.xsl", URI: "http://www.w3.org/fots/fn/transform/staticbaseuri.xsl"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/fn/transform/staticbaseuri.xsl": "fn/transform/staticbaseuri.xsl"}, Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "fn-transform-22", XPath: `let $xsl  :="<xsl:stylesheet version='2.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>
                     <xsl:include href='transform/staticbaseuri.xsl'/>
                     </xsl:stylesheet>"
             return
-            fn:transform(map {"stylesheet-text" : $xsl, "initial-template" : QName('','main'), "stylesheet-base-uri": string(static-base-uri())})?output`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "fn-transform-23", XPath: "fn:transform(map {\"stylesheet-node\" : $include, \"source-node\" : $works, \"stylesheet-base-uri\": string(base-uri($include))})(\"output\")", SourceDocs: []qt3SourceDoc{{Name: "works", DocPath: "docs/works-mod.xml"}, {Name: "render", DocPath: "fn/transform/render.xsl"}, {Name: "include", DocPath: "fn/transform/include.xsl"}}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "fn-transform-24", XPath: "fn:transform(map {\"stylesheet-node\" : $include, \"source-node\" : $works})(\"output\")", SourceDocs: []qt3SourceDoc{{Name: "works", DocPath: "docs/works-mod.xml"}, {Name: "render", DocPath: "fn/transform/render.xsl"}, {Name: "include", DocPath: "fn/transform/include.xsl"}}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "fn-transform-25", XPath: "fn:transform(map {\"stylesheet-location\" : \"transform/render.xsl\", \"source-node\" : $works})(\"output\")", SourceDocs: []qt3SourceDoc{{Name: "works", DocPath: "docs/works-mod.xml"}, {Name: "render", DocPath: "fn/transform/render.xsl"}, {Name: "include", DocPath: "fn/transform/include.xsl"}}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
+            fn:transform(map {"stylesheet-text" : $xsl, "initial-template" : QName('','main'), "stylesheet-base-uri": string(static-base-uri())})?output`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform stylesheet-base-uri option not honored by xslt3.TransformFunction", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "fn-transform-23", XPath: "fn:transform(map {\"stylesheet-node\" : $include, \"source-node\" : $works, \"stylesheet-base-uri\": string(base-uri($include))})(\"output\")", SourceDocs: []qt3SourceDoc{{Name: "works", DocPath: "docs/works-mod.xml"}, {Name: "render", DocPath: "fn/transform/render.xsl"}, {Name: "include", DocPath: "fn/transform/include.xsl"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform stylesheet-base-uri option not honored by xslt3.TransformFunction", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "fn-transform-24", XPath: "fn:transform(map {\"stylesheet-node\" : $include, \"source-node\" : $works})(\"output\")", SourceDocs: []qt3SourceDoc{{Name: "works", DocPath: "docs/works-mod.xml"}, {Name: "render", DocPath: "fn/transform/render.xsl"}, {Name: "include", DocPath: "fn/transform/include.xsl"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform stylesheet-base-uri option not honored by xslt3.TransformFunction", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "fn-transform-25", XPath: "fn:transform(map {\"stylesheet-location\" : \"transform/render.xsl\", \"source-node\" : $works})(\"output\")", SourceDocs: []qt3SourceDoc{{Name: "works", DocPath: "docs/works-mod.xml"}, {Name: "render", DocPath: "fn/transform/render.xsl"}, {Name: "include", DocPath: "fn/transform/include.xsl"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "fn-transform-26", XPath: `let $xsl  :="<xsl:stylesheet version='3.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>
                 <xsl:variable name='dateTime' static='yes' select='current-dateTime()'/>
                 <xsl:template match='/'>
@@ -11206,7 +11206,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style }
             </xsl:stylesheet>"
             return let $output1 := fn:transform(map {"stylesheet-text" : $xsl, "source-node" : parse-xml("<doc1/>"), "cache":true()})?output//x/string()
             return let $output2 := fn:transform(map {"stylesheet-text" : $xsl, "source-node" : parse-xml("<doc2/>")})?output//x/string()
-            return trace($output1,'output1') eq trace($output2,'output2')`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AnyOf(qt3CheckTrue(), qt3CheckFalse())}},
+            return trace($output1,'output1') eq trace($output2,'output2')`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AnyOf(qt3CheckTrue(), qt3CheckFalse())}},
 		{Name: "fn-transform-27", XPath: `let $xsl  :="<xsl:stylesheet version='3.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>
                 <xsl:variable name='dateTime' static='yes' select='current-dateTime()'/>
                 <xsl:template match='/'>
@@ -11215,16 +11215,16 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style }
             </xsl:stylesheet>"
             return let $output1 := fn:transform(map {"stylesheet-text" : $xsl, "source-node" : parse-xml("<doc1/>"), "cache":false()})?output//x/string()
             return let $output2 := fn:transform(map {"stylesheet-text" : $xsl, "source-node" : parse-xml("<doc2/>"), "cache":false()})?output//x/string()
-            return trace($output1,'output1') eq trace($output2,'output2')`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertFalse()}},
+            return trace($output1,'output1') eq trace($output2,'output2')`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "fn-transform-28", XPath: `fn:transform(map {"stylesheet-location" : $render, "source-node" : fn:doc($uri), "delivery-format" : "serialized",
-            "serialization-params" : map { "indent": false() } })`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            "serialization-params" : map { "indent": false() } })`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-29", XPath: `fn:transform(map {"stylesheet-location" : $render, "source-node" : fn:doc($uri), "delivery-format" : "serialized",
-            "serialization-params" : map { "indent": true() } })`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            "serialization-params" : map { "indent": true() } })`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-30", XPath: `let $out1 := fn:transform(map {"stylesheet-location" : $render, "source-node" : fn:doc($uri), "delivery-format" : "serialized",
             "serialization-params" : map { "indent":true() } })("output"),
             $out2 := fn:transform(map {"stylesheet-location" : $render, "source-node" : fn:doc($uri), "delivery-format" : "serialized",
             "serialization-params" : map { "indent":false() } })("output")
-            return $out1 eq $out2`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertFalse()}},
+            return $out1 eq $out2`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "fn:transform serialization-params not applied to serialized output", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "fn-transform-31", XPath: `let $in := xs:string("<books>
     <book>
         <title>XSLT Programmer?s Reference</title>
@@ -11252,7 +11252,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style }
     </xsl:template>
 </xsl:stylesheet>')
 return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, "delivery-format":"serialized",
-"serialization-params": map{"method": "html" }} )("output")`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
+"serialization-params": map{"method": "html" }} )("output")`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "fn-transform-32", XPath: `let $in := xs:string("<books>
     <book>
         <title>XSLT Programmer?s Reference</title>
@@ -11280,7 +11280,7 @@ return let $style := xs:string('<xsl:stylesheet version="2.0" xmlns:xsl="http://
     </xsl:template>
 </xsl:stylesheet>')
 return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, "delivery-format":"serialized",
-"serialization-params": map{"method": "xml"} } )("output")`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
+"serialization-params": map{"method": "xml"} } )("output")`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "fn-transform-33", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>
                                                 <xsl:template match='/'> <xsl:for-each select='//section'>
                                                 <xsl:result-document href='section{position()}.html'> <!-- instructions content here -->
@@ -11295,21 +11295,21 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             fn:transform(map {"stylesheet-text": $xsl, "source-node": parse-xml($xml),
             "base-output-uri" : resolve-uri("transform/sandbox/fn-transform-33.xml", static-base-uri()),
             "delivery-format":"serialized"})
-            => map:remove(resolve-uri("transform/sandbox/fn-transform-33.xml", static-base-uri()))`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            => map:remove(resolve-uri("transform/sandbox/fn-transform-33.xml", static-base-uri()))`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-34", XPath: `fn:transform(map {"stylesheet-node" : $render, "source-node" : $works,
             "base-output-uri" : resolve-uri("transform/sandbox/fn-transform-34.xml", static-base-uri()),
-            "delivery-format" : "document"})?*`, SourceDocs: []qt3SourceDoc{{Name: "works", DocPath: "docs/works-mod.xml"}, {Name: "render", DocPath: "fn/transform/render.xsl"}, {Name: "include", DocPath: "fn/transform/include.xsl"}}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip()}},
+            "delivery-format" : "document"})?*`, SourceDocs: []qt3SourceDoc{{Name: "works", DocPath: "docs/works-mod.xml"}, {Name: "render", DocPath: "fn/transform/render.xsl"}, {Name: "include", DocPath: "fn/transform/include.xsl"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-35", XPath: `fn:transform(map {"stylesheet-location" : $render, "source-node" : fn:doc($uri),
             "base-output-uri" : resolve-uri("transform/sandbox/fn-transform-35.xml", static-base-uri()),
-            "delivery-format" : "serialized"})`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            "delivery-format" : "serialized"})`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-36", XPath: `fn:transform(map {"stylesheet-location" : $render, "source-node" : fn:doc($uri),
             "base-output-uri" : resolve-uri("transform/sandbox/fn-transform-36.xml", static-base-uri()),
             "delivery-format" : "serialized", "serialization-params" : map { "indent": true() }
-            })`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            })`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-36a", XPath: `fn:transform(map {"stylesheet-location" : $render, "source-node" : fn:doc($uri),
             "base-output-uri" : resolve-uri("transform/sandbox/fn-transform-36a.xml", static-base-uri()),
             "delivery-format" : "serialized", "serialization-params" : map { "indent": false() }
-            })`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            })`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-37", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>
                                                 <xsl:template match='/'> <xsl:for-each select='//section'>
                                                 <xsl:result-document href='section{position()}-page.html'> <!-- instructions content here -->
@@ -11330,20 +11330,20 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             fn:transform(map {"stylesheet-text": $xsl, "source-node": parse-xml($xml),
             "base-output-uri" : resolve-uri("transform/sandbox/fn-transform-37/output.html", static-base-uri()),
             "delivery-format":"serialized"})
-            => map:remove(resolve-uri("transform/sandbox/fn-transform-37/output.html", static-base-uri()))`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            => map:remove(resolve-uri("transform/sandbox/fn-transform-37/output.html", static-base-uri()))`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-38", XPath: `let $res := fn:transform(map {"stylesheet-node":$multipledocs, "source-node":$sections,
             "base-output-uri" : resolve-uri("transform/sandbox/fn-transform-38/output.html",
-            static-base-uri()), "delivery-format":"serialized"}) return map:keys($res)`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs", DocPath: "fn/transform/multipledocs.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            static-base-uri()), "delivery-format":"serialized"}) return map:keys($res)`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs", DocPath: "fn/transform/multipledocs.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-39", XPath: `let $res := fn:transform(map {"stylesheet-node":$multipledocs2, "source-node":$sections,
-            "delivery-format":"serialized"}) return map:keys($res)`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs2", DocPath: "fn/transform/multipledocs2.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            "delivery-format":"serialized"}) return map:keys($res)`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs2", DocPath: "fn/transform/multipledocs2.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-40", XPath: `fn:transform(map {"stylesheet-node" : $onedoc, "source-node" : $sections,
             "base-output-uri" : resolve-uri("transform/sandbox/fn-transform-40/output.html",
-            static-base-uri()), "delivery-format" : "serialized"})`, SourceDocs: []qt3SourceDoc{{Name: "onedoc", DocPath: "fn/transform/onedoc.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "fn-transform-41", XPath: "fn:transform(map {\"stylesheet-node\" : $staticbaseuri, \"initial-template\" : QName('','main'), \"stylesheet-base-uri\": \"http://www.example.com\"})(\"output\")", SourceDocs: []qt3SourceDoc{{Name: "staticbaseuri", DocPath: "fn/transform/staticbaseuri.xsl", URI: "http://www.w3.org/fots/fn/transform/staticbaseuri.xsl"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/fn/transform/staticbaseuri.xsl": "fn/transform/staticbaseuri.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip(), qt3CheckSkip())}},
-		{Name: "fn-transform-42", XPath: "fn:transform(map {\"stylesheet-node\" : $staticbaseuri, \"initial-template\" : QName('','main')})(\"output\")", SourceDocs: []qt3SourceDoc{{Name: "staticbaseuri", DocPath: "fn/transform/staticbaseuri.xsl", URI: "http://www.w3.org/fots/fn/transform/staticbaseuri.xsl"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/fn/transform/staticbaseuri.xsl": "fn/transform/staticbaseuri.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
+            static-base-uri()), "delivery-format" : "serialized"})`, SourceDocs: []qt3SourceDoc{{Name: "onedoc", DocPath: "fn/transform/onedoc.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "fn-transform-41", XPath: "fn:transform(map {\"stylesheet-node\" : $staticbaseuri, \"initial-template\" : QName('','main'), \"stylesheet-base-uri\": \"http://www.example.com\"})(\"output\")", SourceDocs: []qt3SourceDoc{{Name: "staticbaseuri", DocPath: "fn/transform/staticbaseuri.xsl", URI: "http://www.w3.org/fots/fn/transform/staticbaseuri.xsl"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/fn/transform/staticbaseuri.xsl": "fn/transform/staticbaseuri.xsl"}, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip(), qt3CheckSkip())}},
+		{Name: "fn-transform-42", XPath: "fn:transform(map {\"stylesheet-node\" : $staticbaseuri, \"initial-template\" : QName('','main')})(\"output\")", SourceDocs: []qt3SourceDoc{{Name: "staticbaseuri", DocPath: "fn/transform/staticbaseuri.xsl", URI: "http://www.w3.org/fots/fn/transform/staticbaseuri.xsl"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/fn/transform/staticbaseuri.xsl": "fn/transform/staticbaseuri.xsl"}, Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "fn-transform-43", XPath: `fn:transform(map {"stylesheet-node":$multipledocs, "source-node":$sections,
             "base-output-uri" : resolve-uri("transform/sandbox/fn-transform-43/output.html",
-            static-base-uri()), "delivery-format":"serialized"})`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs", DocPath: "fn/transform/multipledocs.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            static-base-uri()), "delivery-format":"serialized"})`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs", DocPath: "fn/transform/multipledocs.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-44", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>
                                                 <xsl:template match='/'> <xsl:for-each select='//section'>
                                                 <xsl:result-document href='section{position()}.xml'> <!-- instructions content here -->
@@ -11361,14 +11361,14 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             fn:transform(map {"stylesheet-text": $xsl, "source-node": parse-xml($xml),
             "base-output-uri" : resolve-uri("transform/sandbox/fn-transform-44/output.xml", static-base-uri()),
             "delivery-format":"serialized"})
-            => map:remove(resolve-uri("transform/sandbox/fn-transform-44/output.xml", static-base-uri()))`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            => map:remove(resolve-uri("transform/sandbox/fn-transform-44/output.xml", static-base-uri()))`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-45", XPath: `fn:transform(map {"stylesheet-location" : $render, "source-node" : fn:doc($uri),
             "base-output-uri" : resolve-uri("transform/sandbox/fn-transform-45.xml", static-base-uri()),
-            "delivery-format" : "serialized"})`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            "delivery-format" : "serialized"})`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-46", XPath: `fn:transform(map {"stylesheet-node":$multipledocs2, "source-node":$sections,
-            "delivery-format":"serialized"})`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs2", DocPath: "fn/transform/multipledocs2.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            "delivery-format":"serialized"})`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs2", DocPath: "fn/transform/multipledocs2.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-47", XPath: `fn:transform(map {"stylesheet-node":$multipledocs2, "source-node":$sections,
-            "delivery-format":"document"})`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs2", DocPath: "fn/transform/multipledocs2.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            "delivery-format":"document"})`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs2", DocPath: "fn/transform/multipledocs2.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-48", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='2.0'>
                 <xsl:template name='main'>
                     <out>
@@ -11379,7 +11379,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             return
             transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"),
             "initial-template": fn:QName('','main'),
-            "another-option" : "dummy"})`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            "another-option" : "dummy"})`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-50", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>
                 <xsl:param name='static-param' static='yes' select='&quot;success&quot;'/>
                 <xsl:template match='/'>
@@ -11389,7 +11389,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             return
             transform(map{"stylesheet-node":parse-xml($xsl), "source-node":parse-xml("<doc>this</doc>"),
             "static-params":map{QName('','static-param'):"Hello World"}
-            })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-51", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>
                 <xsl:param name='static-param' static='yes' select='&quot;success&quot;'/>
                 <xsl:param name='alt-param' static='yes' select='upper-case($static-param)'/>
@@ -11400,7 +11400,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             return
             transform(map{"stylesheet-node":parse-xml($xsl), "source-node":parse-xml("<doc>this</doc>"),
             "static-params":map{QName('','static-param'):"Hello"}
-            })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-52", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>
                 <xsl:param name='static-param' static='yes' select='&quot;success&quot;'/>
                 <xsl:param name='alt-param' static='yes' select='upper-case($static-param)'/>
@@ -11411,7 +11411,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             return
             transform(map{"stylesheet-node":parse-xml($xsl), "source-node":parse-xml("<doc>this</doc>"),
             "static-params":map{QName('','static-param'):"Hello", QName('','alt-param'):"World"}
-            })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-53", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>
                 <xsl:template name='main'>
                 <xsl:param name='template-param' select='&quot;old&quot;'/>
@@ -11424,7 +11424,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"),
             "initial-template": fn:QName('','main'),
             "template-params": map{QName('','template-param'):"new"}
-            })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-54", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>
                 <xsl:template name='main'>
                 <xsl:param name='param1' select='&quot;old1&quot;'/>
@@ -11441,7 +11441,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"),
             "initial-template": fn:QName('','main'),
             "template-params": map{QName('','param1'):"new1", QName('','param2'):"new2", QName('','param4'):"new4"}
-            })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-55", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>
                 <xsl:template name='main'>
                 <xsl:param name='param1' select='&quot;old1&quot;'/>
@@ -11458,7 +11458,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"),
             "initial-template": fn:QName('','main'),
             "template-params": map{QName('','param1'):"new1", QName('','param2'):"new2"}
-            })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-56", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>
                 <xsl:template name='main'>
                 <xsl:param name='param1' select='&quot;old1&quot;' tunnel='yes'/>
@@ -11475,7 +11475,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"),
             "initial-template": fn:QName('','main'),
             "template-params": map{QName('','param1'):"new1", QName('','param2'):"new2", QName('','param4'):"new4"}
-            })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-57", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>
                 <xsl:template name='main'>
                 <xsl:param name='param1' select='&quot;old1&quot;' tunnel='yes'/>
@@ -11492,7 +11492,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"),
             "initial-template": fn:QName('','main'),
             "tunnel-params": map{QName('','param1'):"tunnel1", QName('','param2'):"tunnel2"}
-            })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-58", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>
                 <xsl:template name='main'>
                 <xsl:param name='param1' select='&quot;old1&quot;' tunnel='yes'/>
@@ -11510,7 +11510,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "initial-template": fn:QName('','main'),
             "template-params": map{QName('','param1'):"new1", QName('','param2'):"new2", QName('','param4'):"new4"},
             "tunnel-params": map{QName('','param1'):"tunnel1", QName('','param2'):"tunnel2"}
-            })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-60", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             xmlns:my='http://www.w3.org/fots/fn/transform/myfunctions' version='3.0'>
                 <xsl:function name='my:user-function' visibility='public'>
@@ -11530,7 +11530,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"),
             "initial-function": fn:QName('http://www.w3.org/fots/fn/transform/myfunctions','user-function'),
             "function-params": ["new1","new2"]
-            })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-61", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             xmlns:my='http://www.w3.org/fots/fn/transform/myfunctions' version='2.0'>
                 <xsl:function name='my:user-function' visibility='public'>
@@ -11553,7 +11553,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
                 "initial-function": fn:QName('http://www.w3.org/fots/fn/transform/myfunctions','user-function'),
                 "function-params": ["new1","new2"],
                 "xslt-version": 3.0
-            })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-62", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             xmlns:xs='http://www.w3.org/2001/XMLSchema'
             version='2.0'>
@@ -11563,7 +11563,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             </xsl:stylesheet>"
             return
             transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<one><two/><three/><four/></one>"),
-            "delivery-format":"raw"})`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            "delivery-format":"raw"})`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-63", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             xmlns:xs='http://www.w3.org/2001/XMLSchema'
             version='2.0'>
@@ -11574,7 +11574,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             return
             transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<one><two/><three/><four/></one>"),
             "initial-template": QName('','main'),
-            "delivery-format":"raw"})`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            "delivery-format":"raw"})`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-64", XPath: `let $xsl :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
               xmlns:xs='http://www.w3.org/2001/XMLSchema'
               xmlns:my='http://www.w3.org/fots/fn/transform/myfunctions' version='3.0'>
@@ -11588,7 +11588,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
                                  "initial-function": fn:QName('http://www.w3.org/fots/fn/transform/myfunctions','user-function'),
                                  "function-params": [1,5],
                                  "delivery-format": "raw"
-            })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertType("map(*)"), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-65", XPath: `let $xsl :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             xmlns:xs='http://www.w3.org/2001/XMLSchema'
             xmlns:my='http://www.w3.org/fots/fn/transform/myfunctions' version='2.0'>
@@ -11607,7 +11607,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "initial-template": fn:QName('','main'),
             "delivery-format" : "serialized",
             "serialization-params": map{'cdata-section-elements': (QName('http://www.w3.org/fots/fn/transform/myfunctions','c'), QName('', 'c'))}
-            })`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            })`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-66", XPath: `let $xsl :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             xmlns:xs='http://www.w3.org/2001/XMLSchema'
             xmlns:my='http://www.w3.org/fots/fn/transform/myfunctions' version='3.0'>
@@ -11626,7 +11626,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "initial-template": fn:QName('','main'),
             "delivery-format" : "serialized",
             "serialization-params": map{'suppress-indentation': (QName('http://www.w3.org/fots/fn/transform/myfunctions','c'), QName('', 'c'))}
-            })`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            })`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-67", XPath: `let $xsl :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             xmlns:xs='http://www.w3.org/2001/XMLSchema'
             xmlns:my='http://www.w3.org/fots/fn/transform/myfunctions' version='2.0'>
@@ -11643,7 +11643,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "initial-template": fn:QName('','main'),
             "delivery-format" : "serialized",
             "serialization-params": map{'use-character-maps': map{'*':'(star)'}}
-            })`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip()}},
+            })`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-68", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             xmlns:xs='http://www.w3.org/2001/XMLSchema'
             xmlns:saxon='http://saxon.sf.net/'
@@ -11656,7 +11656,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "initial-template": fn:QName('','main'),
             "delivery-format" : "serialized",
             "requested-properties" : map{fn:QName('http://www.w3.org/1999/XSL/Transform','vendor'):'Saxonica'}
-            })`, Skip: "requires XSLT transform", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
 		{Name: "fn-transform-69", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             xmlns:xs='http://www.w3.org/2001/XMLSchema'
             xmlns:xalan='http://xml.apache.org'
@@ -11672,7 +11672,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "initial-template": fn:QName('','main'),
             "delivery-format" : "serialized",
             "requested-properties" : map{fn:QName('http://www.w3.org/1999/XSL/Transform','product-name'):'Xalan'}
-            })`, Skip: "requires XSLT transform", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
 		{Name: "fn-transform-70", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             xmlns:xs='http://www.w3.org/2001/XMLSchema'
             xmlns:chrono='http://chronology.com/' version='2.0'>
@@ -11693,7 +11693,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "initial-template": fn:QName('','main'),
             "delivery-format" : "serialized",
             "requested-properties" : map{fn:QName('http://www.w3.org/1999/XSL/Transform','is-schema-aware'):true()}
-            })`, Skip: "requires XSLT transform", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "requires XML Schema support", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
 		{Name: "fn-transform-71", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             xmlns:xs='http://www.w3.org/2001/XMLSchema'
             xmlns:chrono='http://chronology.com/' version='2.0'>
@@ -11714,7 +11714,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "initial-template": fn:QName('','main'),
             "delivery-format" : "serialized",
             "requested-properties" : map{fn:QName('http://www.w3.org/1999/XSL/Transform','is-schema-aware'):false()}
-            })`, Skip: "requires XSLT transform", ExpectError: true},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform requested-properties option not enforced", ExpectError: true},
 		{Name: "fn-transform-72", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='2.0'>
             <xsl:template name='main'>
@@ -11725,7 +11725,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "initial-template": fn:QName('','main'),
             "delivery-format" : "serialized",
             "requested-properties" : map{fn:QName('http://www.w3.org/1999/XSL/Transform','supports-backwards-compatibility'):true()}
-            })`, Skip: "requires XSLT transform", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
 		{Name: "fn-transform-73", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='2.0'>
             <xsl:template name='main'>
@@ -11736,7 +11736,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "initial-template": fn:QName('','main'),
             "delivery-format" : "serialized",
             "requested-properties" : map{fn:QName('http://www.w3.org/1999/XSL/Transform','supports-backwards-compatibility'):false()}
-            })`, Skip: "requires XSLT transform", ExpectError: true},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform requested-properties option not enforced", ExpectError: true},
 		{Name: "fn-transform-74", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='2.0'>
             <xsl:template match='/'>
@@ -11747,7 +11747,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "source-node": parse-xml($xsl),
             "delivery-format" : "serialized",
             "requested-properties" : map{fn:QName('http://www.w3.org/1999/XSL/Transform','supports-namespace-axis'):true()}
-            })`, Skip: "requires XSLT transform", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
 		{Name: "fn-transform-75", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='2.0'>
             <xsl:template match='/'>
@@ -11758,7 +11758,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "source-node": parse-xml($xsl),
             "delivery-format" : "serialized",
             "requested-properties" : map{fn:QName('http://www.w3.org/1999/XSL/Transform','supports-namespace-axis'):false()}
-            })`, Skip: "requires XSLT transform", ExpectError: true},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform requested-properties option not enforced", ExpectError: true},
 		{Name: "fn-transform-76", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='3.0'>
             <xsl:mode streamable='yes'/>
@@ -11773,7 +11773,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "delivery-format" : "serialized",
             "initial-template": fn:QName('','main'),
             "requested-properties" : map{fn:QName('http://www.w3.org/1999/XSL/Transform','supports-streaming'):true()}
-            })`, Skip: "requires XSLT transform", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
 		{Name: "fn-transform-77", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='3.0'>
             <xsl:mode streamable='yes'/>
@@ -11788,7 +11788,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "delivery-format" : "serialized",
             "initial-template": fn:QName('','main'),
             "requested-properties" : map{fn:QName('http://www.w3.org/1999/XSL/Transform','supports-streaming'):true()}
-            })`, Skip: "requires XSLT transform", ExpectError: true},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform requested-properties option not enforced", ExpectError: true},
 		{Name: "fn-transform-78", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='3.0'> 
             <xsl:template name='main'>
@@ -11799,7 +11799,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "delivery-format" : "serialized",
             "initial-template": fn:QName('','main'),
             "requested-properties" : map{fn:QName('http://www.w3.org/1999/XSL/Transform','xpath-version'):"3.1"}
-            })`, Skip: "requires XSLT transform", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
 		{Name: "fn-transform-79", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='1.0'> 
             <xsl:template match='/'>
@@ -11812,7 +11812,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "source-node": parse-xml('<a><b>89</b></a>'),
             "post-process" : function($uri, $doc) { $doc/out/a/b }
             }) return
-        deep-equal(trace($trans-result("output"), 'actual'), $expected)`, Skip: "requires XSLT transform", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckTrue())}},
+        deep-equal(trace($trans-result("output"), 'actual'), $expected)`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform post-process callback not supported", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckTrue())}},
 		{Name: "fn-transform-80", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='1.0'> 
             <xsl:template match='/'>
@@ -11826,7 +11826,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "source-node": parse-xml('<a><b>89</b></a>'),
             "post-process" : function($uri, $out) { concat(substring($out, 1, 12), '...') }
             }) return
-        deep-equal(trace($trans-result("output"), 'actual'), "<out><a><b>8...")`, Skip: "requires XSLT transform", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckTrue())}},
+        deep-equal(trace($trans-result("output"), 'actual'), "<out><a><b>8...")`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform post-process callback not supported", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckTrue())}},
 		{Name: "fn-transform-81", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='1.0'> 
             <xsl:template match='/'>
@@ -11840,41 +11840,41 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             "source-node": parse-xml('<a><b>89</b></a>'),
             "post-process" : function($uri, $out) { $out + 3 }
             }) return
-        deep-equal(trace($trans-result("output"), 'actual'), 45)`, Skip: "requires XSLT transform", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckTrue())}},
+        deep-equal(trace($trans-result("output"), 'actual'), 45)`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform post-process callback not supported", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckTrue())}},
 		{Name: "fn-transform-82a", XPath: `let $in := parse-xml("<dummy/>")
            return transform(map{
               "source-node": $in, 
               "stylesheet-node": $stylesheet,
               "xslt-version": 3.0
-           })?output`, SourceDocs: []qt3SourceDoc{{Name: "stylesheet", DocPath: "fn/transform/variable-with-context.xsl"}}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+           })?output`, SourceDocs: []qt3SourceDoc{{Name: "stylesheet", DocPath: "fn/transform/variable-with-context.xsl"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-82b", XPath: `let $in := parse-xml("<dummy/>")
            return transform(map{
               "source-node": $in/*, 
               "stylesheet-node": $stylesheet,
               "xslt-version": 3.0
-           })?output`, SourceDocs: []qt3SourceDoc{{Name: "stylesheet", DocPath: "fn/transform/variable-with-context.xsl"}}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+           })?output`, SourceDocs: []qt3SourceDoc{{Name: "stylesheet", DocPath: "fn/transform/variable-with-context.xsl"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-82c", XPath: `let $in := parse-xml("<dummy/>")
            return transform(map{
               "source-node": $in,
               "global-context-item": $in/*,
               "stylesheet-node": $stylesheet,
               "xslt-version": 3.0
-           })?output`, SourceDocs: []qt3SourceDoc{{Name: "stylesheet", DocPath: "fn/transform/variable-with-context.xsl"}}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+           })?output`, SourceDocs: []qt3SourceDoc{{Name: "stylesheet", DocPath: "fn/transform/variable-with-context.xsl"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-82d", XPath: `let $in := parse-xml("<dummy/>")
            return transform(map{
               "source-node": $in/*,
               "global-context-item": $in,
               "stylesheet-node": $stylesheet,
               "xslt-version": 3.0
-           })?output`, SourceDocs: []qt3SourceDoc{{Name: "stylesheet", DocPath: "fn/transform/variable-with-context.xsl"}}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+           })?output`, SourceDocs: []qt3SourceDoc{{Name: "stylesheet", DocPath: "fn/transform/variable-with-context.xsl"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
 		{Name: "fn-transform-82e", XPath: `let $in := parse-xml("<dummy/>")
            return transform(map{
               "source-node": $in/*,
               "global-context-item": $in/*,
               "stylesheet-node": $stylesheet,
               "xslt-version": 2.0
-           })?output`, SourceDocs: []qt3SourceDoc{{Name: "stylesheet", DocPath: "fn/transform/variable-with-context.xsl"}}, Skip: "requires XSLT transform", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip(), qt3CheckSkip())}},
-		{Name: "fn-transform-83", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"initial-match-selection\" : fn:doc($uri)})return $result?output", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
+           })?output`, SourceDocs: []qt3SourceDoc{{Name: "stylesheet", DocPath: "fn/transform/variable-with-context.xsl"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip(), qt3CheckSkip())}},
+		{Name: "fn-transform-83", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"initial-match-selection\" : fn:doc($uri)})return $result?output", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "fn-transform-84", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' xmlns:xs='http://www.w3.org/2001/XMLSchema'
             version='3.0'> 
             <xsl:template match='.' as='xs:integer'>
@@ -11884,7 +11884,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
         transform(map{"stylesheet-text":$xsl,
             "delivery-format" : "raw",
             "initial-match-selection": 1 to 5
-            })?output`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
+            })?output`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "fn-transform-85", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='1.0'> 
             <xsl:template match='/'>
@@ -11901,7 +11901,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
                              "base-output-uri" : "http://example.com/",
                              "source-node"     : parse-xml('<a><b>89</b></a>'),
                              "post-process"    : function($uri, $doc) { xs:integer($doc/out) + 3 }
-                            })`, Skip: "requires XSLT transform", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
+                            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
 		{Name: "fn-transform-86", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='1.0'> 
             <xsl:template match='/'>
@@ -11918,7 +11918,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
                              "base-output-uri" : "http://example.com/",
                              "source-node"     : parse-xml('<a><b>89</b></a>'),
                              "post-process"    : function($uri, $doc) { replace($doc, 'out>', 'output>') }
-                            })`, Skip: "requires XSLT transform", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
+                            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
 		{Name: "fn-transform-87", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='1.0'> 
             <xsl:template match='/'>
@@ -11935,7 +11935,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
                              "base-output-uri" : "http://example.com/",
                              "source-node"     : parse-xml('<a><b>89</b></a>'),
                              "post-process"    : function($uri, $val) { $val + 5 }
-                            })`, Skip: "requires XSLT transform", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
+                            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
 		{Name: "fn-transform-88", XPath: `let $xsl  := "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             version='3.0' default-mode='x'> 
             <xsl:template match='/' mode='#unnamed'>WRONG</xsl:template>
@@ -11945,8 +11945,8 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
                              "delivery-format" : "raw",
                              "base-output-uri" : "http://example.com/",
                              "source-node"     : parse-xml('<a><b>89</b></a>')
-                            })`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "fn-transform-err-1", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render})return $result(\"output\")", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", ExpectError: true},
+                            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "fn-transform-err-1", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render})return $result(\"output\")", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "fn:transform option validation not enforced", ExpectError: true},
 		{Name: "fn-transform-err-2", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'
                                                                  xmlns:app='http://www.example.com'>
                                                 <xsl:template name='app:main' > <xsl:for-each select='section'>
@@ -11959,7 +11959,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
                                                    </doc>"
                     return
 
-            let $result := fn:transform(map {"stylesheet-text": $xsl,"stylesheet-location" : $render, "source-node":fn:parse-xml($xml)})return $result?output`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", ExpectError: true},
+            let $result := fn:transform(map {"stylesheet-text": $xsl,"stylesheet-location" : $render, "source-node":fn:parse-xml($xml)})return $result?output`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "fn:transform option validation not enforced", ExpectError: true},
 		{Name: "fn-transform-err-3", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'
                                                                  xmlns:app='http://www.example.com'>
                                                 <xsl:template name='app:main' > <xsl:for-each select='section'>
@@ -11968,7 +11968,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
                                                 </xsl:template> </xsl:stylesheet>"
                     return
 
-            let $result := fn:transform(map {"stylesheet-text": $xsl,"stylesheet-node" : fn:doc($render), "source-node" : fn:doc($uri)})return $result?output`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", ExpectError: true},
+            let $result := fn:transform(map {"stylesheet-text": $xsl,"stylesheet-node" : fn:doc($render), "source-node" : fn:doc($uri)})return $result?output`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "fn:transform option validation not enforced", ExpectError: true},
 		{Name: "fn-transform-err-4", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='2.0'>
                 <xsl:template match='/'>
                     <out>
@@ -11977,7 +11977,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
                 </xsl:template>
             </xsl:stylesheet>"
             return
-            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "xslt-version":"2.0" })`, Skip: "requires XSLT transform", ExpectError: true},
+            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "xslt-version":"2.0" })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform option validation not enforced", ExpectError: true},
 		{Name: "fn-transform-err-5", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='2.0'>
                 <xsl:template match='/'>
                     <out>
@@ -11986,7 +11986,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
                 </xsl:template>
             </xsl:stylesheet>"
             return
-            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "stylesheet-params":"v" })`, Skip: "requires XSLT transform", ExpectError: true},
+            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "stylesheet-params":"v" })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform option validation not enforced", ExpectError: true},
 		{Name: "fn-transform-err-6", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='2.0'>
             <xsl:template name='start'>
                 <x><xsl:value-of select='.' /></x>
@@ -11998,36 +11998,36 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
                 </xsl:template>
             </xsl:stylesheet>"
             return
-            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "initial-mode": fn:QName('','main'), "initial-template": fn:QName('','start') })`, Skip: "requires XSLT transform", ExpectError: true},
-		{Name: "fn-transform-err-7", XPath: "transform(map{})(\"output\")", Skip: "requires XSLT transform", ExpectError: true},
+            transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"), "initial-mode": fn:QName('','main'), "initial-template": fn:QName('','start') })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform option validation not enforced", ExpectError: true},
+		{Name: "fn-transform-err-7", XPath: "transform(map{})(\"output\")", FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", ExpectError: true},
 		{Name: "fn-transform-err-8", XPath: `fn:transform(map {"stylesheet-node" : $sbu, 
                                 "source-node" : $sections,
                                 "initial-template" : QName("", "main"),
                                 "base-output-uri" : "fn/transform/output.xml", 
                                 "delivery-format" : "serialized"})
-                          ?*`, SourceDocs: []qt3SourceDoc{{Name: "sbu", DocPath: "fn/transform/staticbaseuri.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
+                          ?*`, SourceDocs: []qt3SourceDoc{{Name: "sbu", DocPath: "fn/transform/staticbaseuri.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "fn-transform-err-9", XPath: `let $xsl  :="<xsl:stylesheet version='2.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>
                     <xsl:include href='transform/staticbaseuri.xsl'/>
                     </xsl:stylesheet>"
             return
-            fn:transform(map {"stylesheet-text" : $xsl, "initial-template" : QName('','main')})?output`, Skip: "requires XSLT transform", ExpectError: true},
+            fn:transform(map {"stylesheet-text" : $xsl, "initial-template" : QName('','main')})?output`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", ExpectError: true},
 		{Name: "fn-transform-err-9a", XPath: `let $xsl  :="<xsl:stylesheet version='2.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>
                     <xsl:include href='staticbaseuri.xsl'/>
                     </xsl:stylesheet>"
             return
             fn:transform(map {"stylesheet-text" : $xsl, "initial-template" : QName('','main'),
             "stylesheet-base-uri": "transform/include.xsl"
-            })?output`, Skip: "requires XSLT transform", Assertions: []qt3Assertion{qt3AssertSkip()}},
+            })?output`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform stylesheet-base-uri option not honored by xslt3.TransformFunction", Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "fn-transform-err-10", XPath: `let $res := fn:transform(map {"stylesheet-node":$multipledocs, "source-node":$sections,
-            "delivery-format":"serialized"}) return map:keys($res)[.!='output']!tokenize(., '/')[last()]`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs", DocPath: "fn/transform/multipledocs.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, Skip: "requires XSLT transform", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
+            "delivery-format":"serialized"}) return map:keys($res)[.!='output']!tokenize(., '/')[last()]`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs", DocPath: "fn/transform/multipledocs.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
 		{Name: "fn-transform-err-11", XPath: `let $res := fn:transform(map {"stylesheet-node":$multipledocs, "source-node":$sections,
-            "delivery-format":"serialized"}) return map:keys($res)[.!='output']!tokenize(., '/')[last()]`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs", DocPath: "fn/transform/multipledocs.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, Skip: "requires XSLT transform", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
+            "delivery-format":"serialized"}) return map:keys($res)[.!='output']!tokenize(., '/')[last()]`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs", DocPath: "fn/transform/multipledocs.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
 		{Name: "fn-transform-err-12", XPath: `let $res := fn:transform(map {"stylesheet-node":$multipledocs, "source-node":$sections,
-            "delivery-format":"document"}) return map:keys($res)[.!='output']!tokenize(., '/')[last()]`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs", DocPath: "fn/transform/multipledocs.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, Skip: "requires XSLT transform", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
+            "delivery-format":"document"}) return map:keys($res)[.!='output']!tokenize(., '/')[last()]`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs", DocPath: "fn/transform/multipledocs.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckSkip())}},
 		{Name: "fn-transform-err-13", XPath: `fn:transform(map {"stylesheet-node":$multipledocs2, "source-node":$sections,
-            "delivery-format":"doc"})("output")`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs2", DocPath: "fn/transform/multipledocs2.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, Skip: "requires XSLT transform", ExpectError: true},
+            "delivery-format":"doc"})("output")`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs2", DocPath: "fn/transform/multipledocs2.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform option validation not enforced", ExpectError: true},
 		{Name: "fn-transform-err-14", XPath: `fn:transform(map {"stylesheet-node":$multipledocs2, "source-node":$sections,
-            "delivery-format":"raw"})("output")`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs2", DocPath: "fn/transform/multipledocs2.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, Skip: "requires XSLT transform", ExpectError: true},
+            "delivery-format":"raw"})("output")`, SourceDocs: []qt3SourceDoc{{Name: "multipledocs2", DocPath: "fn/transform/multipledocs2.xsl"}, {Name: "sections", DocPath: "fn/transform/sections.xml"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", Skip: "fn:transform option validation not enforced", ExpectError: true},
 		{Name: "fn-transform-err-15", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>
                 <xsl:template name='main'>
                 <xsl:param name='param1' select='&quot;old1&quot;'/>
@@ -12044,7 +12044,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"),
             "initial-template": fn:QName('','main'),
             "template-params": map{QName('','param1'):"new1", QName('','param2'):"new2"}
-            })`, Skip: "requires XSLT transform", ExpectError: true},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", ExpectError: true},
 		{Name: "fn-transform-err-16", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
             xmlns:my='http://www.w3.org/fots/fn/transform/myfunctions' version='3.0'>
                 <xsl:function name='my:user-function'>
@@ -12063,13 +12063,13 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             return
             transform(map{"stylesheet-text":$xsl, "source-node":parse-xml("<doc>this</doc>"),
             "initial-function": fn:QName('http://www.w3.org/fots/fn/transform/myfunctions','user-function')
-            })`, Skip: "requires XSLT transform", ExpectError: true},
-		{Name: "fn-transform-err-17", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"initial-match-selection\" : fn:doc($uri), \"source-node\" : fn:doc($uri)})return $result?output", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", ExpectError: true},
+            })`, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", ExpectError: true},
+		{Name: "fn-transform-err-17", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"initial-match-selection\" : fn:doc($uri), \"source-node\" : fn:doc($uri)})return $result?output", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "fn:transform option validation not enforced", ExpectError: true},
 		{Name: "fn-transform-err-18", XPath: `let $result := fn:transform(map {"stylesheet-location" : $render, 
                                                "source-node" : fn:doc($uri), 
                                                "stylesheet-params" : map{ "debug": true()}
-                                          }) return $result?output`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "requires XSLT transform", ExpectError: true},
-		{Name: "fn-transform-901", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"source-node\" : fn:doc($uri)})return $result(\"output\")", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, ExpectError: true},
+                                          }) return $result?output`, DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, FOTSBaseURI: "http://www.w3.org/fots/fn/transform.xml", NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "fn:transform option validation not enforced", ExpectError: true},
+		{Name: "fn-transform-901", XPath: "let $result := fn:transform(map {\"stylesheet-location\" : $render, \"source-node\" : fn:doc($uri)})return $result(\"output\")", DocPath: "docs/works-mod.xml", Params: []qt3Param{{Name: "uri", Select: "'http://www.w3.org/fots/docs/works-mod.xml'"}, {Name: "render", Select: "'http://www.w3.org/fots/fn/transform/render.xsl'"}, {Name: "base-uri", Select: "'http://www.w3.org/fots/fn/transform/output-doc.xml'"}}, NeedsHTTP: true, ResourceMap: map[string]string{"http://www.w3.org/fots/docs/works-mod.xml": "docs/works-mod.xml", "http://www.w3.org/fots/fn/transform/render.xsl": "fn/transform/render.xsl"}, Skip: "fn:transform does not raise FOXT0004 on transformation failure", ExpectError: true},
 		{Name: "fn-transform-902", XPath: `let $xsl  :="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>
                 <xsl:param name='static-param' static='yes' select='&quot;success&quot;'/>
                 <xsl:template match='/'>
@@ -12079,7 +12079,7 @@ return transform(map{"source-node":fn:parse-xml($in), "stylesheet-text":$style, 
             return
             transform(map{"stylesheet-node":parse-xml($xsl), "source-node":parse-xml("<doc>this</doc>"), 
             "static-params":map{QName('','static-param'):"Hello World"}
-            })`, ExpectError: true},
+            })`, Skip: "fn:transform does not raise FOXT0004 on transformation failure", ExpectError: true},
 		{Name: "fn-translate3args-1", XPath: "translate('---abcABCxyz---','-abcABCxyz','1ABCabcXYZ')", Assertions: []qt3Assertion{qt3AssertStringValue("111ABCabcXYZ111")}},
 		{Name: "fn-translate3args-2", XPath: `translate('newline
 tab	space ','

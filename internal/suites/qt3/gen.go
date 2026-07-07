@@ -285,6 +285,24 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]bool, map[strin
 				baseURI = env.StaticBaseURI.URI
 			}
 
+			// The FOTS static base URI of a test defaults to the URI of its
+			// test-set document; the harness serves fixtures under
+			// http://www.w3.org/fots/<path>. It is threaded to the fn:transform
+			// adapter (WithTransformBaseURI) as the base for resolving a relative
+			// stylesheet-location, so such a location resolves against the test-set
+			// location where the fixtures live. Only an fn:transform case consults it,
+			// so it is emitted only for the transform feature — a document-URI base on
+			// every one of the ~22k cases would be dead weight. A test whose
+			// environment declares the static base URI as #UNDEFINED keeps an
+			// undefined (empty) base (a relative reference there must be unresolvable).
+			var fotsBaseURI string
+			usesTransform := hasFeatureDependency(mergedDeps, "fn-transform-XSLT") ||
+				hasFeatureDependency(mergedDeps, "fn-transform-XSLT30")
+			undefinedBase := env != nil && env.StaticBaseURI != nil && env.StaticBaseURI.URI == "#UNDEFINED"
+			if usesTransform && !undefinedBase {
+				fotsBaseURI = "http://www.w3.org/fots/" + filepath.ToSlash(tsRef.File)
+			}
+
 			// Detect resource environments (e.g., fn:json-doc/doc tests with URI-mapped files)
 			needsHTTP := false
 			var resMap map[string]string
@@ -336,6 +354,7 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]bool, map[strin
 				Collections:       envCollections(env, envIsGlobal, tsDir),
 				VariableSources:   envVariableSources(env, envIsGlobal, tsDir),
 				BaseURI:           baseURI,
+				FOTSBaseURI:       fotsBaseURI,
 				NeedsHTTP:         needsHTTP,
 				ResourceMap:       resMap,
 				Schemas:           schemas,
@@ -534,8 +553,6 @@ func getSkipReason(deps []dependency) string {
 				return "requires collection stability"
 			case "directory-as-collection-uri":
 				return "requires directory as collection URI"
-			case "fn-transform-XSLT", "fn-transform-XSLT30":
-				return "requires XSLT transform"
 			case "fn-load-xquery-module":
 				return "requires XQuery load-xquery-module"
 			case "remote_http":
@@ -611,6 +628,80 @@ func getTestCaseSkipReason(_, caseName string) string {
 	case "fn-string-22", "fn-string-length-22", "fn-string-length-23",
 		"fn-normalize-space-23", "fn-normalize-space-24":
 		return "requires PSVI insignificant-whitespace-stripping construction (not supported)"
+
+	// fn:transform sub-feature gaps. The xslt3 fn:transform adapter (wired over
+	// the xpath3 stub in qt3_helpers_test.go) runs 92 of the 122 transform cases;
+	// the following need sub-features the adapter does not yet implement. All
+	// reasons carry the "fn:transform" substring so qt3SkipClass files them under
+	// the closeable "not-wired" class.
+
+	// requested-properties: fn:transform ignores the requested-properties option,
+	// so a stylesheet that uses a feature the caller asked NOT to support (schema
+	// awareness, backwards-compatibility, the namespace axis, streaming) runs
+	// instead of raising the FOXT0006 "requested properties cannot be satisfied"
+	// error these cases expect.
+	case "fn-transform-71", "fn-transform-73", "fn-transform-75", "fn-transform-77":
+		return "fn:transform requested-properties option not enforced"
+
+	// post-process: fn:transform ignores the post-process callback, so the result
+	// map's output entry is the raw transform result rather than the value the
+	// callback would have produced.
+	case "fn-transform-79", "fn-transform-80", "fn-transform-81":
+		return "fn:transform post-process callback not supported"
+
+	// serialization-params: fn:transform does not apply the serialization-params
+	// option to the serialized output, so indent yes/no produce identical strings
+	// (the case asserts they differ).
+	case "fn-transform-30":
+		return "fn:transform serialization-params not applied to serialized output"
+
+	// option validation: fn:transform does not reject invalid/mutually-exclusive
+	// option maps (missing source, stylesheet-text+location/node, initial-mode+
+	// initial-template, initial-match-selection+source-node, bad delivery-format,
+	// raw delivery-format on a non-3.0 processor, wrong-typed option values, or
+	// string-keyed stylesheet-params), so the FOXT0002/type errors these cases
+	// expect are not raised.
+	case "fn-transform-err-1", "fn-transform-err-2", "fn-transform-err-3",
+		"fn-transform-err-4", "fn-transform-err-5", "fn-transform-err-6",
+		"fn-transform-err-13", "fn-transform-err-14", "fn-transform-err-17",
+		"fn-transform-err-18":
+		return "fn:transform option validation not enforced"
+
+	// transformation-failure code: fn:transform completes rather than reporting a
+	// FOXT0004 transformation failure for these two dynamic-failure cases.
+	case "fn-transform-901", "fn-transform-902":
+		return "fn:transform does not raise FOXT0004 on transformation failure"
+
+	// simplified stylesheet from a node: fn:transform cannot compile a
+	// stylesheet-node that is a literal result element (simplified stylesheet);
+	// it reports XTSE0150 instead of running it.
+	case "fn-transform-7d", "fn-transform-7e":
+		return "fn:transform simplified stylesheet (literal result element) from a stylesheet-node not supported"
+
+	// namespaced initial-template: fn:transform's initial-template lookup ignores
+	// the QName namespace, so a named template in a non-null namespace is not
+	// found (XTDE0820).
+	case "fn-transform-10", "fn-transform-11":
+		return "fn:transform namespaced initial-template lookup not supported"
+
+	// stylesheet-base-uri option not honored: xslt3.TransformFunction ignores the
+	// stylesheet-base-uri option and the base URI of a stylesheet-node's own
+	// document, so a relative xsl:include cannot be resolved. 22/err-9a supply a
+	// stylesheet-base-uri for an inline stylesheet-text; 23/24 rely on the
+	// stylesheet-node document's base URI (23 also passes it as stylesheet-base-uri).
+	// (fn-transform-25 resolves its relative stylesheet-location against the FOTS
+	// test-set base URI supplied to the transform adapter, so it is not skipped.)
+	case "fn-transform-22", "fn-transform-23", "fn-transform-24", "fn-transform-err-9a":
+		return "fn:transform stylesheet-base-uri option not honored by xslt3.TransformFunction"
+
+	// evaluator-base-relative resolution: the argument evaluates a relative
+	// fn:doc() ("function-lookup/collection-1.xml") in the outer XPath context,
+	// which resolves against the global evaluator base URI. The FOTS test-set base
+	// URI is supplied only to the fn:transform adapter, not as the global evaluator
+	// base, so this relative reference cannot be resolved.
+	case "fn-function-lookup-766a":
+		return "fn:transform-adapter base URI does not cover evaluator-base-relative resolution"
+
 	}
 	return ""
 }
@@ -1060,6 +1151,7 @@ type generatedTest struct {
 	Collections       []collectionBinding
 	VariableSources   []sourceBinding
 	BaseURI           string
+	FOTSBaseURI       string
 	NeedsHTTP         bool
 	ResourceMap       map[string]string // URI → file path relative to testdata dir
 	Schemas           []schemaBinding   // in-scope XSD schemas for schema-aware evaluation
@@ -1167,6 +1259,9 @@ func generateTestFile(tests []generatedTest) string {
 			}
 			if tc.BaseURI != "" {
 				fmt.Fprintf(&b, ", BaseURI: %q", tc.BaseURI)
+			}
+			if tc.FOTSBaseURI != "" {
+				fmt.Fprintf(&b, ", FOTSBaseURI: %q", tc.FOTSBaseURI)
 			}
 			if tc.NeedsHTTP {
 				b.WriteString(", NeedsHTTP: true")
