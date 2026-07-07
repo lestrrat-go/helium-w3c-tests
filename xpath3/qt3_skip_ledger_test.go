@@ -26,6 +26,7 @@ package xpath3_test
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
@@ -97,6 +98,46 @@ func qt3SkipClass(reason string) string {
 	default:
 		return qt3ClassUnclassified
 	}
+}
+
+// qt3ValidateExpectations checks that every hand-authored skip/xfail entry in
+// expectations/qt3.json refers to a real case and, for xfails, one that actually
+// runs — so a typo or stale key can't silently disable the unexpected-pass
+// tripwire (a green-listed divergence would then never be re-checked). It
+// returns one message per problem, sorted for deterministic output:
+//   - a skip/xfail id that matches no generated case;
+//   - an xfail id also present in the skip map, or one whose generated case
+//     carries a dependency-derived Skip — either way the case is skipped before
+//     qt3RunXFail, so its tripwire never runs.
+func qt3ValidateExpectations(exp qt3Expectations, cases []qt3Test) []string {
+	known := make(map[string]struct{}, len(cases))
+	genSkip := make(map[string]string, len(cases))
+	for _, tc := range cases {
+		known[tc.Name] = struct{}{}
+		if tc.Skip != "" {
+			genSkip[tc.Name] = tc.Skip
+		}
+	}
+	var problems []string
+	for id := range exp.Skip {
+		if _, ok := known[id]; !ok {
+			problems = append(problems, fmt.Sprintf("skip id %q matches no QT3 case", id))
+		}
+	}
+	for id := range exp.XFail {
+		if _, ok := known[id]; !ok {
+			problems = append(problems, fmt.Sprintf("xfail id %q matches no QT3 case", id))
+			continue
+		}
+		if _, ok := exp.Skip[id]; ok {
+			problems = append(problems, fmt.Sprintf("xfail id %q is also in the skip map; it would be skipped before the xfail tripwire runs", id))
+		}
+		if r, ok := genSkip[id]; ok {
+			problems = append(problems, fmt.Sprintf("xfail id %q has a dependency-derived skip (%q); it would be skipped before the xfail tripwire runs", id, r))
+		}
+	}
+	sort.Strings(problems)
+	return problems
 }
 
 // qt3SkipLedgerRow is one ledger entry: a single skipped case's contract.
@@ -221,6 +262,14 @@ func TestQT3SkipLedger(t *testing.T) {
 
 	committedLedger := qt3ReadLedger(t)
 	committedCounts := qt3ReadCounts(t)
+
+	// Expectation hygiene: a hand-authored skip/xfail entry that names no real
+	// (or, for xfail, no actually-running) case would silently disable the
+	// unexpected-pass tripwire. Enforce it here so the fixture-free ledger CI job
+	// catches a typo'd or stale entry.
+	for _, p := range qt3ValidateExpectations(qt3LoadExpectations(), qt3AllCases) {
+		t.Errorf("expectations/qt3.json: %s", p)
+	}
 
 	// (a) mandatory-feature guard, independent of the committed files.
 	for _, r := range ledger.Rows {

@@ -32,3 +32,13 @@ func TestQT3XFailMechanism(t *testing.T) {
 		t.Errorf("failing case did not record a failure; xfail would report a false unexpected pass")
 	}
 }
+
+// TestQT3ExpectationsValid fails on a hand-authored expectations/qt3.json entry
+// that names no real case, or an xfail that is force-skipped before qt3RunXFail
+// (so its unexpected-pass tripwire could never fire). This keeps a typo'd or
+// stale key from silently green-listing nothing.
+func TestQT3ExpectationsValid(t *testing.T) {
+	for _, p := range qt3ValidateExpectations(qt3LoadExpectations(), qt3AllCases) {
+		t.Errorf("expectations/qt3.json: %s", p)
+	}
+}
