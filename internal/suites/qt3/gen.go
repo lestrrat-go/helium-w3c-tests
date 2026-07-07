@@ -409,10 +409,28 @@ func copyDocs(sourceDir, destDir string, docFiles, resourceFiles map[string]bool
 	return copied, nil
 }
 
+// reportFalsePassRisk prints how many RUN (non-skipped) cases have no real
+// assertion — they verify only that evaluation did not error. Report-only guard
+// for the un-skip campaign; it does not change what is emitted.
+func reportFalsePassRisk(allTests []generatedTest) {
+	var run, risk int
+	for _, t := range allTests {
+		if t.SkipReason != "" {
+			continue
+		}
+		run++
+		if !hasRealAssertion(t.Assertions) {
+			risk++
+		}
+	}
+	fmt.Printf("qt3: %d RUN cases, %d with no real assertion (false-pass risk)\n", run, risk)
+}
+
 // writeCategoryFiles groups the tests by catalog category and writes one
 // xpath3/qt3_<category>_gen_test.go per category through generator.WriteGoFile
 // (which formats and, in verify mode, checks for drift).
 func writeCategoryFiles(outputDir string, allTests []generatedTest, mode generator.GenerateMode) error {
+	reportFalsePassRisk(allTests)
 	categories := groupByCategory(allTests)
 	for _, cat := range sortedCategoryNames(categories) {
 		out := filepath.Join(outputDir, fmt.Sprintf("qt3_%s_gen_test.go", cat))
@@ -1290,7 +1308,7 @@ func generateTestFile(tests []generatedTest) string {
 				if assertionsAcceptError(tc.Assertions) {
 					b.WriteString(", AcceptError: true")
 				}
-				assertExprs := emitAssertions(tc.Assertions)
+				assertExprs := emitAssertions(tc.Assertions, tc.Namespaces)
 				if len(assertExprs) > 0 {
 					b.WriteString(", Assertions: []qt3Assertion{")
 					b.WriteString(strings.Join(assertExprs, ", "))
@@ -1353,17 +1371,19 @@ func assertionsAcceptError(assertions []assertion) bool {
 	return false
 }
 
-// emitAssertions returns Go expressions for assertion values.
-func emitAssertions(assertions []assertion) []string {
+// emitAssertions returns Go expressions for assertion values. ns is the case's
+// in-scope namespace bindings, threaded through so a generic <assert> can compile
+// its XPath expression against the same prefixes the query sees.
+func emitAssertions(assertions []assertion, ns map[string]string) []string {
 	var out []string
 	for _, a := range assertions {
-		out = append(out, emitAssertion(a)...)
+		out = append(out, emitAssertion(a, ns)...)
 	}
 	return out
 }
 
 // emitAssertion returns one or more Go expressions (all-of expands to multiple).
-func emitAssertion(a assertion) []string {
+func emitAssertion(a assertion, ns map[string]string) []string {
 	switch a.Type {
 	case "assert-eq":
 		return []string{fmt.Sprintf("qt3AssertEq(%s)", goStringLiteral(a.Value))}
@@ -1385,17 +1405,20 @@ func emitAssertion(a assertion) []string {
 		return []string{fmt.Sprintf("qt3AssertType(%q)", a.Value)}
 	case "assert-deep-eq":
 		return []string{fmt.Sprintf("qt3AssertDeepEq(%s)", goStringLiteral(a.Value))}
+	case "assert":
+		// Generic <assert>EXPR</assert>: a boolean XPath over $result.
+		return []string{fmt.Sprintf("qt3Assert(%s, %s)", goStringLiteral(a.Value), emitNamespaceMap(ns))}
 	case "assert-xml", "assert-permutation", "assert-serialization-error", "assert-serialization":
 		return []string{"qt3AssertSkip()"}
 	case "all-of":
-		return emitAssertions(a.Children)
+		return emitAssertions(a.Children, ns)
 	case "any-of":
 		var checks []string
 		for _, child := range a.Children {
 			if child.Type == "error" {
 				continue // handled by assertionsExpectError
 			}
-			checks = append(checks, emitCheck(child))
+			checks = append(checks, emitCheck(child, ns))
 		}
 		if len(checks) == 0 {
 			return nil
@@ -1409,8 +1432,10 @@ func emitAssertion(a assertion) []string {
 }
 
 // emitCheck returns a Go expression for a qt3Check value (used in any-of).
-func emitCheck(a assertion) string {
+func emitCheck(a assertion, ns map[string]string) string {
 	switch a.Type {
+	case "assert":
+		return fmt.Sprintf("qt3CheckAssert(%s, %s)", goStringLiteral(a.Value), emitNamespaceMap(ns))
 	case "assert-eq":
 		return fmt.Sprintf("qt3CheckEq(%s)", goStringLiteral(a.Value))
 	case "assert-string-value":
@@ -1434,6 +1459,82 @@ func emitCheck(a assertion) string {
 	default:
 		return "qt3CheckSkip()"
 	}
+}
+
+// emitNamespaceMap emits a Go map literal for the case's in-scope namespace
+// bindings (or "nil" when empty). Used by the generic-<assert> arms so the
+// asserted XPath compiles against the same test-declared prefixes as the query
+// (the XPath 3.1 predeclared prefixes fn/math/map/array/err/xs are supplied by
+// the evaluator's static context and need not appear here).
+func emitNamespaceMap(ns map[string]string) string {
+	if len(ns) == 0 {
+		return "nil"
+	}
+	var b strings.Builder
+	b.WriteString("map[string]string{")
+	for i, k := range sortedKeys(ns) {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+		fmt.Fprintf(&b, "%q: %q", k, ns[k])
+	}
+	b.WriteString("}")
+	return b.String()
+}
+
+// assertionIsReal reports whether a single FOTS assertion, as emitted by
+// emitAssertion/emitCheck, can actually fail on a wrong result (i.e. is not a
+// no-op/unconditional check). It is a generator guard for the un-skip campaign:
+// a case whose assertions are all non-real verifies only "evaluation did not
+// error". Reporting only for now — callers do not gate on it yet.
+func assertionIsReal(a assertion) bool {
+	switch a.Type {
+	case "assert-eq", "assert-string-value", "assert-true", "assert-false",
+		"assert-empty", "assert-count", "assert-deep-eq", "assert", "error":
+		return true
+	case "assert-type", "assert-xml", "assert-permutation",
+		"assert-serialization", "assert-serialization-error":
+		return false
+	case "all-of":
+		// Real if any child is real (a single real check makes the case checkable).
+		for _, child := range a.Children {
+			if assertionIsReal(child) {
+				return true
+			}
+		}
+		return false
+	case "any-of":
+		// An any-of passes if ANY branch is true, so one unconditional
+		// (non-real) non-error branch makes the whole thing unconditional.
+		// Real only if it has ≥1 checkable branch and every non-error branch
+		// is real.
+		checkable := false
+		for _, child := range a.Children {
+			if child.Type == "error" {
+				continue // becomes AcceptError, not a check
+			}
+			if !assertionIsReal(child) {
+				return false
+			}
+			checkable = true
+		}
+		return checkable
+	default:
+		return false
+	}
+}
+
+// hasRealAssertion reports whether a generated case has at least one assertion
+// that can fail on a wrong result. A case with none is a false-pass risk: it is
+// run but verifies only that evaluation did not error. Generator guard for the
+// un-skip campaign (report-only; not yet used to gate emission).
+func hasRealAssertion(assertions []assertion) bool {
+	for _, a := range assertions {
+		if assertionIsReal(a) {
+			return true
+		}
+	}
+	return false
 }
 
 func emitDecimalFormat(df decimalFormat) string {

@@ -577,7 +577,7 @@ func init() {
 		{Name: "op-concatenate-mix-args-016", XPath: "() , xs:string(\" \") , xs:decimal(\"2.000000000000002\")", Assertions: []qt3Assertion{qt3AssertStringValue("  2.000000000000002")}},
 		{Name: "op-concatenate-mix-args-017", XPath: "(1+1), (2-2)", Assertions: []qt3Assertion{qt3AssertDeepEq("2, 0")}},
 		{Name: "op-concatenate-mix-args-018", XPath: "(1,2,2),(1,2,3),(123,\"\"),(),(\"\")", Assertions: []qt3Assertion{qt3AssertDeepEq("1, 2, 2, 1, 2, 3, 123, \"\", \"\"")}},
-		{Name: "op-concatenate-mix-args-019", XPath: "//book/price, (), (1)", DocPath: "docs/bib.xml", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+		{Name: "op-concatenate-mix-args-019", XPath: "//book/price, (), (1)", DocPath: "docs/bib.xml", Assertions: []qt3Assertion{qt3Assert("count($result) = 5", nil), qt3Assert("$result[1][self::price][.=\"65.95\"]", nil), qt3Assert("$result[2][self::price][.=\"65.95\"]", nil), qt3Assert("$result[3][self::price][.=\"39.95\"]", nil), qt3Assert("$result[4][self::price][.=\"129.95\"]", nil), qt3Assert("$result[5] eq 1", nil)}},
 		{Name: "op-concatenate-mix-args-020", XPath: "//book/price, //book/title", DocPath: "docs/bib.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "K-commaOp-1", XPath: "deep-equal(((1, (2, (3, 4, (5, 6)), 7), 8, (9, 10), 11)), (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11))", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "K-commaOp-2", XPath: "empty(((), (), ((), (), ((), (), (())), ()), (), (())))", Assertions: []qt3Assertion{qt3AssertTrue()}},
@@ -891,8 +891,8 @@ func init() {
 		{Name: "K-DayTimeDurationLT-5", XPath: "xs:dayTimeDuration(\"P3DT08H34M12.143S\") le xs:dayTimeDuration(\"P3DT08H34M12.143S\")", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "K-DayTimeDurationLT-6", XPath: "not(xs:dayTimeDuration(\"P3DT08H34M12.143S\") le xs:dayTimeDuration(\"P3DT08H34M12.142S\"))", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "op-divide-dayTimeDuration2args-1", XPath: "xs:dayTimeDuration(\"P0DT0H0M0S\") div xs:double(\"-1.7976931348623157E308\")", Assertions: []qt3Assertion{qt3AssertStringValue("PT0S")}},
-		{Name: "op-divide-dayTimeDuration2args-2", XPath: "xs:dayTimeDuration(\"P15DT11H59M59S\") div xs:double(\"-1.7976931348623157E308\")", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "op-divide-dayTimeDuration2args-3", XPath: "xs:dayTimeDuration(\"P31DT23H59M59S\") div xs:double(\"-1.7976931348623157E308\")", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "op-divide-dayTimeDuration2args-2", XPath: "xs:dayTimeDuration(\"P15DT11H59M59S\") div xs:double(\"-1.7976931348623157E308\")", Assertions: []qt3Assertion{qt3Assert("abs(seconds-from-duration($result)) lt 1e-100", nil)}},
+		{Name: "op-divide-dayTimeDuration2args-3", XPath: "xs:dayTimeDuration(\"P31DT23H59M59S\") div xs:double(\"-1.7976931348623157E308\")", Assertions: []qt3Assertion{qt3Assert("abs(seconds-from-duration($result)) lt 1e-100", nil)}},
 		{Name: "op-divide-dayTimeDuration2args-4", XPath: "xs:dayTimeDuration(\"P0DT0H0M0S\") div xs:double(\"0.1\")", Assertions: []qt3Assertion{qt3AssertStringValue("PT0S")}},
 		{Name: "op-divide-dayTimeDuration2args-5", XPath: "xs:dayTimeDuration(\"P0DT0H0M0S\") div xs:double(\"1.7976931348623157E308\")", Assertions: []qt3Assertion{qt3AssertStringValue("PT0S")}},
 		{Name: "op-divide-dayTimeDuration-2", XPath: "fn:string((xs:dayTimeDuration(\"P10DT10H11M\")) div 2.0) and fn:false()", Assertions: []qt3Assertion{qt3AssertFalse()}},
@@ -2118,7 +2118,7 @@ func init() {
 		{Name: "op-numeric-dividesht2args-2", XPath: "fn:round-half-to-even((xs:short(\"-5324\") div xs:short(\"-32768\")),5)", Assertions: []qt3Assertion{qt3AssertEq("0.16248")}},
 		{Name: "op-numeric-dividesht2args-3", XPath: "xs:short(\"32767\") div xs:short(\"-32768\")", Assertions: []qt3Assertion{qt3AnyOf(qt3CheckEq("-0.999969482421875"), qt3CheckEq("-0.999969482421"))}},
 		{Name: "op-numeric-dividesht2args-4", XPath: "fn:round-half-to-even((xs:short(\"-32768\") div xs:short(\"-5324\")),5)", Assertions: []qt3Assertion{qt3AssertEq("6.15477")}},
-		{Name: "op-numeric-dividesht2args-5", XPath: "xs:short(\"-32768\") div xs:short(\"32767\")", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "op-numeric-dividesht2args-5", XPath: "xs:short(\"-32768\") div xs:short(\"32767\")", Assertions: []qt3Assertion{qt3Assert("abs($result + 1.000030518509475997) lt 1e-12", nil)}},
 		{Name: "op-numeric-dividemix2args-1", XPath: "() div 1", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckEmpty())}},
 		{Name: "op-numeric-dividemix2args-2", XPath: "1 div '1'", ExpectError: true},
 		{Name: "op-numeric-dividemix2args-3", XPath: "1 div xs:integer('1')", Assertions: []qt3Assertion{qt3AssertEq("1")}},
@@ -3613,7 +3613,7 @@ func init() {
 		{Name: "RangeExpr-601", XPath: "1 to year-from-date(current-date())[. lt 0]", Assertions: []qt3Assertion{qt3AssertEmpty()}},
 		{Name: "fn-union-node-args-001", XPath: "/bib/book[3]/title union /bib/book[1]/title", DocPath: "op/union/bib2.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "fn-union-node-args-002", XPath: "(/bib/book/title | /bib/book)/local-name()", DocPath: "op/union/bib2.xml", Assertions: []qt3Assertion{qt3AssertStringValue("book title book title book title book title")}},
-		{Name: "fn-union-node-args-003", XPath: "/bib/book[3]/title | root(fn:exactly-one(/bib/book[3]/title))", DocPath: "op/union/bib2.xml", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip()}},
+		{Name: "fn-union-node-args-003", XPath: "/bib/book[3]/title | root(fn:exactly-one(/bib/book[3]/title))", DocPath: "op/union/bib2.xml", Assertions: []qt3Assertion{qt3Assert("$result[1][self::document-node()][bib/book[1]/@year = \"1994\"]", nil), qt3Assert("$result[2][self::title][.=\"Data on the Web\"]", nil)}},
 		{Name: "fn-union-node-args-004", XPath: "/bib/book[3]/title/text() union /bib/book[1]/title", DocPath: "op/union/bib2.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "fn-union-node-args-005", XPath: "/processing-instruction() union /bib/book[2]/title", DocPath: "op/union/bib2.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
 		{Name: "fn-union-node-args-006", XPath: "/processing-instruction(PI1) union /bib/book[3]/title", DocPath: "op/union/bib2.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
@@ -3702,7 +3702,7 @@ func init() {
               map:entry(xs:string("xyz"), 1),
               map:entry(xs:untypedAtomic("xyz"), 1),
               map:entry(QName((),"abc"), 1)
-           ), map{"duplicates":"use-last"})`, Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+           ), map{"duplicates":"use-last"})`, Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, Assertions: []qt3Assertion{qt3Assert("map:size($result) eq 3", map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}), qt3Assert("count(map:keys($result)) eq 3", map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}), qt3Assert("map:keys($result)[deep-equal(.,\"abc\")] instance of xs:anyURI", map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}), qt3Assert("map:keys($result)[deep-equal(.,\"xyz\")] instance of xs:untypedAtomic", map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}), qt3Assert("$result?abc eq 1", map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"})}},
 		{Name: "same-key-003", XPath: `map {
              "ab" || "c" : 1,
              xs:anyURI("abc") : 2
@@ -3714,7 +3714,7 @@ func init() {
               map:entry(xs:float('NaN'), 1),
               map:entry(xs:float('INF'), 2),
               map:entry(xs:float('-INF'), 3)
-            ), map{"duplicates":"use-last"})`, Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            ), map{"duplicates":"use-last"})`, Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, Assertions: []qt3Assertion{qt3Assert("map:size($result) eq 3", map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}), qt3Assert("map:keys($result) instance of xs:float+", map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}), qt3Assert("$result?(xs:double('NaN')) eq 1", map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}), qt3Assert("$result?(xs:double('INF')) eq 2", map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}), qt3Assert("$result?(xs:double('-INF')) eq 3", map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"})}},
 		{Name: "same-key-005", XPath: `map:merge((
               map:entry(xs:double('NaN'), 1),
               map:entry(xs:double('INF'), 2),
@@ -3722,16 +3722,16 @@ func init() {
               map:entry(xs:float('NaN'), 1),
               map:entry(xs:float('INF'), 2),
               map:entry(xs:float('-INF'), 3)
-              ), map{"duplicates":"use-last"})`, Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+              ), map{"duplicates":"use-last"})`, Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, Assertions: []qt3Assertion{qt3Assert("map:size($result) eq 3", map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}), qt3Assert("map:keys($result) instance of xs:float+", map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}), qt3Assert("$result?(xs:double('NaN')) eq 1", map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}), qt3Assert("$result?(xs:double('INF')) eq 2", map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}), qt3Assert("$result?(xs:double('-INF')) eq 3", map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"})}},
 		{Name: "same-key-007", XPath: `map {
               xs:double("1.1") : 1
-            }`, Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip()}},
+            }`, Assertions: []qt3Assertion{qt3Assert("$result?(xs:decimal(\"1.1\")) => empty()", nil), qt3Assert("$result?(1.1E0) eq 1", nil)}},
 		{Name: "same-key-008", XPath: `map {
               1 div (3 cast as xs:float) : "float",
               1 div (3 cast as xs:double) : "double",
               1 div (3 cast as xs:integer) : "integer"
-            }`, Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
-		{Name: "same-key-009", XPath: "map { xs:integer(\"16777218\") : 1 }", Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            }`, Assertions: []qt3Assertion{qt3Assert("$result?((1 div (3 cast as xs:float))   cast as xs:decimal) eq \"float\"", nil), qt3Assert("$result?((1 div (3 cast as xs:double))  cast as xs:decimal) eq \"double\"", nil), qt3Assert("$result?((1 div (3 cast as xs:integer)) cast as xs:decimal) eq \"integer\"", nil)}},
+		{Name: "same-key-009", XPath: "map { xs:integer(\"16777218\") : 1 }", Assertions: []qt3Assertion{qt3Assert("$result?(16777218) eq 1", nil), qt3Assert("$result?(xs:double(\"16777218\")) eq 1", nil), qt3Assert("$result?(xs:decimal(\"16777218\")) eq 1", nil)}},
 		{Name: "same-key-021", XPath: `map {
                fn:true() : 1,
                fn:false() : 2,
@@ -3740,11 +3740,11 @@ func init() {
                xs:duration("P12M") : 5,
                QName((), "abc") : 6,
                QName("http://example.org", "abc") : 7
-            }`, Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip(), qt3AssertSkip()}},
+            }`, Assertions: []qt3Assertion{qt3Assert("map:size($result) eq 7", nil), qt3Assert("$result?(fn:true()) eq 1", nil), qt3Assert("$result?(fn:false()) eq 2", nil), qt3Assert("$result?(xs:hexBinary(\"ff\")) eq 3", nil), qt3Assert("$result?(xs:base64Binary(xs:hexBinary(\"ff\"))) eq 4", nil), qt3Assert("$result?(xs:duration(\"P12M\")) eq 5", nil), qt3Assert("$result?(QName((), \"abc\")) eq 6", nil), qt3Assert("$result?(QName(\"http://example.org\", \"abc\")) eq 7", nil)}},
 		{Name: "same-key-022", XPath: `let $ns := "http://example.org",
            $keys := (QName($ns, "foo"), QName($ns, "ns:foo"), QName($ns, "ns2:foo"))
           return
-             map:merge($keys ! map:entry(., position()), map{"duplicates":"use-last"})`, Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, Assertions: []qt3Assertion{qt3AssertSkip(), qt3AssertSkip()}},
+             map:merge($keys ! map:entry(., position()), map{"duplicates":"use-last"})`, Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, Assertions: []qt3Assertion{qt3Assert("map:size($result) eq 1", map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}), qt3Assert("$result?(QName(\"http://example.org\",\"foo\")) eq 3", map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"})}},
 		{Name: "same-key-027", XPath: "map{ xs:time('17:00:00Z'):1, xs:time('12:00:00-05:00'):2 }", Namespaces: map[string]string{"map": "http://www.w3.org/2005/xpath-functions/map"}, ExpectError: true},
 		{Name: "same-key-028", XPath: `map{ xs:time('17:00:00Z'):1,
                 xs:time('17:00:01Z'):1,

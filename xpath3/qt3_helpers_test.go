@@ -1178,6 +1178,43 @@ func qt3AssertSkip() qt3Assertion {
 	return func(_ qt3TB, _ xpath3.Sequence) {}
 }
 
+// qt3EvalAssert compiles a generic FOTS <assert> expression, evaluates it with
+// $result bound to the case's result sequence and the case's in-scope namespaces
+// (ns; the XPath 3.1 predeclared prefixes fn/math/map/array/err/xs come from the
+// evaluator's static context), and returns its effective boolean value. A
+// compile error, evaluation error, or an EBV that raises (e.g. FORG0006 on a
+// multi-item non-node sequence) is returned as the error — the assertion fails.
+func qt3EvalAssert(expr string, ns map[string]string, seq xpath3.Sequence) (bool, error) {
+	compiled, err := xpath3.NewCompiler().Compile(expr)
+	if err != nil {
+		return false, err
+	}
+	eval := xpath3.NewEvaluator(xpath3.DefaultEvaluatorOptions)
+	if len(ns) > 0 {
+		eval = eval.Namespaces(ns)
+	}
+	if seq == nil {
+		seq = xpath3.EmptySequence()
+	}
+	eval = eval.Variables(map[string]xpath3.Sequence{"result": seq})
+	result, err := eval.Evaluate(context.Background(), compiled, nil)
+	if err != nil {
+		return false, err
+	}
+	return qt3EBV(result.Sequence())
+}
+
+// qt3Assert evaluates a generic FOTS <assert>EXPR</assert>: EXPR is a boolean
+// XPath over $result and must have an effective boolean value of true.
+func qt3Assert(expr string, ns map[string]string) qt3Assertion {
+	return func(t qt3TB, seq xpath3.Sequence) {
+		t.Helper()
+		ebv, err := qt3EvalAssert(expr, ns, seq)
+		require.NoError(t, err, "assert: %s", expr)
+		require.True(t, ebv, "assert: %s (got %s)", expr, qt3StringValue(seq))
+	}
+}
+
 // ──────────────────────────────────────────────────────────────────────
 // Check factories  (for use inside qt3AnyOf)
 // ──────────────────────────────────────────────────────────────────────
@@ -1262,6 +1299,15 @@ func qt3CheckDeepEq(expected string) qt3Check {
 func qt3CheckSkip() qt3Check {
 	return func(_ xpath3.Sequence) bool {
 		return true
+	}
+}
+
+// qt3CheckAssert is the any-of form of qt3Assert: it returns true when the
+// generic <assert> expression's effective boolean value is true.
+func qt3CheckAssert(expr string, ns map[string]string) qt3Check {
+	return func(seq xpath3.Sequence) bool {
+		ebv, err := qt3EvalAssert(expr, ns, seq)
+		return err == nil && ebv
 	}
 }
 
