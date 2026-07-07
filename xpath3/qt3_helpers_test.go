@@ -117,25 +117,28 @@ func qt3Resolver(client *http.Client) xpath3.URIResolver {
 }
 
 // qt3TransformBaseURI is the static base URI handed to the fn:transform adapter,
-// used to resolve a relative stylesheet-location (the FOTS-correct behavior: a
-// relative stylesheet-location resolves against the transform call's static base
-// URI). An explicit environment static-base-uri wins; otherwise the FOTS
-// test-set document URI is used, which is where the fixtures live.
+// used to resolve a relative stylesheet-location (a relative stylesheet-location
+// resolves against the transform call's static base URI) and to make a relative
+// stylesheet-base-uri option absolute (fn-transform-err-9a). An explicit
+// environment static-base-uri wins; otherwise the FOTS test-set document URI is
+// used, which is where the fixtures live.
 //
-// It is deliberately NOT supplied for a stylesheet-text case. xslt3 uses this
-// base URI as the base of an inline stylesheet-text too (rather than honoring
-// the stylesheet-base-uri option), so supplying it would let a relative
-// xsl:include in stylesheet-text resolve even when the case supplies no
-// stylesheet-base-uri and expects the include to be unresolvable (e.g.
-// fn-transform-err-9, which asserts XTSE0165). Withholding the base there keeps
-// that error-detection case correct; the flip side is that a stylesheet-text
-// case that legitimately supplies stylesheet-base-uri (fn-transform-22) stays
-// skipped until xslt3 honors that option.
+// The one case the base is withheld: a stylesheet-text with no
+// stylesheet-base-uri option. xslt3 falls back to the transform call's static
+// base URI as the base of an inline stylesheet-text, so supplying it would let a
+// relative xsl:include resolve even though the case supplies no
+// stylesheet-base-uri and expects the include to be unresolvable
+// (fn-transform-err-9, which asserts XTSE0165). Withholding the base only in
+// that shape keeps err-9 correct while a stylesheet-text case that DOES supply
+// stylesheet-base-uri (err-9a) still resolves its include against it.
 func qt3TransformBaseURI(tc qt3Test) string {
 	if tc.BaseURI != "" {
 		return tc.BaseURI
 	}
-	if tc.FOTSBaseURI != "" && !strings.Contains(tc.XPath, "stylesheet-text") {
+	if tc.FOTSBaseURI != "" {
+		if strings.Contains(tc.XPath, "stylesheet-text") && !strings.Contains(tc.XPath, "stylesheet-base-uri") {
+			return qt3DefaultBaseURI(tc)
+		}
 		return tc.FOTSBaseURI
 	}
 	return qt3DefaultBaseURI(tc)
@@ -546,11 +549,19 @@ func qt3SchemaOpts(t *testing.T, ctx context.Context, tc qt3Test, doc helium.Nod
 
 	if len(validatedDocs) > 0 {
 		ann := make(xsd.TypeAnnotations)
+		nilled := make(map[helium.Node]struct{})
+		ids := make(map[helium.Node]struct{})
 		for _, vd := range validatedDocs {
-			qt3AnnotateDoc(t, ctx, schemas, vd, ann)
+			qt3AnnotateDoc(t, ctx, schemas, vd, ann, nilled, ids)
 		}
 		if len(ann) > 0 {
 			muts = append(muts, func(e xpath3.Evaluator) xpath3.Evaluator { return e.TypeAnnotations(ann) })
+		}
+		if len(nilled) > 0 {
+			muts = append(muts, func(e xpath3.Evaluator) xpath3.Evaluator { return e.NilledElements(nilled) })
+		}
+		if len(ids) > 0 {
+			muts = append(muts, func(e xpath3.Evaluator) xpath3.Evaluator { return e.IDNodes(ids) })
 		}
 	}
 	return muts
@@ -678,11 +689,14 @@ func (a qt3AggregateDecls) SchemaTypeContentKind(typeName string) (xpath3.Conten
 }
 
 // qt3AnnotateDoc validates node against the schema whose target namespace
-// matches its root element and merges the resulting type annotations into ann.
-// The fixtures are expected valid; a strict/lax source that FAILS validation is
-// skipped (with schema/doc context) rather than run with incomplete PSVI
-// annotations that would silently distort the result.
-func qt3AnnotateDoc(t *testing.T, ctx context.Context, schemas []*xsd.Schema, node helium.Node, ann xsd.TypeAnnotations) {
+// matches its root element and merges the resulting type annotations into ann,
+// the PSVI nilled elements into nilled, and the PSVI is-id nodes into ids (both
+// keyed on the exact document nodes the evaluator sees, so fn:nilled and
+// fn:id/fn:element-with-id observe the validated properties). The fixtures are
+// expected valid; a strict/lax source that FAILS validation is skipped (with
+// schema/doc context) rather than run with incomplete PSVI annotations that
+// would silently distort the result.
+func qt3AnnotateDoc(t *testing.T, ctx context.Context, schemas []*xsd.Schema, node helium.Node, ann xsd.TypeAnnotations, nilled, ids map[helium.Node]struct{}) {
 	t.Helper()
 	d := qt3AsDocument(node)
 	if d == nil {
@@ -693,11 +707,20 @@ func qt3AnnotateDoc(t *testing.T, ctx context.Context, schemas []*xsd.Schema, no
 		return
 	}
 	local := make(xsd.TypeAnnotations)
-	if err := xsd.NewValidator(schema).Annotations(&local).Validate(ctx, d); err != nil {
+	localNilled := make(xsd.NilledElements)
+	localIDs := make(xsd.IDNodes)
+	validator := xsd.NewValidator(schema).Annotations(&local).NilledElements(&localNilled).IDNodes(&localIDs)
+	if err := validator.Validate(ctx, d); err != nil {
 		t.Skipf("validating source (root ns %q) against schema %q: %v", qt3DocRootNS(d), schema.TargetNamespace(), err)
 	}
 	for k, v := range local {
 		ann[k] = v
+	}
+	for e := range localNilled {
+		nilled[e] = struct{}{}
+	}
+	for n := range localIDs {
+		ids[n] = struct{}{}
 	}
 }
 

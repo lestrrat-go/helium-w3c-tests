@@ -67,6 +67,7 @@ type environment struct {
 type schema struct {
 	URI  string `xml:"uri,attr"`
 	File string `xml:"file,attr"`
+	Role string `xml:"role,attr"`
 }
 
 type collation struct {
@@ -592,31 +593,12 @@ func getTestCaseSkipReason(_, caseName string) string {
 		"fn-unparsed-text-lines-012":
 		return "requires static typing"
 
-	// fn:nilled (and element(E, T) matching of a nilled element) needs the PSVI
-	// "nilled" property, which the standalone xpath3 evaluator does not carry —
-	// only the XSLT engine overrides fn:nilled. The type annotations this harness
-	// feeds do not include the nilled property.
-	case "fn-nilled-33", "fn-nilled-35", "fn-nilled-37", "fn-nilled-38",
-		"fn-nilled-39", "fn-nilled-44", "fn-nilled-45", "fn-nilled-46",
-		"fn-nilled-47", "fn-nilled-50", "fn-nilled-51":
-		return "requires schema PSVI nilled property (unsupported by standalone evaluator)"
-
-	// fn:id / fn:element-with-id resolve elements by their schema is-id property,
-	// which the standalone evaluator does not derive from type annotations.
-	case "fn-element-with-id-4", "fn-element-with-id-5":
-		return "requires schema is-id property lookup (unsupported by standalone evaluator)"
-
-	// fn:json-to-xml with the validate option depends on schema-validating the
-	// generated element tree, which the standalone evaluator does not perform.
-	case "json-to-xml-037", "json-to-xml-038", "json-to-xml-error-042":
-		return "fn:json-to-xml validate option unsupported by standalone evaluator"
-
 	// These schemaValidation cases assert results that depend on PSVI
-	// insignificant-whitespace stripping of element-only content (e.g.
-	// fn-string-22 expects /*/string() with the inter-element whitespace
-	// removed), which the annotate-then-evaluate harness does not model.
-	case "fn-string-22", "fn-string-length-22", "fn-string-length-23",
-		"fn-normalize-space-23", "fn-normalize-space-24":
+	// insignificant-whitespace stripping of element-only content. string-length-23
+	// and normalize-space-24 additionally need xs:string?-argument atomization to
+	// route through the element-only-content FOTY0012 check (a separate coercion
+	// batch).
+	case "fn-string-length-23", "fn-normalize-space-24":
 		return "requires PSVI insignificant-whitespace-stripping construction (not supported)"
 
 	// fn:transform sub-feature gaps. The xslt3 fn:transform adapter (wired over
@@ -674,15 +656,18 @@ func getTestCaseSkipReason(_, caseName string) string {
 	case "fn-transform-10", "fn-transform-11":
 		return "fn:transform namespaced initial-template lookup not supported"
 
-	// stylesheet-base-uri option not honored: xslt3.TransformFunction ignores the
-	// stylesheet-base-uri option and the base URI of a stylesheet-node's own
-	// document, so a relative xsl:include cannot be resolved. 22/err-9a supply a
-	// stylesheet-base-uri for an inline stylesheet-text; 23/24 rely on the
-	// stylesheet-node document's base URI (23 also passes it as stylesheet-base-uri).
-	// (fn-transform-25 resolves its relative stylesheet-location against the FOTS
-	// test-set base URI supplied to the transform adapter, so it is not skipped.)
-	case "fn-transform-22", "fn-transform-23", "fn-transform-24", "fn-transform-err-9a":
-		return "fn:transform stylesheet-base-uri option not honored by xslt3.TransformFunction"
+	// stylesheet-base-uri whose VALUE is a harness-computed base that does not map
+	// to a local fixture. fn-transform-22 passes stylesheet-base-uri =
+	// string(static-base-uri()); the harness static-base-uri() is the qt-fots
+	// catalog namespace, not the transform document URI, so the relative
+	// xsl:include resolves to an un-mapped catalog-relative URL rather than the
+	// testdata fixture. fn-transform-23 passes stylesheet-base-uri =
+	// string(base-uri($include)); the env source $include has no uri attribute, so
+	// its base URI is the local parse path, not the http://www.w3.org/fots/ URL
+	// the resolver maps. Both need the harness's evaluator/source base-URI model
+	// aligned with the fn:transform adapter base, beyond stylesheet-base-uri wiring.
+	case "fn-transform-22", "fn-transform-23":
+		return "fn:transform stylesheet-base-uri value is a harness base URI that does not map to a local fixture"
 
 	// evaluator-base-relative resolution: the argument evaluates a relative
 	// fn:doc() ("function-lookup/collection-1.xml") in the outer XPath context,
@@ -817,6 +802,16 @@ func envSchemas(env *environment, envIsGlobal bool, tsDir string) []schemaBindin
 	var out []schemaBinding
 	for _, s := range env.Schemas {
 		if s.File == "" {
+			// A file-less role="import" of the well-known xpath-functions
+			// namespace: the FOTS driver is expected to recognize the URI
+			// (json-ns environment, W3C bug 28997). Bind the committed
+			// schema-for-json.xsd overlay so schema-element(Q{…}map) resolves.
+			if s.Role == "import" && s.URI == "http://www.w3.org/2005/xpath-functions" {
+				out = append(out, schemaBinding{
+					URI:  s.URI,
+					File: "fn/json-to-xml/schema-for-json.xsd",
+				})
+			}
 			continue
 		}
 		out = append(out, schemaBinding{
