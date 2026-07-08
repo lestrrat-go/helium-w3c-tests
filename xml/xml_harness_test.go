@@ -41,6 +41,17 @@ var xmlAllCases []xmlCase
 // support lands, at which point this flips to true.
 const xml11Supported = false
 
+// targetEdition is the XML 1.0 edition helium implements. Helium ports libxml2,
+// which follows the 5th edition: it replaced the 4th-edition enumerated name
+// character classes (BaseChar, Ideographic, CombiningChar, Digit, Extender —
+// productions [85]–[89]) with the broad NameStartChar/NameChar ranges. A TEST
+// tagged for editions that exclude this one (EDITION="1 2 3 4") asserts an
+// outcome — usually a not-wf rejection of a name character legal in 5th edition
+// — that does not hold for a 5th-edition processor, so it is out of scope. Every
+// such case in the suite is accepted by libxml2, confirming the divergence is
+// edition, not a helium defect.
+const targetEdition = "5"
+
 // slashFS adapts os.DirFS to helium's external-resource resolution, which may
 // hand the FS OS-specific separators; Open normalizes to forward slashes so
 // DTD/entity SYSTEM references resolve on every OS.
@@ -73,15 +84,28 @@ func loadXMLExpectations(t *testing.T) xmlExpectations {
 }
 
 // gatedReason returns a non-empty structural-skip reason when a case is outside
-// the suite's live scope (XML 1.1 / Namespaces 1.1 while those are gated off).
+// the suite's live scope: XML 1.1 / Namespaces 1.1 (gated off), or a test tagged
+// for XML 1.0 editions that exclude the edition helium implements.
 func gatedReason(c xmlCase) string {
-	if xml11Supported {
-		return ""
-	}
-	if c.Version == "1.1" || c.Recommendation == "XML1.1" || c.Recommendation == "NS1.1" {
+	if !xml11Supported && (c.Version == "1.1" || c.Recommendation == "XML1.1" || c.Recommendation == "NS1.1") {
 		return "XML 1.1 / Namespaces 1.1 gated off (helium targets XML 1.0)"
 	}
+	if c.Edition != "" && !editionApplies(c.Edition) {
+		return "test applies to XML 1.0 edition(s) " + c.Edition + ", not the " + targetEdition + "th edition helium implements"
+	}
 	return ""
+}
+
+// editionApplies reports whether targetEdition is in a TEST's space-separated
+// EDITION list. An empty list (no EDITION attribute) applies to every edition
+// and is handled by the caller.
+func editionApplies(edition string) bool {
+	for _, e := range strings.Fields(edition) {
+		if e == targetEdition {
+			return true
+		}
+	}
+	return false
 }
 
 func TestXMLW3C(t *testing.T) {
