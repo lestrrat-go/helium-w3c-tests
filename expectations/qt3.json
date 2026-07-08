@@ -3,6 +3,15 @@
   "xfail": {
     "analyzeString-020": "requires schema-validated PSVI type annotation: the built-in fn:analyze-string-result schema types @nr as xs:positiveInteger, but helium leaves the constructed attribute untyped without a compiled schema",
     "analyzeString-021": "requires schema-validated PSVI type annotation: the built-in fn:analyze-string-result schema gives the result element a named complex type, but helium leaves it xs:untyped without a compiled schema",
-    "json-to-xml-016": "requires schemaImport/PSVI type annotation: fn:json-to-xml(...,map{'validate':true()}) should validate against the built-in schema so j:number is typed xs:double, but helium leaves it untyped, so data(...) instance of xs:double is false"
+    "json-to-xml-016": "requires schemaImport/PSVI type annotation: fn:json-to-xml(...,map{'validate':true()}) should validate against the built-in schema so j:number is typed xs:double, but helium leaves it untyped, so data(...) instance of xs:double is false",
+    "fn-namespace-uri-16": "helium fn:namespace-uri returns xs:string, not xs:anyURI, so assert-type xs:anyURI fails on the empty-string result",
+    "fn-min-14": "helium fn:min returns xs:integer, losing the selected item's derived integer subtype: min((xs:positiveInteger(123),xs:unsignedShort(124))) is not instance of xs:nonNegativeInteger",
+    "fn-min-15": "helium fn:min returns xs:integer, losing the selected item's xs:positiveInteger subtype, so assert-type xs:positiveInteger fails",
+    "fn-min-16": "helium fn:min does not convert xs:anyURI to xs:string: min((xs:anyURI('http://a.com'),'http://b.com')) stays xs:anyURI, so assert-type xs:string fails",
+    "fn-max-14": "helium fn:max returns xs:integer, losing the selected item's derived integer subtype: max((xs:positiveInteger(123),xs:unsignedShort(124))) is not instance of xs:nonNegativeInteger",
+    "fn-max-15": "helium fn:max returns xs:integer, losing the selected item's xs:unsignedShort subtype, so assert-type xs:unsignedShort fails",
+    "fn-max-16": "helium fn:max does not convert xs:anyURI to xs:string: max((xs:anyURI('http://c.com'),'http://b.com')) stays xs:anyURI, so assert-type xs:string fails",
+    "fn-current-time-4": "helium fn:seconds-from-time returns xs:double, not xs:decimal, so assert-type xs:decimal fails",
+    "fn-current-dateTime-24": "helium fn:seconds-from-dateTime returns xs:double, not xs:decimal, so assert-type xs:decimal fails"
   }
 }

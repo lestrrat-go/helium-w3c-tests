@@ -519,7 +519,7 @@ func init() {
 		{Name: "op-concat-16", XPath: "(\"concat\" || \"concat\")", Assertions: []qt3Assertion{qt3AssertStringValue("concatconcat")}},
 		{Name: "op-concat-17", XPath: "(\"abc\" || \"abc\") and (\"abc\" || \"abc\")", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "op-concat-18", XPath: "(\"abc\" || \"abc\" ||  fn:concat#3)", ExpectError: true},
-		{Name: "op-concat-19", XPath: "12 || 34 - 50", Assertions: []qt3Assertion{qt3AssertEq("\"12-16\""), qt3AssertType("xs:string")}},
+		{Name: "op-concat-19", XPath: "12 || 34 - 50", Assertions: []qt3Assertion{qt3AssertEq("\"12-16\""), qt3AssertType("xs:string", nil)}},
 		{Name: "op-concat-20", XPath: "\"1234\" eq 12 || 34", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "K-ConcatOp-3", XPath: "(\"ab\" ||  \"c\") eq \"abc\"", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "K-ConcatOp-4", XPath: "(\"ab\" ||  \"c\") instance of xs:string", Assertions: []qt3Assertion{qt3AssertTrue()}},

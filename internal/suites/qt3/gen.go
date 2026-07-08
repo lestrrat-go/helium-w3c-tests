@@ -1409,7 +1409,10 @@ func emitAssertion(a assertion, ns map[string]string) []string {
 		n, _ := strconv.Atoi(a.Value)
 		return []string{fmt.Sprintf("qt3AssertCount(%d)", n)}
 	case "assert-type":
-		return []string{fmt.Sprintf("qt3AssertType(%q)", a.Value)}
+		// <assert-type>T</assert-type>: $result must match the XPath 3.1
+		// SequenceType T. Evaluated as "$result instance of T" against the case's
+		// in-scope namespaces, exactly like the generic-<assert> path.
+		return []string{fmt.Sprintf("qt3AssertType(%s, %s)", goStringLiteral(a.Value), emitNamespaceMap(ns))}
 	case "assert-deep-eq":
 		return []string{fmt.Sprintf("qt3AssertDeepEq(%s)", goStringLiteral(a.Value))}
 	case "assert":
@@ -1460,7 +1463,7 @@ func emitCheck(a assertion, ns map[string]string) string {
 		n, _ := strconv.Atoi(a.Value)
 		return fmt.Sprintf("qt3CheckCount(%d)", n)
 	case "assert-type":
-		return fmt.Sprintf("qt3CheckType(%q)", a.Value)
+		return fmt.Sprintf("qt3CheckType(%s, %s)", goStringLiteral(a.Value), emitNamespaceMap(ns))
 	case "assert-deep-eq":
 		return fmt.Sprintf("qt3CheckDeepEq(%s)", goStringLiteral(a.Value))
 	default:
@@ -1497,9 +1500,9 @@ func emitNamespaceMap(ns map[string]string) string {
 func assertionIsReal(a assertion) bool {
 	switch a.Type {
 	case "assert-eq", "assert-string-value", "assert-true", "assert-false",
-		"assert-empty", "assert-count", "assert-deep-eq", "assert", "error":
+		"assert-empty", "assert-count", "assert-deep-eq", "assert", "assert-type", "error":
 		return true
-	case "assert-type", "assert-xml", "assert-permutation",
+	case "assert-xml", "assert-permutation",
 		"assert-serialization", "assert-serialization-error":
 		return false
 	case "all-of":
