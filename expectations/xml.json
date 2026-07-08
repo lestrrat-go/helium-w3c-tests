@@ -79,7 +79,6 @@
     "not-wf-not-sa-004": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
     "not-wf-not-sa-006": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
     "not-wf-sa-074": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
-    "not-wf-sa-077": "helium panics on this input: parser robustness bug (helium gap)",
     "not-wf-sa-081": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
     "not-wf-sa-082": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
     "not-wf-sa-084": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
