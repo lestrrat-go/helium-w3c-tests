@@ -1672,26 +1672,37 @@ func qt3DeepEqualItem(a, b xpath3.Item) bool {
 }
 
 func qt3DeepEqualAtomic(a, b xpath3.AtomicValue) bool {
-	// Numeric comparison. deep-equal (and assert-permutation) compare two numerics
-	// with the eq operator after type promotion (xs:float(1.01) eq xs:decimal(1.01)
-	// promotes the decimal to xs:float, so they are equal) — use helium'"'"'s own
-	// ValueCompare so single/double precision promotion matches the spec, not a
-	// blanket float64 widening. NaN is special-cased equal (unlike the eq operator).
+	// fn:deep-equal (and assert-permutation) compare two atomic values TYPE-AWARELY:
+	// equal only if they compare equal under the eq operator AND their types are
+	// eq-comparable. xs:string("1993-03-31") is NOT deep-equal to
+	// xs:date("1993-03-31") despite the shared lexical form. Use helium's ValueCompare
+	// (the eq operator) for every atomic kind — strings, dates, times, booleans,
+	// QNames, and numerics (with single/double promotion, so xs:float(1.01) equals
+	// xs:decimal(1.01)) — never a lexical string compare, which would false-pass a
+	// wrong-typed value. NaN is special-cased equal to NaN (the eq operator says
+	// NaN ne NaN).
 	if a.IsNumeric() && b.IsNumeric() {
 		af, bf := a.ToFloat64(), b.ToFloat64()
 		if math.IsNaN(af) || math.IsNaN(bf) {
 			return math.IsNaN(af) && math.IsNaN(bf)
 		}
-		if eq, err := xpath3.ValueCompare(xpath3.TokenEq, a, b); err == nil {
-			return eq
-		}
-		return af == bf
 	}
-	// String-based comparison for same types
+	eq, err := xpath3.ValueCompare(xpath3.TokenEq, a, b)
+	if err == nil {
+		return eq
+	}
+	// The eq operator is undefined for a few SAME-type pairs (notably xs:duration,
+	// which fn:deep-equal compares component-wise). Fall back to a lexical compare
+	// ONLY when the dynamic types match, so a cross-type pair with the same lexical
+	// form (xs:string vs xs:date) is still not deep-equal — an incomparable-type
+	// pair is a different item, not a hard error.
+	if a.TypeName != b.TypeName {
+		return false
+	}
 	sa, err1 := xpath3.AtomicToString(a)
 	sb, err2 := xpath3.AtomicToString(b)
 	if err1 != nil || err2 != nil {
-		return fmt.Sprintf("%v", a.Value) == fmt.Sprintf("%v", b.Value)
+		return false
 	}
 	return sa == sb
 }
