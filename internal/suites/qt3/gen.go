@@ -634,14 +634,21 @@ func getTestCaseSkipReason(_, caseName string) string {
 	case "fn-transform-23":
 		return "fn:transform stylesheet-base-uri from base-uri() of a no-uri env source is the local parse path, so the relative xsl:include does not map to a fixture"
 
-	// fn-transform-22 and fn-function-lookup-766a have only generic <assert>
-	// result assertions, which the generator emits as a no-op (qt3AssertSkip),
-	// so un-skipping them would produce a green false-pass that verifies nothing
-	// but "evaluation did not error". Keep them skipped until the generator
-	// supports generic <assert>. The "fn:transform" / "function-lookup"
-	// substrings file them under the closeable "not-wired" class.
-	case "fn-transform-22", "fn-function-lookup-766a":
-		return "fn:transform/function-lookup assertions degrade to no-op (generic <assert>); pending generic-<assert> harness support"
+	// fn-transform-22's generic <assert> now evaluates for real, but the case
+	// sets stylesheet-base-uri = static-base-uri(), which resolves the relative
+	// xsl:include href="transform/staticbaseuri.xsl" against the FOTS catalog URL
+	// rather than a mapped fixture (HTTP 404) — the same fixture-base-uri gap as
+	// fn-transform-23. The "fn:transform" substring files it under "not-wired".
+	case "fn-transform-22":
+		return "fn:transform stylesheet-base-uri=static-base-uri() resolves the relative xsl:include to an unmapped catalog URL (HTTP 404); same fixture-base-uri gap as fn-transform-23"
+
+	// fn-function-lookup-766a's generic <assert> now evaluates for real, but its
+	// fn:transform source-node is doc("function-lookup/collection-1.xml"), an
+	// embedded relative doc() the generator does not extract into ResourceMap, so
+	// it resolves against no base and 404s (FODC0002). The "function-lookup"
+	// substring files it under "not-wired".
+	case "fn-function-lookup-766a":
+		return "fn:transform source-node doc('function-lookup/collection-1.xml') is an embedded relative doc() unmapped in the harness resource set (FODC0002)"
 
 	// fn:transform sub-feature gaps. The xslt3 fn:transform adapter (wired over
 	// the xpath3 stub in qt3_helpers_test.go) runs the transform cases; the
