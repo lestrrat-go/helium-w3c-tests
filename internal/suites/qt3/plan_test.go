@@ -53,11 +53,11 @@ func TestReadCatalogPlan(t *testing.T) {
 	if info.TestCaseCount != 6 {
 		t.Fatalf("TestCaseCount = %d, want 6", info.TestCaseCount)
 	}
-	if info.RunnableCount != 1 {
-		t.Fatalf("RunnableCount = %d, want 1", info.RunnableCount)
+	if info.RunnableCount != 2 {
+		t.Fatalf("RunnableCount = %d, want 2", info.RunnableCount)
 	}
-	if info.SkippedCount != 3 {
-		t.Fatalf("SkippedCount = %d, want 3", info.SkippedCount)
+	if info.SkippedCount != 2 {
+		t.Fatalf("SkippedCount = %d, want 2", info.SkippedCount)
 	}
 	if info.ExcludedCount != 2 {
 		t.Fatalf("ExcludedCount = %d, want 2", info.ExcludedCount)
