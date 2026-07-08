@@ -285,7 +285,18 @@ func buildCase(xmlconfRoot, uriRel, base, catalogDir string, t catTest) (genCase
 
 // collectClosure BFS-walks the external DTD/entity SYSTEM (and PUBLIC system-id)
 // references reachable from the test document, adding every existing file to
-// fixtures. Missing references are ignored — they surface as skips at run time.
+// fixtures.
+//
+// A missing or contained-but-unreadable downstream reference is DELIBERATELY
+// tolerated (not an error), because a large fraction of them are supposed to be
+// absent: a NOTATION's system identifier (e.g. "image.jpg", "JPGFormat", "alpha")
+// is an opaque name, not a file to load, and many not-wf/invalid TEST documents
+// reference a nonexistent external DTD or entity ON PURPOSE — that absence (or
+// the reference itself) is the defect under test. In the pinned suite 166 of 508
+// such references resolve to no file, all legitimately. This tolerance is scoped
+// to the transitive closure ONLY; the PRIMARY test document and its OUTPUT are
+// still required to exist (see resolveFixture), so a corrupt catalog cannot yield
+// a silently smaller suite through this path.
 func collectClosure(xmlconfRoot, startRel string, fixtures map[string]bool) {
 	queue := []string{startRel}
 	enqueued := map[string]bool{startRel: true}
