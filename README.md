@@ -19,6 +19,7 @@ testdata/            generated/pruned fixtures
 xpath3/              QT3 generated tests
 xslt3/               XSLT 3.0 generated tests
 xsd/                 XSD 1.1 generated tests
+xml/                 XML conformance (parser) generated tests
 ```
 
 ## Local Development
@@ -41,7 +42,15 @@ Fetch pinned upstream suites:
 go run ./cmd/w3cgen fetch qt3
 go run ./cmd/w3cgen fetch xslt30
 go run ./cmd/w3cgen fetch xsd11
+go run ./cmd/w3cgen fetch xml
 ```
+
+The `xml` suite is the W3C XML Conformance Test Suite (parser well-formedness
+and DTD validity). Unlike the git-pinned suites it is pinned to the W3C `xmlts`
+zip by sha256 (a `zip` source kind that downloads, verifies, and extracts). It
+targets XML 1.0 + Namespaces 1.0; XML 1.1 / Namespaces 1.1 cases are gated off
+until 1.1 parser support lands. Known helium gaps are recorded as categorized
+xfails in `expectations/xml.json`.
 
 Regenerate tests:
 
@@ -66,6 +75,7 @@ Run a suite's conformance tests and write JUnit XML results:
 ```sh
 go run ./cmd/w3ctest xsd11
 go run ./cmd/w3ctest xslt30
+go run ./cmd/w3ctest xml
 ```
 
 Each run writes two files, both defaulting under `test-results/`: the JUnit XML

@@ -64,6 +64,15 @@ var suites = map[string]suiteConfig{
 		defaultOut:     "test-results/xslt30-junit.xml",
 		defaultSummary: "test-results/xslt30-summary.md",
 	},
+	"xml": {
+		pkg:            "./xml",
+		rootTest:       "TestXMLW3C",
+		runPattern:     "^TestXMLW3C$",
+		junitSuite:     "xml-conformance",
+		displayName:    "XML 1.0/1.1",
+		defaultOut:     "test-results/xml-junit.xml",
+		defaultSummary: "test-results/xml-summary.md",
+	},
 }
 
 func main() {
@@ -88,7 +97,7 @@ func run(ctx context.Context, args []string) (int, error) {
 	fs.Usage = func() {
 		fmt.Fprintln(fs.Output(), "usage: w3ctest [-out FILE] [-summary FILE] [-root DIR] <suite> [go test flags...]")
 		fmt.Fprintln(fs.Output(), "")
-		fmt.Fprintln(fs.Output(), "suites: qt3 xsd10 xsd11 xslt30")
+		fmt.Fprintln(fs.Output(), "suites: qt3 xsd10 xsd11 xslt30 xml")
 	}
 	if err := fs.Parse(args); err != nil {
 		return 2, err
@@ -194,8 +203,18 @@ func writeSummary(path, root string, prov provenance, suiteKey string, suite sui
 	}
 	if lock, lerr := generator.LoadLock(root); lerr == nil {
 		if sl, ok := lock.Suite(suiteKey); ok {
-			meta.UpstreamRepo = strings.TrimSuffix(sl.Repo, ".git")
-			meta.UpstreamCommit = sl.Commit
+			switch {
+			case sl.Repo != "":
+				meta.UpstreamRepo = strings.TrimSuffix(sl.Repo, ".git")
+				meta.UpstreamCommit = sl.Commit
+			case sl.URL != "":
+				// Zip-pinned suite (the W3C xmlts archive): record the download
+				// URL and the pinned sha256 as provenance in place of repo+commit.
+				meta.UpstreamRepo = sl.URL
+				if sl.Sha256 != "" {
+					meta.UpstreamCommit = "sha256:" + sl.Sha256
+				}
+			}
 		}
 	}
 

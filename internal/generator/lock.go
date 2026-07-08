@@ -16,6 +16,7 @@ type SuiteLock struct {
 	Repo      string `json:"repo,omitempty"`
 	URL       string `json:"url,omitempty"`
 	Commit    string `json:"commit,omitempty"`
+	Sha256    string `json:"sha256,omitempty"`
 	SourceDir string `json:"sourceDir"`
 }
 
