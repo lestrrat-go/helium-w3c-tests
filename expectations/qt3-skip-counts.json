@@ -4,6 +4,7 @@
   "total_cases": 22469,
   "expected_fail": 12,
   "skipped": 141,
+  "false_pass_risk": 0,
   "by_class": {
     "not-wired": 5,
     "out-of-scope": 136
