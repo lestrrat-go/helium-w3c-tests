@@ -119,8 +119,12 @@ func readCases(xmlconfRoot string) (byCollection map[string][]genCase, collectio
 		}
 		data, rerr := os.ReadFile(catPath)
 		if rerr != nil {
-			// A referenced collection catalog is absent from this checkout: skip.
-			continue
+			// The top catalog was present and parsed, so a referenced collection
+			// catalog that cannot be read is a corrupt/incomplete source, not a
+			// legitimately-absent checkout (that case is handled by the caller
+			// stat-ing the source root before calling readCases). Fail loudly so a
+			// tampered source cannot silently yield a smaller passing suite.
+			return nil, nil, 0, fmt.Errorf("read referenced catalog %s: %w", ref.CatalogFile, rerr)
 		}
 
 		collection := collectionKey(ref.CatalogFile)
@@ -184,13 +188,17 @@ func parseCollectionCatalog(xmlconfRoot, base, catalogDir string, data []byte, s
 			if err := dec.DecodeElement(&tc, &se); err != nil {
 				return nil, err
 			}
-			collectCases(xmlconfRoot, base, catalogDir, tc, seen, &out)
+			if err := collectCases(xmlconfRoot, base, catalogDir, tc, seen, &out); err != nil {
+				return nil, err
+			}
 		case "TEST":
 			var t catTest
 			if err := dec.DecodeElement(&t, &se); err != nil {
 				return nil, err
 			}
-			appendTest(xmlconfRoot, base, catalogDir, t, seen, &out)
+			if err := appendTest(xmlconfRoot, base, catalogDir, t, seen, &out); err != nil {
+				return nil, err
+			}
 		}
 	}
 	return out, nil
@@ -198,39 +206,50 @@ func parseCollectionCatalog(xmlconfRoot, base, catalogDir string, data []byte, s
 
 // collectCases walks a TESTCASES subtree, accumulating the xml:base chain and
 // appending a genCase for every TEST that carries a URI.
-func collectCases(xmlconfRoot, base, catalogDir string, tc catTestcases, seen map[string]bool, out *[]genCase) {
+func collectCases(xmlconfRoot, base, catalogDir string, tc catTestcases, seen map[string]bool, out *[]genCase) error {
 	if tc.XMLBase != "" {
 		base = joinBase(base, tc.XMLBase)
 	}
 	for _, t := range tc.Tests {
-		appendTest(xmlconfRoot, base, catalogDir, t, seen, out)
+		if err := appendTest(xmlconfRoot, base, catalogDir, t, seen, out); err != nil {
+			return err
+		}
 	}
 	for _, nested := range tc.Nested {
-		collectCases(xmlconfRoot, base, catalogDir, nested, seen, out)
+		if err := collectCases(xmlconfRoot, base, catalogDir, nested, seen, out); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 // appendTest resolves and appends a single TEST, skipping ones without a URI/ID
 // and de-duplicating by ID (a handful of IDs recur across catalogs). A TEST whose
-// resolved URI escapes the suite root (untrusted catalog data) is dropped.
-func appendTest(xmlconfRoot, base, catalogDir string, t catTest, seen map[string]bool, out *[]genCase) {
+// resolved URI escapes the suite root is a corrupt/tampered catalog and is a hard
+// error, not a silent drop, so a smaller passing suite cannot slip through.
+func appendTest(xmlconfRoot, base, catalogDir string, t catTest, seen map[string]bool, out *[]genCase) error {
 	if t.URI == "" || t.ID == "" {
-		return
+		return nil
 	}
 	if seen[t.ID] {
-		return
+		return nil
 	}
 	uriRel := resolveFixture(xmlconfRoot, base, catalogDir, t.URI)
 	if _, err := generator.ContainedPath(xmlconfRoot, uriRel); err != nil {
-		return
+		return fmt.Errorf("test %s: URI %q escapes suite root: %w", t.ID, t.URI, err)
 	}
 	seen[t.ID] = true
-	*out = append(*out, buildCase(xmlconfRoot, uriRel, base, catalogDir, t))
+	gc, err := buildCase(xmlconfRoot, uriRel, base, catalogDir, t)
+	if err != nil {
+		return err
+	}
+	*out = append(*out, gc)
+	return nil
 }
 
 // buildCase assembles a genCase from an already-resolved, root-contained uriRel
 // and gathers the external-reference closure of its document.
-func buildCase(xmlconfRoot, uriRel, base, catalogDir string, t catTest) genCase {
+func buildCase(xmlconfRoot, uriRel, base, catalogDir string, t catTest) (genCase, error) {
 	gc := genCase{
 		ID:             t.ID,
 		Type:           t.Type,
@@ -243,9 +262,10 @@ func buildCase(xmlconfRoot, uriRel, base, catalogDir string, t catTest) genCase 
 	}
 	if t.Output != "" {
 		out := resolveFixture(xmlconfRoot, base, catalogDir, t.Output)
-		if _, err := generator.ContainedPath(xmlconfRoot, out); err == nil {
-			gc.Output = out
+		if _, err := generator.ContainedPath(xmlconfRoot, out); err != nil {
+			return genCase{}, fmt.Errorf("test %s: OUTPUT %q escapes suite root: %w", t.ID, t.Output, err)
 		}
+		gc.Output = out
 	}
 
 	fixtures := map[string]bool{}
@@ -259,7 +279,7 @@ func buildCase(xmlconfRoot, uriRel, base, catalogDir string, t catTest) genCase 
 		gc.FixtureRels = append(gc.FixtureRels, rel)
 	}
 	sort.Strings(gc.FixtureRels)
-	return gc
+	return gc, nil
 }
 
 // collectClosure BFS-walks the external DTD/entity SYSTEM (and PUBLIC system-id)

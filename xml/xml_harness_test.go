@@ -65,13 +65,27 @@ const xml11Supported = false
 // edition, not a helium defect.
 const targetEdition = "5"
 
-// slashFS adapts os.DirFS to helium's external-resource resolution, which may
-// hand the FS OS-specific separators; Open normalizes to forward slashes so
-// DTD/entity SYSTEM references resolve on every OS.
-type slashFS struct{ fsys fs.FS }
+// confinedFS is the FS helium resolves external DTD/entity SYSTEM references
+// through. It normalizes OS-specific separators to forward slashes (helium may
+// hand the FS backslashes for a local BaseURI on Windows) and — because those
+// SYSTEM paths are upstream-controlled catalog data — rejects any name that
+// escapes the testdata root before delegating to os.DirFS, so a "../" in a
+// fixture cannot reach outside testdata/xml.
+type confinedFS struct {
+	root string
+	fsys fs.FS
+}
 
-func (s slashFS) Open(name string) (fs.File, error) {
-	return s.fsys.Open(filepath.ToSlash(name))
+func newConfinedFS(root string) confinedFS {
+	return confinedFS{root: root, fsys: os.DirFS(root)}
+}
+
+func (c confinedFS) Open(name string) (fs.File, error) {
+	slashed := filepath.ToSlash(name)
+	if _, ok := containedPath(c.root, slashed); !ok {
+		return nil, &fs.PathError{Op: "open", Path: name, Err: fs.ErrPermission}
+	}
+	return c.fsys.Open(slashed)
 }
 
 type xmlExpectations struct {
@@ -206,7 +220,7 @@ func runXMLCase(t *testing.T, o *caseOutcome, testdataRoot string, c xmlCase) {
 		DefaultDTDAttributes(true).
 		SubstituteEntities(true).
 		ValidateDTD(validate).
-		FS(slashFS{os.DirFS(testdataRoot)}).
+		FS(newConfinedFS(testdataRoot)).
 		Parse(t.Context(), src)
 
 	switch c.Type {
