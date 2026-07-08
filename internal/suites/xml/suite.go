@@ -98,7 +98,17 @@ func (s Suite) Generate(ctx context.Context, genCtx generator.Context, suiteLock
 	info := generator.CatalogInfo{SourceDir: suiteLock.SourceDir}
 	var byCollection map[string][]genCase
 	var collections []string
-	if _, err := os.Stat(xmlconfRoot); err == nil {
+	// Presence is decided by the SOURCE DIR (sources/xml), not the nested catalog
+	// root: an absent source dir is a legitimately-unfetched checkout (emit the
+	// skip-only manifest), but a PRESENT source dir with a missing/corrupt catalog
+	// is a hard error — readCases fails on a missing xmlconf.xml or referenced
+	// catalog rather than silently generating a zero-count suite.
+	sourceDir := filepath.Join(genCtx.Root, filepath.FromSlash(suiteLock.SourceDir))
+	if _, err := os.Stat(sourceDir); err != nil {
+		if !os.IsNotExist(err) {
+			return fmt.Errorf("stat %s: %w", suiteLock.SourceDir, err)
+		}
+	} else {
 		info.Present = true
 		info.CatalogPath = filepath.ToSlash(filepath.Join(suiteLock.SourceDir, catalogSubdir, "xmlconf.xml"))
 		var testsOut int
