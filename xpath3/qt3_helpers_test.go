@@ -1146,9 +1146,28 @@ func qt3AssertCount(n int) qt3Assertion {
 	}
 }
 
-func qt3AssertType(_ string) qt3Assertion {
-	return func(_ qt3TB, _ xpath3.Sequence) {
-		// Type checking not yet implemented; pass unconditionally.
+// qt3InstanceOfExpr builds the "$result instance of T" XPath used to check a
+// FOTS assert-type. T is an XPath 3.1 SequenceType and is spliced verbatim; it
+// must NOT be parenthesized — helium's grammar rejects a parenthesized item type
+// with an occurrence indicator (e.g. "( xs:integer+ )"), which is exactly the
+// grammar of a SequenceType.
+func qt3InstanceOfExpr(typ string) string {
+	return "$result instance of " + typ
+}
+
+// qt3AssertType evaluates the FOTS <assert-type>T</assert-type> assertion:
+// $result must match the XPath 3.1 SequenceType T. It compiles and evaluates
+// "$result instance of T" with $result bound to the case result and the case's
+// namespaces (reusing the generic-<assert> plumbing, qt3EvalAssert), and requires
+// an effective boolean value of true. A SequenceType helium's xpath3 cannot
+// compile surfaces as a compile error — never a silent pass; such a case is
+// xfailed in expectations/qt3.json with a specific reason.
+func qt3AssertType(typ string, ns map[string]string) qt3Assertion {
+	return func(t qt3TB, seq xpath3.Sequence) {
+		t.Helper()
+		ok, err := qt3EvalAssert(qt3InstanceOfExpr(typ), ns, seq)
+		require.NoError(t, err, "assert-type %s", typ)
+		require.True(t, ok, "expected result to match type %s, got %s", typ, qt3StringValue(seq))
 	}
 }
 
@@ -1267,9 +1286,12 @@ func qt3CheckEmpty() qt3Check {
 	}
 }
 
-func qt3CheckType(_ string) qt3Check {
-	return func(_ xpath3.Sequence) bool {
-		return true // not yet implemented
+// qt3CheckType is the any-of form of qt3AssertType: it returns true when
+// $result matches the SequenceType T.
+func qt3CheckType(typ string, ns map[string]string) qt3Check {
+	return func(seq xpath3.Sequence) bool {
+		ok, err := qt3EvalAssert(qt3InstanceOfExpr(typ), ns, seq)
+		return err == nil && ok
 	}
 }
 
