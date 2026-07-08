@@ -1672,12 +1672,18 @@ func qt3DeepEqualItem(a, b xpath3.Item) bool {
 }
 
 func qt3DeepEqualAtomic(a, b xpath3.AtomicValue) bool {
-	// Numeric comparison with promotion. deep-equal (and assert-permutation) treat
-	// NaN as equal to NaN, unlike the eq operator.
+	// Numeric comparison. deep-equal (and assert-permutation) compare two numerics
+	// with the eq operator after type promotion (xs:float(1.01) eq xs:decimal(1.01)
+	// promotes the decimal to xs:float, so they are equal) — use helium'"'"'s own
+	// ValueCompare so single/double precision promotion matches the spec, not a
+	// blanket float64 widening. NaN is special-cased equal (unlike the eq operator).
 	if a.IsNumeric() && b.IsNumeric() {
 		af, bf := a.ToFloat64(), b.ToFloat64()
 		if math.IsNaN(af) || math.IsNaN(bf) {
 			return math.IsNaN(af) && math.IsNaN(bf)
+		}
+		if eq, err := xpath3.ValueCompare(xpath3.TokenEq, a, b); err == nil {
+			return eq
 		}
 		return af == bf
 	}
