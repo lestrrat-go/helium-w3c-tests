@@ -161,6 +161,7 @@ type resultSpec struct {
 type assertion struct {
 	Type           string
 	Value          string
+	File           string
 	NormalizeSpace bool
 	Children       []assertion
 }
@@ -287,6 +288,13 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]bool, map[strin
 			}
 
 			assertions := parseResultAssertions(tc)
+			// Inline the expected fragment of any <assert-xml file="..."/> so the
+			// real assert-xml check has content to compare against. A file that
+			// cannot be resolved/read force-skips the case rather than degrading it
+			// to a silent no-op (the un-skip guard forbids a green weak-only case).
+			if fileSkip := resolveAssertionFiles(sourceDir, tsDir, assertions); fileSkip != "" && skipReason == "" {
+				skipReason = fileSkip
+			}
 
 			var baseURI string
 			if env != nil && env.StaticBaseURI != nil && env.StaticBaseURI.URI != "#UNDEFINED" {
@@ -371,6 +379,7 @@ func collectTests(sourceDir string) ([]generatedTest, map[string]bool, map[strin
 				XML11:             hasXML11Dependency(mergedDeps),
 				Assertions:        assertions,
 				SkipReason:        skipReason,
+				FalsePassRisk:     isFalsePassRisk(skipReason, assertions),
 			})
 		}
 	}
@@ -419,11 +428,26 @@ func reportFalsePassRisk(allTests []generatedTest) {
 			continue
 		}
 		run++
-		if !hasRealAssertion(t.Assertions) {
+		if t.FalsePassRisk {
 			risk++
 		}
 	}
 	fmt.Printf("qt3: %d RUN cases, %d with no real assertion (false-pass risk)\n", run, risk)
+}
+
+// isFalsePassRisk reports whether a RUN (non-skipped) case verifies only that
+// evaluation did not error — no real assertion and no expected error. Such a
+// case is a green no-op: it cannot fail on a wrong result. The un-skip guard
+// (TestQT3WeakNoOpGuard) locks the committed count so un-skipping a weak-only
+// case, or regressing a real assertion to a no-op, fails the drift-check.
+func isFalsePassRisk(skipReason string, assertions []assertion) bool {
+	if skipReason != "" {
+		return false
+	}
+	if assertionsExpectError(assertions) {
+		return false
+	}
+	return !hasRealAssertion(assertions)
 }
 
 // writeCategoryFiles groups the tests by catalog category and writes one
@@ -1094,6 +1118,7 @@ type xmlAssertion struct {
 	XMLName        xml.Name       `xml:""`
 	Code           string         `xml:"code,attr"`
 	NormalizeSpace string         `xml:"normalize-space,attr"`
+	File           string         `xml:"file,attr"`
 	Inner          []byte         `xml:",innerxml"`
 	Children       []xmlAssertion `xml:",any"`
 }
@@ -1110,6 +1135,55 @@ func parseAssertionXML(s string) []assertion {
 	return out
 }
 
+// resolveAssertionFiles inlines the content of any <assert-xml file="..."/> in
+// the tree (relative to the test-set directory tsDir) into its Value. It returns
+// a non-empty skip reason if a referenced file is unsafe or unreadable, so the
+// caller can force-skip the case instead of running a contentless (no-op)
+// assert-xml. A resolved file's leading XML declaration is stripped and the
+// fragment trimmed, matching the inline-fragment handling.
+func resolveAssertionFiles(sourceDir, tsDir string, assertions []assertion) string {
+	var skip string
+	var walk func(a *assertion)
+	walk = func(a *assertion) {
+		if a.Type == "assert-xml" && a.File != "" && a.Value == "" {
+			ref := filepath.Join(tsDir, filepath.FromSlash(a.File))
+			full, err := generator.ContainedPath(sourceDir, ref)
+			if err != nil {
+				if skip == "" {
+					skip = "assert-xml @file path is unsafe: " + a.File
+				}
+			} else if data, rerr := os.ReadFile(full); rerr != nil { //nolint:gosec // trusted committed suite source
+				if skip == "" {
+					skip = "assert-xml @file not readable: " + a.File
+				}
+			} else {
+				a.Value = strings.TrimSpace(stripXMLDecl(string(data)))
+			}
+		}
+		for i := range a.Children {
+			walk(&a.Children[i])
+		}
+	}
+	for i := range assertions {
+		walk(&assertions[i])
+	}
+	return skip
+}
+
+// stripXMLDecl removes a leading XML declaration (and any leading whitespace/BOM
+// before it) so an assert-xml @file fragment can be wrapped in a synthetic root
+// and re-parsed for canonical comparison.
+func stripXMLDecl(s string) string {
+	s = strings.TrimPrefix(s, "\ufeff")
+	trimmed := strings.TrimLeft(s, " \t\r\n")
+	if strings.HasPrefix(trimmed, "<?xml") {
+		if end := strings.Index(trimmed, "?>"); end >= 0 {
+			return trimmed[end+2:]
+		}
+	}
+	return s
+}
+
 func convertAssertion(xa xmlAssertion) assertion {
 	// Decode the raw inner XML to preserve character references like &#xD;
 	// that Go's xml:",chardata" would normalize away.
@@ -1120,6 +1194,7 @@ func convertAssertion(xa xmlAssertion) assertion {
 	a := assertion{
 		Type:           xa.XMLName.Local,
 		Value:          value,
+		File:           xa.File,
 		NormalizeSpace: xa.NormalizeSpace == "true",
 	}
 	if xa.Code != "" {
@@ -1158,6 +1233,7 @@ type generatedTest struct {
 	XML11             bool              // xml-version="1.1" dependency: run under AllowXML11Chars()
 	Assertions        []assertion
 	SkipReason        string
+	FalsePassRisk     bool // RUN case that verifies only "no error" (no real assertion, no expected error)
 }
 
 func generateTestFile(tests []generatedTest) string {
@@ -1309,6 +1385,9 @@ func generateTestFile(tests []generatedTest) string {
 			if tc.SkipReason != "" {
 				fmt.Fprintf(&b, ", Skip: %q", tc.SkipReason)
 			}
+			if tc.FalsePassRisk {
+				b.WriteString(", FalsePassRisk: true")
+			}
 			if assertionsExpectError(tc.Assertions) {
 				b.WriteString(", ExpectError: true")
 			} else {
@@ -1418,7 +1497,15 @@ func emitAssertion(a assertion, ns map[string]string) []string {
 	case "assert":
 		// Generic <assert>EXPR</assert>: a boolean XPath over $result.
 		return []string{fmt.Sprintf("qt3Assert(%s, %s)", goStringLiteral(a.Value), emitNamespaceMap(ns))}
-	case "assert-xml", "assert-permutation", "assert-serialization-error", "assert-serialization":
+	case "assert-xml":
+		// <assert-xml>FRAG</assert-xml>: $result serialized as XML must equal the
+		// expected fragment (canonical XML comparison after fn:serialize).
+		return []string{fmt.Sprintf("qt3AssertXML(%s, %t, %s)", goStringLiteral(a.Value), a.NormalizeSpace, emitNamespaceMap(ns))}
+	case "assert-permutation":
+		// <assert-permutation>EXPR</assert-permutation>: $result is an unordered
+		// (multiset) deep-equal permutation of the sequence EXPR produces.
+		return []string{fmt.Sprintf("qt3AssertPermutation(%s, %s)", goStringLiteral(a.Value), emitNamespaceMap(ns))}
+	case "assert-serialization-error", "assert-serialization":
 		return []string{"qt3AssertSkip()"}
 	case "all-of":
 		return emitAssertions(a.Children, ns)
@@ -1466,6 +1553,10 @@ func emitCheck(a assertion, ns map[string]string) string {
 		return fmt.Sprintf("qt3CheckType(%s, %s)", goStringLiteral(a.Value), emitNamespaceMap(ns))
 	case "assert-deep-eq":
 		return fmt.Sprintf("qt3CheckDeepEq(%s)", goStringLiteral(a.Value))
+	case "assert-xml":
+		return fmt.Sprintf("qt3CheckXML(%s, %t, %s)", goStringLiteral(a.Value), a.NormalizeSpace, emitNamespaceMap(ns))
+	case "assert-permutation":
+		return fmt.Sprintf("qt3CheckPermutation(%s, %s)", goStringLiteral(a.Value), emitNamespaceMap(ns))
 	default:
 		return "qt3CheckSkip()"
 	}
@@ -1500,10 +1591,10 @@ func emitNamespaceMap(ns map[string]string) string {
 func assertionIsReal(a assertion) bool {
 	switch a.Type {
 	case "assert-eq", "assert-string-value", "assert-true", "assert-false",
-		"assert-empty", "assert-count", "assert-deep-eq", "assert", "assert-type", "error":
+		"assert-empty", "assert-count", "assert-deep-eq", "assert", "assert-type",
+		"assert-xml", "assert-permutation", "error":
 		return true
-	case "assert-xml", "assert-permutation",
-		"assert-serialization", "assert-serialization-error":
+	case "assert-serialization", "assert-serialization-error":
 		return false
 	case "all-of":
 		// Real if any child is real (a single real check makes the case checkable).
