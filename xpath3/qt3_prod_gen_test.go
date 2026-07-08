@@ -105,10 +105,10 @@ func init() {
 		{Name: "ArrowPostfix-024", XPath: "5.4=>ceil()", ExpectError: true},
 		{Name: "ArrowPostfix-025", XPath: "let $f:= \"ceiling\" return 5.4=>$f()", ExpectError: true},
 		{Name: "ArrowPostfix-026", XPath: "//hours => count()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertEq("16")}},
-		{Name: "ArrowPostfix-027", XPath: "(\"one two\", \"three four five\")!tokenize(.,\" \") => distinct-values()", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "ArrowPostfix-028", XPath: "(\"one two\", \"three four five\")!tokenize(.,\" \")!upper-case(.) => distinct-values()", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "ArrowPostfix-029", XPath: "let $a := (\"one two\", \"three four five\") return $a!tokenize(.,\" \") => distinct-values()", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "ArrowPostfix-030", XPath: "let $a := (\"one two\", \"three four five\"), $b:= tokenize#2 return $a!$b(.,\" \") => distinct-values()", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "ArrowPostfix-027", XPath: "(\"one two\", \"three four five\")!tokenize(.,\" \") => distinct-values()", Assertions: []qt3Assertion{qt3AssertPermutation("(\"one\", \"two\", \"three\", \"four\", \"five\")", nil)}},
+		{Name: "ArrowPostfix-028", XPath: "(\"one two\", \"three four five\")!tokenize(.,\" \")!upper-case(.) => distinct-values()", Assertions: []qt3Assertion{qt3AssertPermutation("(\"ONE\", \"TWO\", \"THREE\", \"FOUR\", \"FIVE\")", nil)}},
+		{Name: "ArrowPostfix-029", XPath: "let $a := (\"one two\", \"three four five\") return $a!tokenize(.,\" \") => distinct-values()", Assertions: []qt3Assertion{qt3AssertPermutation("(\"one\", \"two\", \"three\", \"four\", \"five\")", nil)}},
+		{Name: "ArrowPostfix-030", XPath: "let $a := (\"one two\", \"three four five\"), $b:= tokenize#2 return $a!$b(.,\" \") => distinct-values()", Assertions: []qt3Assertion{qt3AssertPermutation("(\"one\", \"two\", \"three\", \"four\", \"five\")", nil)}},
 		{Name: "ArrowPostfix-031", XPath: "\"one two three four five\" => tokenize(\" \") ! upper-case(.)", ExpectError: true},
 		{Name: "ArrowPostfix-032", XPath: "(\"one two three four five\" => tokenize(\" \")) ! upper-case(.)", Assertions: []qt3Assertion{qt3AssertDeepEq("(\"ONE\", \"TWO\", \"THREE\", \"FOUR\", \"FIVE\")")}},
 		{Name: "ArrowPostfix-101", XPath: "(\"one two three four five\" => Q{http://www.w3.org/2005/xpath-functions}tokenize(\" \")) ! upper-case(.)", Assertions: []qt3Assertion{qt3AssertDeepEq("(\"ONE\", \"TWO\", \"THREE\", \"FOUR\", \"FIVE\")")}},
@@ -309,7 +309,7 @@ func init() {
 		{Name: "Axes116", XPath: "/*/namespace::*[self::namespace-node()]", DocPath: "prod/AxisStep/TreeTrunc.xml", Assertions: []qt3Assertion{qt3AssertCount(1)}},
 		{Name: "Axes118", XPath: "/*/namespace::*", DocPath: "docs/auction.xml", Namespaces: map[string]string{"anyzone": "http://www.example.com/auctioneers#anyzone", "eachbay": "http://www.example.com/auctioneers#eachbay", "ma": "http://www.example.com/AuctionWatch", "map": "http://www.w3.org/2005/xpath-functions/map", "xlink": "http://www.w3.org/1999/xlink", "yabadoo": "http://www.example.com/auctioneers#yabadoo"}, Assertions: []qt3Assertion{qt3AssertCount(6)}},
 		{Name: "Axes119", XPath: "/*/namespace::*/..", DocPath: "docs/auction.xml", Namespaces: map[string]string{"anyzone": "http://www.example.com/auctioneers#anyzone", "eachbay": "http://www.example.com/auctioneers#eachbay", "ma": "http://www.example.com/AuctionWatch", "map": "http://www.w3.org/2005/xpath-functions/map", "xlink": "http://www.w3.org/1999/xlink", "yabadoo": "http://www.example.com/auctioneers#yabadoo"}, Assertions: []qt3Assertion{qt3AssertCount(1), qt3Assert("local-name($result) = 'AuctionWatchList'", map[string]string{"anyzone": "http://www.example.com/auctioneers#anyzone", "eachbay": "http://www.example.com/auctioneers#eachbay", "ma": "http://www.example.com/AuctionWatch", "map": "http://www.w3.org/2005/xpath-functions/map", "xlink": "http://www.w3.org/1999/xlink", "yabadoo": "http://www.example.com/auctioneers#yabadoo"})}},
-		{Name: "Axes120", XPath: "/*/namespace::*/name()", DocPath: "docs/auction.xml", Namespaces: map[string]string{"anyzone": "http://www.example.com/auctioneers#anyzone", "eachbay": "http://www.example.com/auctioneers#eachbay", "ma": "http://www.example.com/AuctionWatch", "map": "http://www.w3.org/2005/xpath-functions/map", "xlink": "http://www.w3.org/1999/xlink", "yabadoo": "http://www.example.com/auctioneers#yabadoo"}, Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "Axes120", XPath: "/*/namespace::*/name()", DocPath: "docs/auction.xml", Namespaces: map[string]string{"anyzone": "http://www.example.com/auctioneers#anyzone", "eachbay": "http://www.example.com/auctioneers#eachbay", "ma": "http://www.example.com/AuctionWatch", "map": "http://www.w3.org/2005/xpath-functions/map", "xlink": "http://www.w3.org/1999/xlink", "yabadoo": "http://www.example.com/auctioneers#yabadoo"}, Assertions: []qt3Assertion{qt3AssertPermutation("('xml', 'ma', 'xlink', 'yabadoo', 'anyzone', 'eachbay')", map[string]string{"anyzone": "http://www.example.com/auctioneers#anyzone", "eachbay": "http://www.example.com/auctioneers#eachbay", "ma": "http://www.example.com/AuctionWatch", "map": "http://www.w3.org/2005/xpath-functions/map", "xlink": "http://www.w3.org/1999/xlink", "yabadoo": "http://www.example.com/auctioneers#yabadoo"})}},
 		{Name: "Axes121", XPath: "string(/*/namespace::xlink)", DocPath: "docs/auction.xml", Namespaces: map[string]string{"anyzone": "http://www.example.com/auctioneers#anyzone", "eachbay": "http://www.example.com/auctioneers#eachbay", "ma": "http://www.example.com/AuctionWatch", "map": "http://www.w3.org/2005/xpath-functions/map", "xlink": "http://www.w3.org/1999/xlink", "yabadoo": "http://www.example.com/auctioneers#yabadoo"}, Assertions: []qt3Assertion{qt3AssertEq("'http://www.w3.org/1999/xlink'")}},
 		{Name: "Axes122", XPath: "/*/namespace::xlink is /*/*[1]/namespace::xlink", DocPath: "docs/auction.xml", Namespaces: map[string]string{"anyzone": "http://www.example.com/auctioneers#anyzone", "eachbay": "http://www.example.com/auctioneers#eachbay", "ma": "http://www.example.com/AuctionWatch", "map": "http://www.w3.org/2005/xpath-functions/map", "xlink": "http://www.w3.org/1999/xlink", "yabadoo": "http://www.example.com/auctioneers#yabadoo"}, Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "Axes123", XPath: "/*/namespace::xlink is /*/namespace::*[. = 'http://www.w3.org/1999/xlink']", DocPath: "docs/auction.xml", Namespaces: map[string]string{"anyzone": "http://www.example.com/auctioneers#anyzone", "eachbay": "http://www.example.com/auctioneers#eachbay", "ma": "http://www.example.com/AuctionWatch", "map": "http://www.w3.org/2005/xpath-functions/map", "xlink": "http://www.w3.org/1999/xlink", "yabadoo": "http://www.example.com/auctioneers#yabadoo"}, Assertions: []qt3Assertion{qt3AssertTrue()}},
@@ -388,9 +388,23 @@ func init() {
 		{Name: "ancestor-8", XPath: "exactly-one(/works/employee[1]) >> exactly-one(/works/employee[1]/ancestor::works)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "ancestor-9", XPath: "exactly-one(/works/employee[1]/ancestor::works) >> exactly-one(/works/employee[1]/ancestor::works)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "ancestor-10", XPath: "exactly-one(/works/employee[1]/ancestor::works) >> exactly-one(/works/employee[1]/hours)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertFalse()}},
-		{Name: "ancestor-11", XPath: "(/works/employee[12]/*/day/ancestor::overtime) | (/works/employee[12]/*/day/ancestor::overtime)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "ancestor-12", XPath: "(/works/employee[12]/*/day[1]/ancestor::overtime) | (/works/employee[12]/*/day[2]/ancestor::overtime)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "ancestor-13", XPath: "(/works/employee[12]/overtime/day/ancestor::employee) intersect (/works/employee[12]/overtime/day/ancestor::employee)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "ancestor-11", XPath: "(/works/employee[12]/*/day/ancestor::overtime) | (/works/employee[12]/*/day/ancestor::overtime)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<overtime>
+     <day>Monday</day>
+     <day>Tuesday</day>
+   </overtime>`, false, nil)}},
+		{Name: "ancestor-12", XPath: "(/works/employee[12]/*/day[1]/ancestor::overtime) | (/works/employee[12]/*/day[2]/ancestor::overtime)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<overtime>
+     <day>Monday</day>
+     <day>Tuesday</day>
+   </overtime>`, false, nil)}},
+		{Name: "ancestor-13", XPath: "(/works/employee[12]/overtime/day/ancestor::employee) intersect (/works/employee[12]/overtime/day/ancestor::employee)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee name="John Doe 12" gender="male">
+   <empnum>E4</empnum>
+   <pnum>P4</pnum>
+   <hours>40</hours>
+   <overtime>
+     <day>Monday</day>
+     <day>Tuesday</day>
+   </overtime>
+  </employee>`, false, nil)}},
 		{Name: "ancestor-14", XPath: "fn:count((/works/employee[12]/overtime/day[ancestor::overtime]) except (/works/employee[12]/overtime/day[ancestor::overtime]))", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertEq("0")}},
 		{Name: "ancestor-15", XPath: "(/works/employee[12]/overtime/day[ancestor::overtime]) except (/works/employee[12]/overtime/day[1])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertStringValue("Tuesday")}},
 		{Name: "ancestor-16", XPath: "(/works/employee[12]/overtime/day[ancestor::overtime]) and fn:true()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
@@ -398,7 +412,11 @@ func init() {
 		{Name: "ancestor-18", XPath: "(/works/employee[12]/overtime/day[ancestor::overtime]) or fn:true()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "ancestor-19", XPath: "(/works/employee[12]/overtime/day[ancestor::overtime]) or fn:false()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "ancestor-20", XPath: "fn:deep-equal(/works/employee[12]/overtime/ancestor::works,/works/employee[12]/overtime/ancestor::works)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
-		{Name: "unabbreviatedSyntax-10", XPath: "for $h in (/works/employee[1]/hours) return $h/ancestor::employee", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "unabbreviatedSyntax-10", XPath: "for $h in (/works/employee[1]/hours) return $h/ancestor::employee", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee name="Jane Doe 1" gender="female">
+   <empnum>E1</empnum>
+   <pnum>P1</pnum>
+   <hours>40</hours>
+  </employee>`, false, nil)}},
 		{Name: "ancestorself-1", XPath: "(200)/ancestor-or-self::*", ExpectError: true},
 		{Name: "ancestorself-2", XPath: "fn:count(/works/employee[1]/ancestor-or-self::noSuchNode)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertEq("0")}},
 		{Name: "ancestorself-3", XPath: "exactly-one(/works/employee[1]/ancestor-or-self::works) is exactly-one(/works)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
@@ -430,11 +448,11 @@ func init() {
 		{Name: "following-8", XPath: "exactly-one(/works[1]/employee[13]) >> exactly-one(/works[1]/employee[12]/overtime[1]/day[1]/following::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "following-9", XPath: "exactly-one(/works[1]/employee[12]/following::employee) >> exactly-one(/works[1]/employee[12]/following::employee)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "following-10", XPath: "exactly-one(/works[1]/employee[12]) >> exactly-one(/works[1]/employee[12]/following::employee)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertFalse()}},
-		{Name: "following-11", XPath: "(/works/employee[12]/*/day[1]/following::day) | (/works/employee[12]/*/day[1]/following::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "following-12", XPath: "(/works/employee[12]/*/day[1]/following::day) | (/works/employee[12]/*/day[1])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "following-13", XPath: "(/works[1]/employee[12]/overtime[1]/day[1]/following::day) intersect (/works[1]/employee[12]/overtime[1]/day[1]/following::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "following-11", XPath: "(/works/employee[12]/*/day[1]/following::day) | (/works/employee[12]/*/day[1]/following::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<day>Tuesday</day>", false, nil)}},
+		{Name: "following-12", XPath: "(/works/employee[12]/*/day[1]/following::day) | (/works/employee[12]/*/day[1])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<day>Monday</day><day>Tuesday</day>", false, nil)}},
+		{Name: "following-13", XPath: "(/works[1]/employee[12]/overtime[1]/day[1]/following::day) intersect (/works[1]/employee[12]/overtime[1]/day[1]/following::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<day>Tuesday</day>", false, nil)}},
 		{Name: "following-14", XPath: "fn:count((/works[1]/employee[12]/following::employee) except (/works[1]/employee[12]/following::employee))", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertEq("0")}},
-		{Name: "following-15", XPath: "(/works[1]/employee[12]/overtime/day) except (/works[1]/employee[12]/overtime/day[1]/following::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "following-15", XPath: "(/works[1]/employee[12]/overtime/day) except (/works[1]/employee[12]/overtime/day[1]/following::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<day>Monday</day>", false, nil)}},
 		{Name: "following-16", XPath: "(/works[1]/employee[12]/following::employee) and fn:true()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "following-17", XPath: "(/works[1]/employee[12]/following::employee) and fn:false()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "following-18", XPath: "(/works[1]/employee[12]/following::employee) or fn:true()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
@@ -451,17 +469,21 @@ func init() {
 		{Name: "followingsibling-8", XPath: "exactly-one(/works[1]/employee[13]) >> exactly-one(/works[1]/employee[12]/overtime[1]/day[1]/following-sibling::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "followingsibling-9", XPath: "exactly-one(/works[1]/employee[12]/following-sibling::employee) >> exactly-one(/works[1]/employee[12]/following-sibling::employee)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "followingsibling-10", XPath: "exactly-one(/works[1]/employee[12]) >> exactly-one(/works[1]/employee[12]/following-sibling::employee)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertFalse()}},
-		{Name: "followingsibling-11", XPath: "(/works/employee[12]/*/day[1]/following-sibling::day) | (/works/employee[12]/*/day[1]/following-sibling::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "followingsibling-12", XPath: "(/works/employee[12]/*/day[1]/following-sibling::day) | (/works/employee[12]/*/day[1])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "followingsibling-13", XPath: "(/works[1]/employee[12]/overtime[1]/day[1]/following-sibling::day) intersect (/works[1]/employee[12]/overtime[1]/day[1]/following-sibling::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "followingsibling-11", XPath: "(/works/employee[12]/*/day[1]/following-sibling::day) | (/works/employee[12]/*/day[1]/following-sibling::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<day>Tuesday</day>", false, nil)}},
+		{Name: "followingsibling-12", XPath: "(/works/employee[12]/*/day[1]/following-sibling::day) | (/works/employee[12]/*/day[1])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<day>Monday</day><day>Tuesday</day>", false, nil)}},
+		{Name: "followingsibling-13", XPath: "(/works[1]/employee[12]/overtime[1]/day[1]/following-sibling::day) intersect (/works[1]/employee[12]/overtime[1]/day[1]/following-sibling::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<day>Tuesday</day>", false, nil)}},
 		{Name: "followingsibling-14", XPath: "fn:count((/works[1]/employee[12]/following-sibling::employee) except (/works[1]/employee[12]/following-sibling::employee))", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertEq("0")}},
-		{Name: "followingsibling-15", XPath: "(/works[1]/employee[12]/overtime/day) except (/works[1]/employee[12]/overtime/day[1]/following-sibling::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "followingsibling-15", XPath: "(/works[1]/employee[12]/overtime/day) except (/works[1]/employee[12]/overtime/day[1]/following-sibling::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<day>Monday</day>", false, nil)}},
 		{Name: "followingsibling-16", XPath: "(/works[1]/employee[12]/following-sibling::employee) and fn:true()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "followingsibling-17", XPath: "(/works[1]/employee[12]/following-sibling::employee) and fn:false()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "followingsibling-18", XPath: "(/works[1]/employee[12]/following-sibling::employee) or fn:true()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "followingsibling-19", XPath: "(/works[1]/employee[12]/following-sibling::employee) or fn:false()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "followingsibling-20", XPath: "fn:deep-equal(/works[1]/employee[12]/following-sibling::employee,/works[1]/employee[12]/following-sibling::employee)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
-		{Name: "unabbreviatedSyntax-24", XPath: "for $h in (/works/employee[2]) return $h/following-sibling::employee[fn:position() = 1]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "unabbreviatedSyntax-24", XPath: "for $h in (/works/employee[2]) return $h/following-sibling::employee[fn:position() = 1]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee name="Jane Doe 3" gender="female">
+   <empnum>E1</empnum>
+   <pnum>P3</pnum>
+   <hours>80</hours>
+  </employee>`, false, nil)}},
 		{Name: "preceding-1", XPath: "(200)/preceding::*", ExpectError: true},
 		{Name: "preceding-2", XPath: "fn:count(/works/employee[1]/preceding::noSuchNode)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertEq("0")}},
 		{Name: "preceding-3", XPath: "exactly-one(/works/employee[2]/preceding::employee) is exactly-one(/works/employee[1])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
@@ -469,11 +491,11 @@ func init() {
 		{Name: "preceding-8", XPath: "exactly-one(/works[1]/employee[13]) >> exactly-one(/works[1]/employee[12]/overtime[1]/day[2]/preceding::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "preceding-9", XPath: "exactly-one(/works[1]/employee[2]/preceding::employee) >> exactly-one(/works[1]/employee[2]/preceding::employee)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "preceding-10", XPath: "exactly-one(/works[1]/employee[13]) >> exactly-one(/works[1]/employee[2]/preceding::employee)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
-		{Name: "preceding-11", XPath: "(/works/employee[12]/*/day[2]/preceding::day) | (/works/employee[12]/*/day[2]/preceding::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "preceding-12", XPath: "(/works/employee[12]/*/day[2]/preceding::day) | (/works/employee[12]/*/day[2])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "preceding-13", XPath: "(/works[1]/employee[12]/overtime[1]/day[2]/preceding::day) intersect (/works[1]/employee[12]/overtime[1]/day[2]/preceding::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "preceding-11", XPath: "(/works/employee[12]/*/day[2]/preceding::day) | (/works/employee[12]/*/day[2]/preceding::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<day>Monday</day>", false, nil)}},
+		{Name: "preceding-12", XPath: "(/works/employee[12]/*/day[2]/preceding::day) | (/works/employee[12]/*/day[2])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<day>Monday</day><day>Tuesday</day>", false, nil)}},
+		{Name: "preceding-13", XPath: "(/works[1]/employee[12]/overtime[1]/day[2]/preceding::day) intersect (/works[1]/employee[12]/overtime[1]/day[2]/preceding::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<day>Monday</day>", false, nil)}},
 		{Name: "preceding-14", XPath: "fn:count((/works[1]/employee[12]/preceding::employee) except (/works[1]/employee[12]/preceding::employee))", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertEq("0")}},
-		{Name: "preceding-15", XPath: "(/works[1]/employee[12]/overtime/day) except (/works[1]/employee[12]/overtime/day[2]/preceding::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "preceding-15", XPath: "(/works[1]/employee[12]/overtime/day) except (/works[1]/employee[12]/overtime/day[2]/preceding::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<day>Tuesday</day>", false, nil)}},
 		{Name: "preceding-16", XPath: "(/works[1]/employee[12]/preceding::employee) and fn:true()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "preceding-17", XPath: "(/works[1]/employee[12]/preceding::employee) and fn:false()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "preceding-18", XPath: "(/works[1]/employee[12]/preceding::employee) or fn:true()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
@@ -486,17 +508,21 @@ func init() {
 		{Name: "preceding-sibling-8", XPath: "exactly-one(/works[1]/employee[13]) >> exactly-one(/works[1]/employee[12]/preceding-sibling::employee[1])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "preceding-sibling-9", XPath: "exactly-one(/works[1]/employee[2]/preceding-sibling::employee) >> exactly-one(/works[1]/employee[2]/preceding-sibling::employee)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "preceding-sibling-10", XPath: "exactly-one(/works[1]/employee[13]) >> exactly-one(/works[1]/employee[2]/preceding-sibling::employee)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
-		{Name: "preceding-sibling-11", XPath: "(/works/employee[12]/*/day[2]/preceding-sibling::day) | (/works/employee[12]/*/day[2]/preceding-sibling::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "preceding-sibling-12", XPath: "(/works/employee[12]/*/day[2]/preceding-sibling::day) | (/works/employee[12]/*/day[2])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "preceding-sibling-13", XPath: "(/works[1]/employee[12]/overtime[1]/day[2]/preceding-sibling::day) intersect (/works[1]/employee[12]/overtime[1]/day[2]/preceding-sibling::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "preceding-sibling-11", XPath: "(/works/employee[12]/*/day[2]/preceding-sibling::day) | (/works/employee[12]/*/day[2]/preceding-sibling::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<day>Monday</day>", false, nil)}},
+		{Name: "preceding-sibling-12", XPath: "(/works/employee[12]/*/day[2]/preceding-sibling::day) | (/works/employee[12]/*/day[2])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<day>Monday</day><day>Tuesday</day>", false, nil)}},
+		{Name: "preceding-sibling-13", XPath: "(/works[1]/employee[12]/overtime[1]/day[2]/preceding-sibling::day) intersect (/works[1]/employee[12]/overtime[1]/day[2]/preceding-sibling::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<day>Monday</day>", false, nil)}},
 		{Name: "preceding-sibling-14", XPath: "fn:count((/works[1]/employee[12]/preceding-sibling::employee) except (/works[1]/employee[12]/preceding-sibling::employee))", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertEq("0")}},
-		{Name: "preceding-sibling-15", XPath: "(/works[1]/employee[12]/overtime/day) except (/works[1]/employee[12]/overtime/day[2]/preceding-sibling::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "preceding-sibling-15", XPath: "(/works[1]/employee[12]/overtime/day) except (/works[1]/employee[12]/overtime/day[2]/preceding-sibling::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<day>Tuesday</day>", false, nil)}},
 		{Name: "preceding-sibling-16", XPath: "(/works[1]/employee[12]/preceding-sibling::employee) and fn:true()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "preceding-sibling-17", XPath: "(/works[1]/employee[12]/preceding-sibling::employee) and fn:false()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "preceding-sibling-18", XPath: "(/works[1]/employee[12]/preceding-sibling::employee) or fn:true()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "preceding-sibling-19", XPath: "(/works[1]/employee[12]/preceding-sibling::employee) or fn:false()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "preceding-sibling-20", XPath: "fn:deep-equal(/works[1]/employee[12]/preceding-sibling::employee,/works[1]/employee[12]/preceding-sibling::employee)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertTrue()}},
-		{Name: "unabbreviatedSyntax-25", XPath: "for $h in (/works/employee[2]) return $h/preceding-sibling::employee[fn:position() = 1]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "unabbreviatedSyntax-25", XPath: "for $h in (/works/employee[2]) return $h/preceding-sibling::employee[fn:position() = 1]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee name="Jane Doe 1" gender="female">
+   <empnum>E1</empnum>
+   <pnum>P1</pnum>
+   <hours>40</hours>
+  </employee>`, false, nil)}},
 		{Name: "ST-Axes001", XPath: "fn:count(//center/self::nowhere)", DocPath: "prod/AxisStep/TreeCompass.xml", Skip: "requires static typing", ExpectError: true},
 		{Name: "ST-Axes002", XPath: "fn:count(//center/@center-attr-2/self::*)", DocPath: "prod/AxisStep/TreeCompass.xml", Skip: "requires static typing", ExpectError: true},
 		{Name: "ST-Axes003", XPath: "fn:count(//center/@center-attr-3/self::center-attr-3)", DocPath: "prod/AxisStep/TreeCompass.xml", Skip: "requires static typing", ExpectError: true},
@@ -512,32 +538,90 @@ func init() {
 		{Name: "ST-Axes013", XPath: "fn:count(/parent::*)", DocPath: "prod/AxisStep/TreeCompass.xml", Skip: "requires static typing", ExpectError: true},
 		{Name: "ST-Axes014", XPath: "fn:count(/..)", DocPath: "prod/AxisStep/TreeCompass.xml", Skip: "requires static typing", ExpectError: true},
 		{Name: "ST-Axes015", XPath: "fn:count(/self::*)", DocPath: "prod/AxisStep/TopMany.xml", Skip: "requires static typing", ExpectError: true},
-		{Name: "unabbreviatedSyntax-1", XPath: "for $h in (/works/employee) return $h/child::empnum", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "unabbreviatedSyntax-2", XPath: "for $h in (/works/employee[1]) return $h/child::*", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "unabbreviatedSyntax-1", XPath: "for $h in (/works/employee) return $h/child::empnum", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<empnum>E1</empnum><empnum>E1</empnum><empnum>E1</empnum><empnum>E1</empnum><empnum>E1</empnum><empnum>E1</empnum><empnum>E2</empnum><empnum>E2</empnum><empnum>E3</empnum><empnum>E3</empnum><empnum>E4</empnum><empnum>E4</empnum><empnum>E4</empnum>", false, nil)}},
+		{Name: "unabbreviatedSyntax-2", XPath: "for $h in (/works/employee[1]) return $h/child::*", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<empnum>E1</empnum><pnum>P1</pnum><hours>40</hours>", false, nil)}},
 		{Name: "unabbreviatedSyntax-3", XPath: "for $h in (/works[1]/employee[2]) return $h/child::text()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertStringValueNS("Text data from Employee[2]")}},
 		{Name: "unabbreviatedSyntax-4", XPath: "for $h in (/works/employee[1]) return $h/child::node()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3Assert("$result[self::empnum] eq 'E1'", nil), qt3Assert("$result[self::pnum] eq 'P1'", nil), qt3Assert("$result[self::hours] eq '40'", nil)}},
 		{Name: "unabbreviatedSyntax-5", XPath: "for $h in (/works/employee[2]) return $h/child::node()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3Assert("$result[self::empnum] eq 'E1'", nil), qt3Assert("$result[self::pnum] eq 'P2'", nil), qt3Assert("($result[self::hours])[1] eq '70'", nil), qt3Assert("($result[self::hours])[2] eq '20'", nil), qt3Assert("contains(($result[self::text()])[last()],'Text data from Employee[2]')", nil)}},
-		{Name: "unabbreviatedSyntax-8", XPath: "for $h in (/works/employee[1]/hours) return $h/parent::node()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "unabbreviatedSyntax-9", XPath: "for $h in (/works/employee) return $h/descendant::empnum", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "unabbreviatedSyntax-12", XPath: "for $h in (/works/employee[1]) return $h/descendant-or-self::employee", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "unabbreviatedSyntax-13", XPath: "for $h in (/works/employee[1]) return $h/self::employee", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "unabbreviatedSyntax-8", XPath: "for $h in (/works/employee[1]/hours) return $h/parent::node()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee name="Jane Doe 1" gender="female">
+   <empnum>E1</empnum>
+   <pnum>P1</pnum>
+   <hours>40</hours>
+  </employee>`, false, nil)}},
+		{Name: "unabbreviatedSyntax-9", XPath: "for $h in (/works/employee) return $h/descendant::empnum", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<empnum>E1</empnum><empnum>E1</empnum><empnum>E1</empnum><empnum>E1</empnum><empnum>E1</empnum><empnum>E1</empnum><empnum>E2</empnum><empnum>E2</empnum><empnum>E3</empnum><empnum>E3</empnum><empnum>E4</empnum><empnum>E4</empnum><empnum>E4</empnum>", false, nil)}},
+		{Name: "unabbreviatedSyntax-12", XPath: "for $h in (/works/employee[1]) return $h/descendant-or-self::employee", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee name="Jane Doe 1" gender="female">
+   <empnum>E1</empnum>
+   <pnum>P1</pnum>
+   <hours>40</hours>
+  </employee>`, false, nil)}},
+		{Name: "unabbreviatedSyntax-13", XPath: "for $h in (/works/employee[1]) return $h/self::employee", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee name="Jane Doe 1" gender="female">
+   <empnum>E1</empnum>
+   <pnum>P1</pnum>
+   <hours>40</hours>
+  </employee>`, false, nil)}},
 		{Name: "unabbreviatedSyntax-14", XPath: "for $h in (/works[1]/employee[1]) return fn:count(($h/self::employee[1000]))", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertEq("0")}},
-		{Name: "unabbreviatedSyntax-15", XPath: "for $h in (/works) return $h/child::employee/descendant::empnum", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "unabbreviatedSyntax-16", XPath: "for $h in (/works) return $h/child::*/child::pnum", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "unabbreviatedSyntax-18", XPath: "for $h in (/works) return $h/descendant::pnum", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "unabbreviatedSyntax-19", XPath: "for $h in (/works) return $h/descendant::employee/child::pnum", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "unabbreviatedSyntax-20", XPath: "for $h in (/works) return $h/child::employee[fn:position() = 1]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "unabbreviatedSyntax-21", XPath: "for $h in (/works) return $h/child::employee[fn:position() = fn:last()]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "unabbreviatedSyntax-22", XPath: "for $h in (/works) return $h/child::employee[fn:position() = fn:last()-1]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "unabbreviatedSyntax-23", XPath: "for $h in (/works/employee) return $h/child::hours[fn:position() > 1]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "unabbreviatedSyntax-26", XPath: "for $h in (/works) return $h/descendant::employee[fn:position() = 12]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "unabbreviatedSyntax-27", XPath: "/child::works/child::employee[fn:position() = 5]/child::hours[fn:position() = 2]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "unabbreviatedSyntax-28", XPath: "for $h in (/works) return $h/child::employee[attribute::name eq \"Jane Doe 11\"]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "unabbreviatedSyntax-29", XPath: "for $h in (/works) return $h/child::employee[attribute::gender eq 'female'][fn:position() = 5]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "unabbreviatedSyntax-30", XPath: "for $h in (/works) return $h/child::employee[child::empnum = 'E3']", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "unabbreviatedSyntax-31", XPath: "for $h in (/works) return $h/child::employee[child::status]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "unabbreviatedSyntax-32", XPath: "for $h in (/works/employee[7]) return $h/child::*[self::pnum or self::empnum]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "unabbreviatedSyntax-33", XPath: "for $h in (/works/employee[6]) return $h/child::*[self::empnum or self::pnum][fn:position() = fn:last()]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "unabbreviatedSyntax-15", XPath: "for $h in (/works) return $h/child::employee/descendant::empnum", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<empnum>E1</empnum><empnum>E1</empnum><empnum>E1</empnum><empnum>E1</empnum><empnum>E1</empnum><empnum>E1</empnum><empnum>E2</empnum><empnum>E2</empnum><empnum>E3</empnum><empnum>E3</empnum><empnum>E4</empnum><empnum>E4</empnum><empnum>E4</empnum>", false, nil)}},
+		{Name: "unabbreviatedSyntax-16", XPath: "for $h in (/works) return $h/child::*/child::pnum", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<pnum>P1</pnum><pnum>P2</pnum><pnum>P3</pnum><pnum>P4</pnum><pnum>P5</pnum><pnum>P6</pnum><pnum>P1</pnum><pnum>P2</pnum><pnum>P2</pnum><pnum>P2</pnum><pnum>P2</pnum><pnum>P4</pnum><pnum>P5</pnum>", false, nil)}},
+		{Name: "unabbreviatedSyntax-18", XPath: "for $h in (/works) return $h/descendant::pnum", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<pnum>P1</pnum><pnum>P2</pnum><pnum>P3</pnum><pnum>P4</pnum><pnum>P5</pnum><pnum>P6</pnum><pnum>P1</pnum><pnum>P2</pnum><pnum>P2</pnum><pnum>P2</pnum><pnum>P2</pnum><pnum>P4</pnum><pnum>P5</pnum>", false, nil)}},
+		{Name: "unabbreviatedSyntax-19", XPath: "for $h in (/works) return $h/descendant::employee/child::pnum", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<pnum>P1</pnum><pnum>P2</pnum><pnum>P3</pnum><pnum>P4</pnum><pnum>P5</pnum><pnum>P6</pnum><pnum>P1</pnum><pnum>P2</pnum><pnum>P2</pnum><pnum>P2</pnum><pnum>P2</pnum><pnum>P4</pnum><pnum>P5</pnum>", false, nil)}},
+		{Name: "unabbreviatedSyntax-20", XPath: "for $h in (/works) return $h/child::employee[fn:position() = 1]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee name="Jane Doe 1" gender="female">
+   <empnum>E1</empnum>
+   <pnum>P1</pnum>
+   <hours>40</hours>
+  </employee>`, false, nil)}},
+		{Name: "unabbreviatedSyntax-21", XPath: "for $h in (/works) return $h/child::employee[fn:position() = fn:last()]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee name="Jane Doe 13" gender="female" type="FT">
+   <empnum>E4</empnum>
+   <pnum>P5</pnum>
+   <hours>80</hours>
+   <status>active</status>
+  </employee>`, false, nil)}},
+		{Name: "unabbreviatedSyntax-22", XPath: "for $h in (/works) return $h/child::employee[fn:position() = fn:last()-1]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee name="John Doe 12" gender="male">
+   <empnum>E4</empnum>
+   <pnum>P4</pnum>
+   <hours>40</hours>
+   <overtime>
+     <day>Monday</day>
+     <day>Tuesday</day>
+   </overtime>
+  </employee>`, false, nil)}},
+		{Name: "unabbreviatedSyntax-23", XPath: "for $h in (/works/employee) return $h/child::hours[fn:position() > 1]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<hours>20</hours><hours>40</hours><hours>30</hours>", false, nil)}},
+		{Name: "unabbreviatedSyntax-26", XPath: "for $h in (/works) return $h/descendant::employee[fn:position() = 12]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee name="John Doe 12" gender="male">
+   <empnum>E4</empnum>
+   <pnum>P4</pnum>
+   <hours>40</hours>
+   <overtime>
+     <day>Monday</day>
+     <day>Tuesday</day>
+   </overtime>
+  </employee>`, false, nil)}},
+		{Name: "unabbreviatedSyntax-27", XPath: "/child::works/child::employee[fn:position() = 5]/child::hours[fn:position() = 2]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<hours>30</hours>", false, nil)}},
+		{Name: "unabbreviatedSyntax-28", XPath: "for $h in (/works) return $h/child::employee[attribute::name eq \"Jane Doe 11\"]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee name="Jane Doe 11" gender="female">
+   <empnum>E4</empnum>
+   <pnum>P2</pnum>
+   <hours>20</hours>
+  </employee>`, false, nil)}},
+		{Name: "unabbreviatedSyntax-29", XPath: "for $h in (/works) return $h/child::employee[attribute::gender eq 'female'][fn:position() = 5]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee name="Jane Doe 9" gender="female">
+   <empnum>E3</empnum>
+   <pnum>P2</pnum>
+   <hours>20</hours>
+  </employee>`, false, nil)}},
+		{Name: "unabbreviatedSyntax-30", XPath: "for $h in (/works) return $h/child::employee[child::empnum = 'E3']", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee name="Jane Doe 9" gender="female">
+   <empnum>E3</empnum>
+   <pnum>P2</pnum>
+   <hours>20</hours>
+  </employee><employee name="John Doe 10" gender="male">
+   <empnum>E3</empnum>
+   <pnum>P2</pnum>
+   <hours>20</hours>
+  </employee>`, false, nil)}},
+		{Name: "unabbreviatedSyntax-31", XPath: "for $h in (/works) return $h/child::employee[child::status]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee name="Jane Doe 13" gender="female" type="FT">
+   <empnum>E4</empnum>
+   <pnum>P5</pnum>
+   <hours>80</hours>
+   <status>active</status>
+  </employee>`, false, nil)}},
+		{Name: "unabbreviatedSyntax-32", XPath: "for $h in (/works/employee[7]) return $h/child::*[self::pnum or self::empnum]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<empnum>E2</empnum><pnum>P1</pnum>", false, nil)}},
+		{Name: "unabbreviatedSyntax-33", XPath: "for $h in (/works/employee[6]) return $h/child::*[self::empnum or self::pnum][fn:position() = fn:last()]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<pnum>P6</pnum>", false, nil)}},
 		{Name: "CastableAs001", XPath: "xs:untypedAtomic(\"INF\") castable as xs:untypedAtomic", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "CastableAs002", XPath: "xs:untypedAtomic(\"0.0E0\") castable as xs:untypedAtomic", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "CastableAs003", XPath: "xs:untypedAtomic(\"true\") castable as xs:untypedAtomic", Assertions: []qt3Assertion{qt3AssertTrue()}},
@@ -4316,7 +4400,7 @@ func init() {
 
 
 (: This is a comment :)
-(//fs:Folder)[1]/fs:File[1]/fs:FileName`, DocPath: "prod/ForClause/fsx_NS.xml", Namespaces: map[string]string{"fs": "http://www.example.com/filesystem"}, Assertions: []qt3Assertion{qt3AssertSkip()}},
+(//fs:Folder)[1]/fs:File[1]/fs:FileName`, DocPath: "prod/ForClause/fsx_NS.xml", Namespaces: map[string]string{"fs": "http://www.example.com/filesystem"}, Assertions: []qt3Assertion{qt3AssertXML("<fs:FileName xmlns:fs=\"http://www.example.com/filesystem\">File00000000000</fs:FileName>", false, map[string]string{"fs": "http://www.example.com/filesystem"})}},
 		{Name: "XQueryComment009", XPath: `(: Name: XQueryComment009 :)
 (: Description: Comments inside a conditional expression :)
 
@@ -4343,7 +4427,7 @@ if (:test:)(:t2:)(:t3:) (/fs:MyComputer)
 (: Description: Comments that looks like a function call :)
 
 
-/south(: test :)`, DocPath: "prod/AxisStep/TreeEmpty.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+/south(: test :)`, DocPath: "prod/AxisStep/TreeEmpty.xml", Assertions: []qt3Assertion{qt3AssertXML("<south mark=\"s0\" />", false, nil)}},
 		{Name: "XQueryComment013", XPath: `(: Name: XQueryComment013 :)
 (: Description: Comments inside a sequence expression :)
 
@@ -4468,9 +4552,17 @@ for (: set up loop :) $i in 3 return $i eq 3`, Assertions: []qt3Assertion{qt3Ass
 		{Name: "externalcontextitem-19", XPath: "for $var in (/works/employee[1]) return $var/fn:avg((hours,hours,hours))", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertEq("40")}},
 		{Name: "externalcontextitem-20", XPath: "for $var in (/works/employee[1]) return $var/fn:min((hours,hours,22))", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertEq("22")}},
 		{Name: "externalcontextitem-21", XPath: "for $var in (/works/employee[1]) return $var/fn:max((hours,exactly-one(hours) + 1,22))", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertEq("41")}},
-		{Name: "externalcontextitem-22", XPath: "./works/employee[1]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "externalcontextitem-22", XPath: "./works/employee[1]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee name="Jane Doe 1" gender="female">
+   <empnum>E1</empnum>
+   <pnum>P1</pnum>
+   <hours>40</hours>
+  </employee>`, false, nil)}},
 		{Name: "externalcontextitem-23", XPath: "./works/employee[1]", ExpectError: true},
-		{Name: "externalcontextitem-24", XPath: "works/employee[1]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "externalcontextitem-24", XPath: "works/employee[1]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee name="Jane Doe 1" gender="female">
+   <empnum>E1</empnum>
+   <pnum>P1</pnum>
+   <hours>40</hours>
+  </employee>`, false, nil)}},
 		{Name: "internalcontextitem-2", XPath: "(\"A\",\"B\",\"C\")[xs:string(.)]", Assertions: []qt3Assertion{qt3AssertStringValue("A B C")}},
 		{Name: "internalcontextitem-3", XPath: "(1,2,3)[xs:integer(.)]", Assertions: []qt3Assertion{qt3AssertStringValue("1 2 3")}},
 		{Name: "internalcontextitem-4", XPath: "(1,2,3)[xs:decimal(.)]", Assertions: []qt3Assertion{qt3AssertStringValue("1 2 3")}},
@@ -4501,7 +4593,12 @@ for (: set up loop :) $i in 3 return $i eq 3`, Assertions: []qt3Assertion{qt3Ass
 		{Name: "K2-DirectConElemContent-4", XPath: "}", ExpectError: true},
 		{Name: "eqname-014", XPath: "string((//Q{http://www.example.com/AuctionWatch}Start)[1])", DocPath: "docs/auction.xml", Namespaces: map[string]string{"anyzone": "http://www.example.com/auctioneers#anyzone", "eachbay": "http://www.example.com/auctioneers#eachbay", "ma": "http://www.example.com/AuctionWatch", "map": "http://www.w3.org/2005/xpath-functions/map", "xlink": "http://www.w3.org/1999/xlink", "yabadoo": "http://www.example.com/auctioneers#yabadoo"}, Assertions: []qt3Assertion{qt3AssertStringValue("3.00")}},
 		{Name: "eqname-015", XPath: "for $Q{http://example.com/ns}x in 1 to 10 return $Q{http://example.com/ns}x + 1", DocPath: "docs/auction.xml", Namespaces: map[string]string{"anyzone": "http://www.example.com/auctioneers#anyzone", "eachbay": "http://www.example.com/auctioneers#eachbay", "ma": "http://www.example.com/AuctionWatch", "map": "http://www.w3.org/2005/xpath-functions/map", "xlink": "http://www.w3.org/1999/xlink", "yabadoo": "http://www.example.com/auctioneers#yabadoo"}, Assertions: []qt3Assertion{qt3AssertStringValue("2 3 4 5 6 7 8 9 10 11")}},
-		{Name: "eqname-018", XPath: "(//Q{http://www.example.com/AuctionWatch}Start)[1]/namespace::Q{}*/string()", DocPath: "docs/auction.xml", Namespaces: map[string]string{"anyzone": "http://www.example.com/auctioneers#anyzone", "eachbay": "http://www.example.com/auctioneers#eachbay", "ma": "http://www.example.com/AuctionWatch", "map": "http://www.w3.org/2005/xpath-functions/map", "xlink": "http://www.w3.org/1999/xlink", "yabadoo": "http://www.example.com/auctioneers#yabadoo"}, Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "eqname-018", XPath: "(//Q{http://www.example.com/AuctionWatch}Start)[1]/namespace::Q{}*/string()", DocPath: "docs/auction.xml", Namespaces: map[string]string{"anyzone": "http://www.example.com/auctioneers#anyzone", "eachbay": "http://www.example.com/auctioneers#eachbay", "ma": "http://www.example.com/AuctionWatch", "map": "http://www.w3.org/2005/xpath-functions/map", "xlink": "http://www.w3.org/1999/xlink", "yabadoo": "http://www.example.com/auctioneers#yabadoo"}, Assertions: []qt3Assertion{qt3AssertPermutation(`"http://www.example.com/AuctionWatch",
+            "http://www.w3.org/1999/xlink",
+            "http://www.example.com/auctioneers#anyzone",
+            "http://www.example.com/auctioneers#eachbay",
+            "http://www.example.com/auctioneers#yabadoo",
+            "http://www.w3.org/XML/1998/namespace"`, map[string]string{"anyzone": "http://www.example.com/auctioneers#anyzone", "eachbay": "http://www.example.com/auctioneers#eachbay", "ma": "http://www.example.com/AuctionWatch", "map": "http://www.w3.org/2005/xpath-functions/map", "xlink": "http://www.w3.org/1999/xlink", "yabadoo": "http://www.example.com/auctioneers#yabadoo"})}},
 		{Name: "eqname-020", XPath: "Q{  http://www.w3.org/2005/xpath-functions/math}pi()", Assertions: []qt3Assertion{qt3AssertEq("math:pi()")}},
 		{Name: "eqname-021", XPath: "Q{http://www.w3.org/2005/xpath-functions/math   }pi()", Assertions: []qt3Assertion{qt3AssertEq("math:pi()")}},
 		{Name: "eqname-022", XPath: `Q{  
@@ -4509,7 +4606,12 @@ for (: set up loop :) $i in 3 return $i eq 3`, Assertions: []qt3Assertion{qt3Ass
          }pi()`, Assertions: []qt3Assertion{qt3AssertEq("math:pi()")}},
 		{Name: "eqname-023", XPath: `(//Q{http://www.example.com/AuctionWatch}Start)[1]/namespace::Q{  
          
-         }*/string()`, DocPath: "docs/auction.xml", Namespaces: map[string]string{"anyzone": "http://www.example.com/auctioneers#anyzone", "eachbay": "http://www.example.com/auctioneers#eachbay", "ma": "http://www.example.com/AuctionWatch", "map": "http://www.w3.org/2005/xpath-functions/map", "xlink": "http://www.w3.org/1999/xlink", "yabadoo": "http://www.example.com/auctioneers#yabadoo"}, Assertions: []qt3Assertion{qt3AssertSkip()}},
+         }*/string()`, DocPath: "docs/auction.xml", Namespaces: map[string]string{"anyzone": "http://www.example.com/auctioneers#anyzone", "eachbay": "http://www.example.com/auctioneers#eachbay", "ma": "http://www.example.com/AuctionWatch", "map": "http://www.w3.org/2005/xpath-functions/map", "xlink": "http://www.w3.org/1999/xlink", "yabadoo": "http://www.example.com/auctioneers#yabadoo"}, Assertions: []qt3Assertion{qt3AssertPermutation(`"http://www.example.com/AuctionWatch",
+            "http://www.w3.org/1999/xlink",
+            "http://www.example.com/auctioneers#anyzone",
+            "http://www.example.com/auctioneers#eachbay",
+            "http://www.example.com/auctioneers#yabadoo",
+            "http://www.w3.org/XML/1998/namespace"`, map[string]string{"anyzone": "http://www.example.com/auctioneers#anyzone", "eachbay": "http://www.example.com/auctioneers#eachbay", "ma": "http://www.example.com/AuctionWatch", "map": "http://www.w3.org/2005/xpath-functions/map", "xlink": "http://www.w3.org/1999/xlink", "yabadoo": "http://www.example.com/auctioneers#yabadoo"})}},
 		{Name: "eqname-024", XPath: "for $Q{ urn:foo bar }x in 1 to 5 return $Q{urn:foo   bar}x + $Q{urn:foo bar}x", Assertions: []qt3Assertion{qt3AssertStringValue("2 4 6 8 10")}},
 		{Name: "eqname-025", XPath: "for $Q{}T in 1 to 5 return $Q{  }T + $T", Assertions: []qt3Assertion{qt3AssertStringValue("2 4 6 8 10")}},
 		{Name: "eqname-026", XPath: "string((//Q{  http://www.example.com/AuctionWatch  }Start)[1])", DocPath: "docs/auction.xml", Namespaces: map[string]string{"anyzone": "http://www.example.com/auctioneers#anyzone", "eachbay": "http://www.example.com/auctioneers#eachbay", "ma": "http://www.example.com/AuctionWatch", "map": "http://www.w3.org/2005/xpath-functions/map", "xlink": "http://www.w3.org/1999/xlink", "yabadoo": "http://www.example.com/auctioneers#yabadoo"}, Assertions: []qt3Assertion{qt3AssertStringValue("3.00")}},
@@ -4545,21 +4647,21 @@ for (: set up loop :) $i in 3 return $i eq 3`, Assertions: []qt3Assertion{qt3Ass
          return $f(1, 2)`, ExpectError: true},
 		{Name: "ForExpr001", XPath: "for $a in (\"test\", \"test1\", \"test2\") return $a", Assertions: []qt3Assertion{qt3AssertStringValue("test test1 test2")}},
 		{Name: "ForExpr005", XPath: "for $f in /MyComputer//File[@creation_date=\"08/06/00\"]/SecurityObject/Denies/Deny[security/right] return $f/../../@name/string()", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertStringValue("so00000000001")}},
-		{Name: "ForExpr007", XPath: "for $AaBbCc.-_Dd in /MyComputer/Drive1/Folder return $AaBbCc.-_Dd/FolderName", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "ForExpr007", XPath: "for $AaBbCc.-_Dd in /MyComputer/Drive1/Folder return $AaBbCc.-_Dd/FolderName", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertXML("<FolderName>Folder00000000000</FolderName>", false, nil)}},
 		{Name: "ForExpr009", XPath: "for $a in $a/* return $a", ExpectError: true},
 		{Name: "ForExpr012", XPath: "for $fileName in for $file in //Folder/File return $file/FileName return string( $fileName )", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertStringValue("File00000000000 File00000000001 File00000000002 File00000000003 File00000000004 File00000000005 File00000000006 File00000000007 File00000000008 File00000000009 File00000000010 File00000000011 File00000000012 File00000000013 File00000000014 File00000000015 File00000000016 File00000000017 File00000000018 File00000000019 File00000000020 File00000000021 File00000000022 File00000000023 File00000000024 File00000000025 File00000000026 File00000000027 File00000000028 File00000000029 File00000000030 File00000000031 File00000000032 File00000000033 File00000000034 File00000000035 File00000000036 File00000000037 File00000000038 File00000000039 File00000000040 File00000000041 File00000000042 File00000000043 File00000000044 File00000000045 File00000000046 File00000000047 File00000000048 File00000000049 File00000000050 File00000000051 File00000000052 File00000000053 File00000000054 File00000000055 File00000000056 File00000000057 File00000000058 File00000000059 File00000000060 File00000000061 File00000000062 File00000000063 File00000000064 File00000000065 File00000000066 File00000000067 File00000000068 File00000000069 File00000000070 File00000000071 File00000000072 File00000000073 File00000000074 File00000000075 File00000000076 File00000000077 File00000000078 File00000000079 File00000000080 File00000000081 File00000000082 File00000000083 File00000000084 File00000000085 File00000000086 File00000000087 File00000000088 File00000000089 File00000000090 File00000000091 File00000000092 File00000000093 File00000000094 File00000000095 File00000000096 File00000000097 File00000000098 File00000000099 File00000000100")}},
 		{Name: "ForExpr013", XPath: `for $fileName in //File/FileName, 
             $folderName in //Folder[contains(description, 'fren')]/FolderName 
-        return ($folderName, $fileName)`, DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+        return ($folderName, $fileName)`, DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertXML("<FolderName>Folder00000000026</FolderName><FileName>File00000000000</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000001</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000002</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000003</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000004</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000005</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000006</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000007</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000008</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000009</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000010</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000011</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000012</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000013</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000014</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000015</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000016</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000017</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000018</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000019</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000020</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000021</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000022</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000023</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000024</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000025</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000026</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000027</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000028</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000029</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000030</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000031</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000032</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000033</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000034</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000035</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000036</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000037</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000038</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000039</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000040</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000041</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000042</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000043</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000044</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000045</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000046</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000047</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000048</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000049</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000050</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000051</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000052</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000053</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000054</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000055</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000056</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000057</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000058</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000059</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000060</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000061</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000062</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000063</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000064</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000065</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000066</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000067</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000068</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000069</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000070</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000071</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000072</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000073</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000074</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000075</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000076</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000077</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000078</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000079</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000080</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000081</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000082</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000083</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000084</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000085</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000086</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000087</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000088</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000089</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000090</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000091</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000092</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000093</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000094</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000095</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000096</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000097</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000098</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000099</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000100</FileName>", false, nil)}},
 		{Name: "ForExpr014", XPath: "for $fileName in //File/FileName for $folderName in //Folder/FolderName return $folderName return $fileName", DocPath: "prod/ForClause/fsx.xml", ExpectError: true},
 		{Name: "ForExpr015", XPath: "for $folder in //Folder return for $file in $folder/File return string( $file/FileName[1] )", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertStringValue("File00000000000 File00000000001 File00000000002 File00000000003 File00000000004 File00000000005 File00000000006 File00000000007 File00000000008 File00000000009 File00000000010 File00000000011 File00000000012 File00000000013 File00000000014 File00000000015 File00000000016 File00000000017 File00000000018 File00000000019 File00000000020 File00000000021 File00000000022 File00000000023 File00000000024 File00000000025 File00000000026 File00000000027 File00000000028 File00000000029 File00000000030 File00000000031 File00000000032 File00000000033 File00000000034 File00000000035 File00000000036 File00000000037 File00000000038 File00000000039 File00000000040 File00000000041 File00000000042 File00000000043 File00000000044 File00000000045 File00000000046 File00000000047 File00000000048 File00000000049 File00000000050 File00000000051 File00000000052 File00000000053 File00000000054 File00000000055 File00000000056 File00000000057 File00000000058 File00000000059 File00000000060 File00000000061 File00000000062 File00000000063 File00000000064 File00000000065 File00000000066 File00000000067 File00000000068 File00000000069 File00000000070 File00000000071 File00000000072 File00000000073 File00000000074 File00000000075 File00000000076 File00000000077 File00000000078 File00000000079 File00000000080 File00000000081 File00000000082 File00000000083 File00000000084 File00000000085 File00000000086 File00000000087 File00000000088 File00000000089 File00000000090 File00000000091 File00000000092 File00000000093 File00000000094 File00000000095 File00000000096 File00000000097 File00000000098 File00000000099 File00000000100")}},
-		{Name: "ForExpr016", XPath: "for $folder in //Folder, $index in (1, 2, 3) return $folder/File[$index]/FileName", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "ForExpr016", XPath: "for $folder in //Folder, $index in (1, 2, 3) return $folder/File[$index]/FileName", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertXML("<FileName>File00000000000</FileName><FileName>File00000000001</FileName><FileName>File00000000002</FileName><FileName>File00000000031</FileName><FileName>File00000000032</FileName><FileName>File00000000033</FileName><FileName>File00000000034</FileName><FileName>File00000000035</FileName><FileName>File00000000036</FileName><FileName>File00000000037</FileName><FileName>File00000000038</FileName><FileName>File00000000039</FileName><FileName>File00000000040</FileName><FileName>File00000000041</FileName><FileName>File00000000042</FileName><FileName>File00000000043</FileName><FileName>File00000000044</FileName><FileName>File00000000045</FileName><FileName>File00000000046</FileName><FileName>File00000000047</FileName><FileName>File00000000048</FileName><FileName>File00000000049</FileName><FileName>File00000000050</FileName><FileName>File00000000051</FileName><FileName>File00000000052</FileName><FileName>File00000000053</FileName><FileName>File00000000054</FileName><FileName>File00000000055</FileName><FileName>File00000000056</FileName><FileName>File00000000057</FileName><FileName>File00000000058</FileName><FileName>File00000000059</FileName><FileName>File00000000060</FileName><FileName>File00000000061</FileName><FileName>File00000000062</FileName><FileName>File00000000063</FileName><FileName>File00000000064</FileName><FileName>File00000000065</FileName><FileName>File00000000066</FileName><FileName>File00000000067</FileName><FileName>File00000000068</FileName><FileName>File00000000069</FileName><FileName>File00000000070</FileName><FileName>File00000000071</FileName><FileName>File00000000072</FileName><FileName>File00000000073</FileName><FileName>File00000000074</FileName><FileName>File00000000075</FileName><FileName>File00000000076</FileName><FileName>File00000000077</FileName><FileName>File00000000078</FileName><FileName>File00000000079</FileName><FileName>File00000000082</FileName><FileName>File00000000083</FileName><FileName>File00000000084</FileName><FileName>File00000000087</FileName><FileName>File00000000088</FileName><FileName>File00000000089</FileName><FileName>File00000000090</FileName><FileName>File00000000091</FileName><FileName>File00000000095</FileName><FileName>File00000000096</FileName><FileName>File00000000097</FileName><FileName>File00000000098</FileName><FileName>File00000000099</FileName><FileName>File00000000100</FileName>", false, nil)}},
 		{Name: "ForExpr017", XPath: "for $folder in //Folder return $folder return $folder", DocPath: "prod/ForClause/fsx.xml", ExpectError: true},
 		{Name: "ForExpr018", XPath: "for $folder in in .//Folder return $folder", DocPath: "prod/ForClause/fsx.xml", ExpectError: true},
 		{Name: "ForExpr019", XPath: "for for $folder in //Folder return $folder", DocPath: "prod/ForClause/fsx.xml", ExpectError: true},
 		{Name: "ForExpr020", XPath: "for $folder in //Folder, $file in $folder/File, return $file/FileName", DocPath: "prod/ForClause/fsx.xml", ExpectError: true},
 		{Name: "ForExpr021", XPath: "for $i in (1, 2), $j in (3, 4) return ($i, $j)", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertStringValue("1 3 1 4 2 3 2 4")}},
-		{Name: "ForExpr025", XPath: "for $file in (//Folder)[1]/File, $file in (//Folder)[2]/File return $file/FileName", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "ForExpr025", XPath: "for $file in (//Folder)[1]/File, $file in (//Folder)[2]/File return $file/FileName", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertXML("<FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName><FileName>File00000000031</FileName>", false, nil)}},
 		{Name: "ForExpr026", XPath: "for $file (//Folder)[1]/File return $file/FileName", DocPath: "prod/ForClause/fsx.xml", ExpectError: true},
 		{Name: "ForExpr030", XPath: "for $var in (1,2), $var in (2,2) return $var * $var", Assertions: []qt3Assertion{qt3AssertStringValue("4 4 4 4")}},
 		{Name: "K-ForExprWithout-1", XPath: "for $foo in 1, $bar in 2, $moo in 3, return 4", ExpectError: true},
@@ -5882,7 +5984,7 @@ line2`)}},
 		{Name: "Lookup-142", XPath: "(map{1:1, 2:2, 3:3},  map{2:3, 3:4, 4:5})?(1 to 2)", Assertions: []qt3Assertion{qt3AssertDeepEq("1, 2, 3")}},
 		{Name: "Lookup-143", XPath: "(map{'a-1':1, 'b-1':2, 'c-1':3},  map{'a-1':2, 'b-1':3, 'c-1':4})?c-1", Assertions: []qt3Assertion{qt3AssertDeepEq("3, 4")}},
 		{Name: "Lookup-144", XPath: "(map{'a-1':1, 'b-1':2, 'c-1':3},  map{'a-1':2, 'b-1':3, 'c-1':4})? (:confusing.?:) b-1", Assertions: []qt3Assertion{qt3AssertDeepEq("2, 3")}},
-		{Name: "Lookup-145", XPath: "(map{1:1, 2:2, 3:3},  map{1:2, 2:3, 3:4})?*", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "Lookup-145", XPath: "(map{1:1, 2:2, 3:3},  map{1:2, 2:3, 3:4})?*", Assertions: []qt3Assertion{qt3AssertPermutation("1, 2, 3, 2, 3, 4", nil)}},
 		{Name: "Lookup-146", XPath: "(map{1:1, 2:2, 3:3},  map{1:2, 2:3, 3:4})?()", Assertions: []qt3Assertion{qt3AssertEmpty()}},
 		{Name: "Lookup-147", XPath: "()?banana", Assertions: []qt3Assertion{qt3AssertEmpty()}},
 		{Name: "Lookup-148", XPath: "()?12", Assertions: []qt3Assertion{qt3AssertEmpty()}},
@@ -5891,7 +5993,7 @@ line2`)}},
 		{Name: "Lookup-151", XPath: "map{'f':floor#1, 'c':ceiling#1, 'r':round#1, 'a':abs#1}?c(1.3)", Assertions: []qt3Assertion{qt3AssertEq("2.0")}},
 		{Name: "Lookup-152", XPath: "map{'f':floor#1, 'c':ceiling#1, 'r':round#1, 'a':abs#1}?(\"c\")(1.3)", Assertions: []qt3Assertion{qt3AssertEq("2.0")}},
 		{Name: "Lookup-153", XPath: "map{'f':floor#1, 'c':ceiling#1, 'r':round#1, 'a':abs#1}[1]?(\"c\")(1.3)", Assertions: []qt3Assertion{qt3AssertEq("2.0")}},
-		{Name: "Lookup-154", XPath: "map{'f':floor#1, 'c':ceiling#1, 'r':round#1, 'a':abs#1}?*!.(1.3)", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "Lookup-154", XPath: "map{'f':floor#1, 'c':ceiling#1, 'r':round#1, 'a':abs#1}?*!.(1.3)", Assertions: []qt3Assertion{qt3AssertPermutation("1.0, 2.0, 1.0, 1.3", nil)}},
 		{Name: "Lookup-155", XPath: "map{'or':true(), 'and':true(), 'but':false()} ? or or 2 = 3", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "Lookup-156", XPath: "map{'xs:decimal':true(), 'xs:integer':true(), 'xs:polygon':false()} ? xs:integer", ExpectError: true},
 		{Name: "Lookup-157", XPath: "map{'decimal':true(), 'integer':true(), 'polygon':false()} ? Q{}integer", ExpectError: true},
@@ -6175,9 +6277,9 @@ line2`)}},
 		{Name: "function-literal-157", XPath: "exists(Q{http://www.w3.org/2005/xpath-functions}tokenize#3)", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "function-literal-158", XPath: "Q{http://www.w3.org/2005/xpath-functions}tokenize#3('string', 'i', 'i')", Assertions: []qt3Assertion{qt3AssertStringValue("str ng")}},
 		{Name: "function-literal-159", XPath: "exists(Q{http://www.w3.org/2005/xpath-functions}analyze-string#2)", Assertions: []qt3Assertion{qt3AssertTrue()}},
-		{Name: "function-literal-160", XPath: "Q{http://www.w3.org/2005/xpath-functions}analyze-string#2('', 'abc')", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "function-literal-160", XPath: "Q{http://www.w3.org/2005/xpath-functions}analyze-string#2('', 'abc')", Assertions: []qt3Assertion{qt3AssertXML("<fn:analyze-string-result xmlns:fn=\"http://www.w3.org/2005/xpath-functions\"/>", false, nil)}},
 		{Name: "function-literal-161", XPath: "exists(Q{http://www.w3.org/2005/xpath-functions}analyze-string#3)", Assertions: []qt3Assertion{qt3AssertTrue()}},
-		{Name: "function-literal-162", XPath: "Q{http://www.w3.org/2005/xpath-functions}analyze-string#3('', 'abc', 'i')", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "function-literal-162", XPath: "Q{http://www.w3.org/2005/xpath-functions}analyze-string#3('', 'abc', 'i')", Assertions: []qt3Assertion{qt3AssertXML("<fn:analyze-string-result xmlns:fn=\"http://www.w3.org/2005/xpath-functions\"/>", false, nil)}},
 		{Name: "function-literal-163", XPath: "exists(Q{http://www.w3.org/2005/xpath-functions}resolve-uri#1)", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "function-literal-164", XPath: "Q{http://www.w3.org/2005/xpath-functions}resolve-uri#1('http://www.w3.org/2005/xpath-functions')", Assertions: []qt3Assertion{qt3AssertType("xs:anyURI", nil)}},
 		{Name: "function-literal-165", XPath: "exists(Q{http://www.w3.org/2005/xpath-functions}resolve-uri#2)", Assertions: []qt3Assertion{qt3AssertTrue()}},
@@ -6562,8 +6664,8 @@ string')`, Assertions: []qt3Assertion{qt3AssertStringValue("normalized string")}
 		{Name: "NodeTest003", XPath: "/*/*[1]/name()", DocPath: "prod/AxisStep/nw_Customers.xml", Assertions: []qt3Assertion{qt3AssertStringValue("Customers")}},
 		{Name: "NodeTest004", XPath: "/.", DocPath: "prod/AxisStep/nw_Customers.xml", Assertions: []qt3Assertion{qt3AssertType("document-node(element(Root))", nil), qt3Assert("exists($result//Country[.='Poland'])", nil)}},
 		{Name: "NodeTest005", XPath: "/*/.", DocPath: "prod/AxisStep/nw_Customers.xml", Assertions: []qt3Assertion{qt3AssertType("element(Root)", nil), qt3Assert("exists($result//Country[.='Poland'])", nil)}},
-		{Name: "nametest-12", XPath: "let $var := /works/employee[12]/overtime return $var/child::*:day[1] | $var/child::*:day[2]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "nametest-13", XPath: "let $var := /works[1]/child::employee[12]/overtime return $var/child::* intersect $var/child::day", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "nametest-12", XPath: "let $var := /works/employee[12]/overtime return $var/child::*:day[1] | $var/child::*:day[2]", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<day>Monday</day><day>Tuesday</day>", false, nil)}},
+		{Name: "nametest-13", XPath: "let $var := /works[1]/child::employee[12]/overtime return $var/child::* intersect $var/child::day", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<day>Monday</day><day>Tuesday</day>", false, nil)}},
 		{Name: "nametest-14", XPath: "let $var := /works[1]/child::employee[12]/overtime return fn:count($var/child::* except $var/child::day)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertEq("0")}},
 		{Name: "nametest-15", XPath: "let $var := /works return fn:count($var/child::*)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertEq("13")}},
 		{Name: "nametest-16", XPath: "let $var := /works return fn:count($var/child::employee)", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertEq("13")}},
@@ -6610,8 +6712,8 @@ string')`, Assertions: []qt3Assertion{qt3AssertStringValue("normalized string")}
 		{Name: "K2-NameTest-84", XPath: "declare default function namespace \"http://www.example.com/\"; declare namespace e = \"http://www.example.com/\"; declare function element() { 1 }; e:element()", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckEq("1"))}},
 		{Name: "K2-NameTest-85", XPath: "_", ExpectError: true},
 		{Name: "K2-NameTest-86", XPath: "pod_pod", ExpectError: true},
-		{Name: "NodeTest001", XPath: "/comment()", DocPath: "op/union/bib2.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "NodeTest002", XPath: "/processing-instruction()", DocPath: "op/union/bib2.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "NodeTest001", XPath: "/comment()", DocPath: "op/union/bib2.xml", Assertions: []qt3Assertion{qt3AssertXML("<!-- this file is a copy of bib.xml; just adds a few comments and PI nodes for testing --><!-- Comment 1 --><!-- Comment 2 -->", false, nil)}},
+		{Name: "NodeTest002", XPath: "/processing-instruction()", DocPath: "op/union/bib2.xml", Assertions: []qt3Assertion{qt3AssertXML("<?PI1 Processing Instruction 1?><?PI2 Processing Instruction 2?>", false, nil)}},
 		{Name: "K2-NodeTest-3", XPath: "processing-instruction(*)", ExpectError: true},
 		{Name: "K2-NodeTest-4", XPath: "text(*)", ExpectError: true},
 		{Name: "K2-NodeTest-5", XPath: "comment(*)", ExpectError: true},
@@ -7001,11 +7103,63 @@ string')`, Assertions: []qt3Assertion{qt3AssertStringValue("normalized string")}
 		{Name: "Parenexpr-13", XPath: "(1)", Assertions: []qt3Assertion{qt3AssertEq("1")}},
 		{Name: "Parenexpr-14", XPath: "(1, (2, (3, 4)), (5))", Assertions: []qt3Assertion{qt3AssertStringValue("1 2 3 4 5")}},
 		{Name: "Parenexpr-19", XPath: "(.)", DocPath: "prod/AxisStep/Tree1Child.xml", Assertions: []qt3Assertion{qt3Assert("name($result/*) = \"far-north\"", nil)}},
-		{Name: "filterexpressionhc1", XPath: "(/works/employee[xs:integer(hours[1]) gt 20])", DocPath: "docs/works.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "filterexpressionhc1", XPath: "(/works/employee[xs:integer(hours[1]) gt 20])", DocPath: "docs/works.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee>
+   <empnum>E1</empnum>
+   <pnum>P1</pnum>
+   <hours>40</hours>
+  </employee><employee>
+   <empnum>E1</empnum>
+   <pnum>P3</pnum>
+   <hours>80</hours>
+  </employee><employee>
+   <empnum>E2</empnum>
+   <pnum>P1</pnum>
+   <hours>40</hours>
+  </employee><employee>
+   <empnum>E2</empnum>
+   <pnum>P2</pnum>
+   <hours>80</hours>
+  </employee><employee>
+   <empnum>E4</empnum>
+   <pnum>P4</pnum>
+   <hours>40</hours>
+  </employee><employee>
+   <empnum>E4</empnum>
+   <pnum>P5</pnum>
+   <hours>80</hours>
+  </employee>`, false, nil)}},
 		{Name: "filterexpressionhc2", XPath: "((1 to 25)[. mod 2 eq 0])", Assertions: []qt3Assertion{qt3AssertStringValue("2 4 6 8 10 12 14 16 18 20 22 24")}},
 		{Name: "filterexpressionhc3", XPath: "((1 to 25)[25])", Assertions: []qt3Assertion{qt3AssertEq("25")}},
-		{Name: "filterexpressionhc4", XPath: "(//empnum | (/))//employee[xs:integer(hours[1]) gt 20]", DocPath: "docs/works.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "filterexpressionhc5", XPath: "(//employee[fn:last()])", DocPath: "docs/works.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "filterexpressionhc4", XPath: "(//empnum | (/))//employee[xs:integer(hours[1]) gt 20]", DocPath: "docs/works.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee>
+   <empnum>E1</empnum>
+   <pnum>P1</pnum>
+   <hours>40</hours>
+  </employee><employee>
+   <empnum>E1</empnum>
+   <pnum>P3</pnum>
+   <hours>80</hours>
+  </employee><employee>
+   <empnum>E2</empnum>
+   <pnum>P1</pnum>
+   <hours>40</hours>
+  </employee><employee>
+   <empnum>E2</empnum>
+   <pnum>P2</pnum>
+   <hours>80</hours>
+  </employee><employee>
+   <empnum>E4</empnum>
+   <pnum>P4</pnum>
+   <hours>40</hours>
+  </employee><employee>
+   <empnum>E4</empnum>
+   <pnum>P5</pnum>
+   <hours>80</hours>
+  </employee>`, false, nil)}},
+		{Name: "filterexpressionhc5", XPath: "(//employee[fn:last()])", DocPath: "docs/works.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee>
+   <empnum>E4</empnum>
+   <pnum>P5</pnum>
+   <hours>80</hours>
+  </employee>`, false, nil)}},
 		{Name: "filterexpressionhc6", XPath: "((1 to 25)[. ge 10])", Assertions: []qt3Assertion{qt3AssertStringValue("10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25")}},
 		{Name: "filterexpressionhc7", XPath: "((1 to 25)[. lt 10])", Assertions: []qt3Assertion{qt3AssertStringValue("1 2 3 4 5 6 7 8 9")}},
 		{Name: "filterexpressionhc8", XPath: "((1 to 25)[. le 10])", Assertions: []qt3Assertion{qt3AssertStringValue("1 2 3 4 5 6 7 8 9 10")}},
@@ -7117,30 +7271,50 @@ string')`, Assertions: []qt3Assertion{qt3AssertStringValue("normalized string")}
 		{Name: "K-FilterExpr-94", XPath: "(1, 2, 3)[\"a string\", 1]", ExpectError: true},
 		{Name: "K-FilterExpr-95", XPath: "/works/employee[@name=/works/employee[1]/@name]/@name/string()", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertEq("\"Jane Doe 1\"")}},
 		{Name: "K2-FilterExpr-3", XPath: "empty((1,2,3,4,5)[3.4])", Assertions: []qt3Assertion{qt3AssertTrue()}},
-		{Name: "predicates-1", XPath: "(//integer[fn:true()])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "predicates-1", XPath: "(//integer[fn:true()])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<integer>12678967543233</integer>", false, nil)}},
 		{Name: "predicates-2", XPath: "fn:count((//integer[fn:false()]))", DocPath: "docs/atomicns.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckEq("0"))}},
-		{Name: "predicates-3", XPath: "(//integer[fn:not(fn:false())])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicates-4", XPath: "(//integer[fn:true() and fn:true()])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicates-5", XPath: "(//integer[fn:true() or fn:true()])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "predicates-3", XPath: "(//integer[fn:not(fn:false())])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<integer>12678967543233</integer>", false, nil)}},
+		{Name: "predicates-4", XPath: "(//integer[fn:true() and fn:true()])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<integer>12678967543233</integer>", false, nil)}},
+		{Name: "predicates-5", XPath: "(//integer[fn:true() or fn:true()])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<integer>12678967543233</integer>", false, nil)}},
 		{Name: "predicates-6", XPath: "fn:count((//integer[fn:false() and fn:false()]))", DocPath: "docs/atomicns.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckEq("0"))}},
 		{Name: "predicates-7", XPath: "fn:count((//integer[fn:false() or fn:false()]))", DocPath: "docs/atomicns.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckEq("0"))}},
-		{Name: "predicates-8", XPath: "(/root/string[xs:string(.) = \"A String Function\"])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicates-9", XPath: "(/root/integer[xs:integer(.) = 12678967543233])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicates-10", XPath: "(/root/decimal[xs:decimal(.) = 12678967.543233])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicates-11", XPath: "(/root/float[xs:float(.) = xs:float(1267.43233E12)])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicates-12", XPath: "(/root/double[xs:double(.) = 1267.43233E12])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicates-13", XPath: "(/root/boolean[xs:boolean(.) = fn:true()])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicates-14", XPath: "(/root/date[xs:date(.) = xs:date(\"2000-01-01+05:00\")])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicates-17", XPath: "(/works/employee[@name=\"Jane Doe 11\"])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicates-18", XPath: "(/works//day[xs:string(.) ne \"Monday\"])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicates-19", XPath: "(/works//hours[xs:integer(.) lt 13])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicates-20", XPath: "(/works//hours[xs:integer(.) le 12])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicates-21", XPath: "(/works//hours[xs:integer(.) gt 79])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicates-22", XPath: "(/works//hours[xs:integer(.) ge 80])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicates-23", XPath: "(/works//hours[xs:integer(.) = 12])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicates-24", XPath: "(/works[1]//employee[empnum != \"E1\" and empnum != \"E4\"])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicates-27", XPath: "(/works//hours[xs:integer(.) > 79])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicates-28", XPath: "(/works//hours[xs:integer(.) >= 80])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "predicates-8", XPath: "(/root/string[xs:string(.) = \"A String Function\"])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<string>A String Function</string>", false, nil)}},
+		{Name: "predicates-9", XPath: "(/root/integer[xs:integer(.) = 12678967543233])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<integer>12678967543233</integer>", false, nil)}},
+		{Name: "predicates-10", XPath: "(/root/decimal[xs:decimal(.) = 12678967.543233])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<decimal attr=\"12678967.543233\">12678967.543233</decimal>", false, nil)}},
+		{Name: "predicates-11", XPath: "(/root/float[xs:float(.) = xs:float(1267.43233E12)])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<float>1267.43233E12</float>", false, nil)}},
+		{Name: "predicates-12", XPath: "(/root/double[xs:double(.) = 1267.43233E12])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<double>1267.43233E12</double>", false, nil)}},
+		{Name: "predicates-13", XPath: "(/root/boolean[xs:boolean(.) = fn:true()])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<boolean>true</boolean>", false, nil)}},
+		{Name: "predicates-14", XPath: "(/root/date[xs:date(.) = xs:date(\"2000-01-01+05:00\")])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<date>2000-01-01+05:00</date>", false, nil)}},
+		{Name: "predicates-17", XPath: "(/works/employee[@name=\"Jane Doe 11\"])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee name="Jane Doe 11" gender="female">
+   <empnum>E4</empnum>
+   <pnum>P2</pnum>
+   <hours>20</hours>
+  </employee>`, false, nil)}},
+		{Name: "predicates-18", XPath: "(/works//day[xs:string(.) ne \"Monday\"])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<day>Tuesday</day>", false, nil)}},
+		{Name: "predicates-19", XPath: "(/works//hours[xs:integer(.) lt 13])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<hours>12</hours>", false, nil)}},
+		{Name: "predicates-20", XPath: "(/works//hours[xs:integer(.) le 12])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<hours>12</hours>", false, nil)}},
+		{Name: "predicates-21", XPath: "(/works//hours[xs:integer(.) gt 79])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<hours>80</hours><hours>80</hours><hours>80</hours>", false, nil)}},
+		{Name: "predicates-22", XPath: "(/works//hours[xs:integer(.) ge 80])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<hours>80</hours><hours>80</hours><hours>80</hours>", false, nil)}},
+		{Name: "predicates-23", XPath: "(/works//hours[xs:integer(.) = 12])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<hours>12</hours>", false, nil)}},
+		{Name: "predicates-24", XPath: "(/works[1]//employee[empnum != \"E1\" and empnum != \"E4\"])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML(`<employee name="Jane Doe 7" gender="female">
+   <empnum>E2</empnum>
+   <pnum>P1</pnum>
+   <hours>40</hours>
+  </employee><employee name="John Doe 8" gender="male">
+   <empnum>E2</empnum>
+   <pnum>P2</pnum>
+   <hours>80</hours>
+  </employee><employee name="Jane Doe 9" gender="female">
+   <empnum>E3</empnum>
+   <pnum>P2</pnum>
+   <hours>20</hours>
+  </employee><employee name="John Doe 10" gender="male">
+   <empnum>E3</empnum>
+   <pnum>P2</pnum>
+   <hours>20</hours>
+  </employee>`, false, nil)}},
+		{Name: "predicates-27", XPath: "(/works//hours[xs:integer(.) > 79])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<hours>80</hours><hours>80</hours><hours>80</hours>", false, nil)}},
+		{Name: "predicates-28", XPath: "(/works//hours[xs:integer(.) >= 80])", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertXML("<hours>80</hours><hours>80</hours><hours>80</hours>", false, nil)}},
 		{Name: "predicates-30", XPath: "for $x in /works/employee[fn:position() lt 5][fn:position() mod 2 eq 1] return (fn:data($x/empnum), fn:data($x/pnum))", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertStringValue("E1 P1 E1 P3")}},
 		{Name: "predicates-31", XPath: "for $x in /works/employee[fn:position() mod 2 eq 1][fn:position() lt 5] return (fn:data($x/empnum), fn:data($x/pnum))", DocPath: "docs/works-mod.xml", Assertions: []qt3Assertion{qt3AssertStringValue("E1 P1 E1 P3 E1 P5 E2 P1")}},
 		{Name: "predicates-33", XPath: "count(/works/employee[(xs:integer(hours) gt 40) = xs:untypedAtomic(\"true\"||substring(string(current-date()), 200))])", DocPath: "docs/works.xml", Assertions: []qt3Assertion{qt3AssertEq("3")}},
@@ -7150,18 +7324,18 @@ string')`, Assertions: []qt3Assertion{qt3AssertStringValue("normalized string")}
          = xs:untypedAtomic("1"||substring(string(current-date()), 200))]) ! (empnum || pnum)`, DocPath: "docs/works.xml", Assertions: []qt3Assertion{qt3AssertDeepEq("\"E1P1\", \"E2P1\", \"E4P4\"")}},
 		{Name: "predicatesns-1", XPath: "fn:count((//integer[fn:true()]))", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertEq("1")}},
 		{Name: "predicatesns-2", XPath: "fn:count((//integer[fn:false()]))", DocPath: "docs/atomicns.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckEq("0"))}},
-		{Name: "predicatesns-3", XPath: "(//integer[fn:not(fn:false())])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicatesns-4", XPath: "(//integer[fn:true() and fn:true()])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicatesns-5", XPath: "(//integer[fn:true() or fn:true()])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "predicatesns-3", XPath: "(//integer[fn:not(fn:false())])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<integer>12678967543233</integer>", false, nil)}},
+		{Name: "predicatesns-4", XPath: "(//integer[fn:true() and fn:true()])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<integer>12678967543233</integer>", false, nil)}},
+		{Name: "predicatesns-5", XPath: "(//integer[fn:true() or fn:true()])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<integer>12678967543233</integer>", false, nil)}},
 		{Name: "predicatesns-6", XPath: "fn:count((//integer[fn:false() and fn:false()]))", DocPath: "docs/atomicns.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckEq("0"))}},
 		{Name: "predicatesns-7", XPath: "fn:count((//integer[fn:false() or fn:false()]))", DocPath: "docs/atomicns.xml", AcceptError: true, Assertions: []qt3Assertion{qt3AnyOf(qt3CheckEq("0"))}},
-		{Name: "predicatesns-8", XPath: "(/root/string[xs:string(.) = \"A String Function\"])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicatesns-9", XPath: "(/root/integer[xs:integer(.) = 12678967543233])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicatesns-10", XPath: "(/root/decimal[(xs:decimal(.) = 12678967.543233)])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicatesns-11", XPath: "(/root/float[xs:float(.) = xs:float(1267.43233E12)])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicatesns-12", XPath: "(/root/double[xs:double(.) = 1267.43233E12])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicatesns-13", XPath: "(/root/boolean[xs:boolean(.) = fn:true()])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "predicatesns-14", XPath: "(/root/date[xs:date(.) = xs:date(\"2000-01-01+05:00\")])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "predicatesns-8", XPath: "(/root/string[xs:string(.) = \"A String Function\"])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<string>A String Function</string>", false, nil)}},
+		{Name: "predicatesns-9", XPath: "(/root/integer[xs:integer(.) = 12678967543233])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<integer>12678967543233</integer>", false, nil)}},
+		{Name: "predicatesns-10", XPath: "(/root/decimal[(xs:decimal(.) = 12678967.543233)])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<decimal attr=\"12678967.543233\">12678967.543233</decimal>", false, nil)}},
+		{Name: "predicatesns-11", XPath: "(/root/float[xs:float(.) = xs:float(1267.43233E12)])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<float>1267.43233E12</float>", false, nil)}},
+		{Name: "predicatesns-12", XPath: "(/root/double[xs:double(.) = 1267.43233E12])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<double>1267.43233E12</double>", false, nil)}},
+		{Name: "predicatesns-13", XPath: "(/root/boolean[xs:boolean(.) = fn:true()])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<boolean>true</boolean>", false, nil)}},
+		{Name: "predicatesns-14", XPath: "(/root/date[xs:date(.) = xs:date(\"2000-01-01+05:00\")])", DocPath: "docs/atomicns.xml", Assertions: []qt3Assertion{qt3AssertXML("<date>2000-01-01+05:00</date>", false, nil)}},
 		{Name: "K2-Predicates-1", XPath: "\"c\"[. treat as xs:string]", Assertions: []qt3Assertion{qt3AssertStringValue("c")}},
 		{Name: "cbcl-filter-001", XPath: "let $x := exists((1 to 10)[. mod 2 = 0]) return (1 to 100)[position() mod 2 = 0 and position() mod 3 = 0 and $x]", Assertions: []qt3Assertion{qt3AssertStringValue("6 12 18 24 30 36 42 48 54 60 66 72 78 84 90 96")}},
 		{Name: "filter-limits-008", XPath: `(-1, 0, 1, 2147483647, 2147483648, 2147483649, 4294967295, 4294967296, 4294967297,
@@ -7331,16 +7505,16 @@ string')`, Assertions: []qt3Assertion{qt3AssertStringValue("normalized string")}
 		{Name: "cbcl-every-001", XPath: "every $x in (1 to 10)[. div 2 = 11] satisfies false()", Assertions: []qt3Assertion{qt3AssertTrue()}},
 		{Name: "cbcl-some-001", XPath: "some $x in (1 to 10)[. div 2 = 11] satisfies true()", Assertions: []qt3Assertion{qt3AssertFalse()}},
 		{Name: "cbcl-every-002", XPath: "every $x in (1 to 10)[. mod 2 = 0] satisfies true()", Assertions: []qt3Assertion{qt3AssertTrue()}},
-		{Name: "ReturnExpr005", XPath: "for $file in (//Folder)[1]/File return $file/FileName", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "ReturnExpr005", XPath: "for $file in (//Folder)[1]/File return $file/FileName", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertXML("<FileName>File00000000000</FileName><FileName>File00000000001</FileName><FileName>File00000000002</FileName><FileName>File00000000003</FileName><FileName>File00000000004</FileName><FileName>File00000000005</FileName><FileName>File00000000006</FileName><FileName>File00000000007</FileName><FileName>File00000000008</FileName><FileName>File00000000009</FileName><FileName>File00000000010</FileName><FileName>File00000000011</FileName><FileName>File00000000012</FileName><FileName>File00000000013</FileName><FileName>File00000000014</FileName><FileName>File00000000015</FileName><FileName>File00000000016</FileName><FileName>File00000000017</FileName><FileName>File00000000018</FileName><FileName>File00000000019</FileName><FileName>File00000000020</FileName><FileName>File00000000021</FileName><FileName>File00000000022</FileName><FileName>File00000000023</FileName><FileName>File00000000024</FileName><FileName>File00000000025</FileName><FileName>File00000000026</FileName><FileName>File00000000027</FileName><FileName>File00000000028</FileName><FileName>File00000000029</FileName><FileName>File00000000030</FileName>", false, nil)}},
 		{Name: "ReturnExpr006", XPath: "for $file in (//Folder)[1]/File return data( $file/FileName )", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertStringValue("File00000000000 File00000000001 File00000000002 File00000000003 File00000000004 File00000000005 File00000000006 File00000000007 File00000000008 File00000000009 File00000000010 File00000000011 File00000000012 File00000000013 File00000000014 File00000000015 File00000000016 File00000000017 File00000000018 File00000000019 File00000000020 File00000000021 File00000000022 File00000000023 File00000000024 File00000000025 File00000000026 File00000000027 File00000000028 File00000000029 File00000000030")}},
-		{Name: "ReturnExpr007", XPath: "for $file in (//Folder)[1]/File return $file/parent::Folder/FolderName", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "ReturnExpr007", XPath: "for $file in (//Folder)[1]/File return $file/parent::Folder/FolderName", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertXML("<FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName><FolderName>Folder00000000000</FolderName>", false, nil)}},
 		{Name: "ReturnExpr008", XPath: "for $file in (//Folder)[1]/File return 1", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertStringValue("1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1")}},
-		{Name: "ReturnExpr009", XPath: "for $file in (//Folder)[1]/File return (//FileName)[1]", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
-		{Name: "ReturnExpr011", XPath: "for $folder in //Folder, $file in $folder/File return ( $folder/FolderName, $file/FileName )", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "ReturnExpr009", XPath: "for $file in (//Folder)[1]/File return (//FileName)[1]", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertXML("<FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName><FileName>File00000000000</FileName>", false, nil)}},
+		{Name: "ReturnExpr011", XPath: "for $folder in //Folder, $file in $folder/File return ( $folder/FolderName, $file/FileName )", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertXML("<FolderName>Folder00000000000</FolderName><FileName>File00000000000</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000001</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000002</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000003</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000004</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000005</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000006</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000007</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000008</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000009</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000010</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000011</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000012</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000013</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000014</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000015</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000016</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000017</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000018</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000019</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000020</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000021</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000022</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000023</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000024</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000025</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000026</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000027</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000028</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000029</FileName><FolderName>Folder00000000000</FolderName><FileName>File00000000030</FileName><FolderName>Folder00000000001</FolderName><FileName>File00000000031</FileName><FolderName>Folder00000000002</FolderName><FileName>File00000000032</FileName><FolderName>Folder00000000003</FolderName><FileName>File00000000033</FileName><FolderName>Folder00000000004</FolderName><FileName>File00000000034</FileName><FolderName>Folder00000000005</FolderName><FileName>File00000000035</FileName><FolderName>Folder00000000006</FolderName><FileName>File00000000036</FileName><FolderName>Folder00000000007</FolderName><FileName>File00000000037</FileName><FolderName>Folder00000000008</FolderName><FileName>File00000000038</FileName><FolderName>Folder00000000009</FolderName><FileName>File00000000039</FileName><FolderName>Folder00000000010</FolderName><FileName>File00000000040</FileName><FolderName>Folder00000000011</FolderName><FileName>File00000000041</FileName><FolderName>Folder00000000012</FolderName><FileName>File00000000042</FileName><FolderName>Folder00000000013</FolderName><FileName>File00000000043</FileName><FolderName>Folder00000000014</FolderName><FileName>File00000000044</FileName><FolderName>Folder00000000015</FolderName><FileName>File00000000045</FileName><FolderName>Folder00000000016</FolderName><FileName>File00000000046</FileName><FolderName>Folder00000000017</FolderName><FileName>File00000000047</FileName><FolderName>Folder00000000018</FolderName><FileName>File00000000048</FileName><FolderName>Folder00000000019</FolderName><FileName>File00000000049</FileName><FolderName>Folder00000000020</FolderName><FileName>File00000000050</FileName><FolderName>Folder00000000021</FolderName><FileName>File00000000051</FileName><FolderName>Folder00000000022</FolderName><FileName>File00000000052</FileName><FolderName>Folder00000000023</FolderName><FileName>File00000000053</FileName><FolderName>Folder00000000024</FolderName><FileName>File00000000054</FileName><FolderName>Folder00000000025</FolderName><FileName>File00000000055</FileName><FolderName>Folder00000000026</FolderName><FileName>File00000000056</FileName><FolderName>Folder00000000027</FolderName><FileName>File00000000057</FileName><FolderName>Folder00000000028</FolderName><FileName>File00000000058</FileName><FolderName>Folder00000000029</FolderName><FileName>File00000000059</FileName><FolderName>Folder00000000030</FolderName><FileName>File00000000060</FileName><FolderName>Folder00000000031</FolderName><FileName>File00000000061</FileName><FolderName>Folder00000000032</FolderName><FileName>File00000000062</FileName><FolderName>Folder00000000033</FolderName><FileName>File00000000063</FileName><FolderName>Folder00000000034</FolderName><FileName>File00000000064</FileName><FolderName>Folder00000000035</FolderName><FileName>File00000000065</FileName><FolderName>Folder00000000036</FolderName><FileName>File00000000066</FileName><FolderName>Folder00000000037</FolderName><FileName>File00000000067</FileName><FolderName>Folder00000000038</FolderName><FileName>File00000000068</FileName><FolderName>Folder00000000039</FolderName><FileName>File00000000069</FileName><FolderName>Folder00000000040</FolderName><FileName>File00000000070</FileName><FolderName>Folder00000000041</FolderName><FileName>File00000000071</FileName><FolderName>Folder00000000042</FolderName><FileName>File00000000072</FileName><FolderName>Folder00000000043</FolderName><FileName>File00000000073</FileName><FolderName>Folder00000000044</FolderName><FileName>File00000000074</FileName><FolderName>Folder00000000045</FolderName><FileName>File00000000075</FileName><FolderName>Folder00000000046</FolderName><FileName>File00000000076</FileName><FolderName>Folder00000000048</FolderName><FileName>File00000000077</FileName><FolderName>Folder00000000048</FolderName><FileName>File00000000078</FileName><FolderName>Folder00000000048</FolderName><FileName>File00000000079</FileName><FolderName>Folder00000000048</FolderName><FileName>File00000000080</FileName><FolderName>Folder00000000048</FolderName><FileName>File00000000081</FileName><FolderName>Folder00000000049</FolderName><FileName>File00000000082</FileName><FolderName>Folder00000000049</FolderName><FileName>File00000000083</FileName><FolderName>Folder00000000049</FolderName><FileName>File00000000084</FileName><FolderName>Folder00000000049</FolderName><FileName>File00000000085</FileName><FolderName>Folder00000000049</FolderName><FileName>File00000000086</FileName><FolderName>Folder00000000050</FolderName><FileName>File00000000087</FileName><FolderName>Folder00000000050</FolderName><FileName>File00000000088</FileName><FolderName>Folder00000000051</FolderName><FileName>File00000000089</FileName><FolderName>Folder00000000051</FolderName><FileName>File00000000090</FileName><FolderName>Folder00000000051</FolderName><FileName>File00000000091</FileName><FolderName>Folder00000000051</FolderName><FileName>File00000000092</FileName><FolderName>Folder00000000051</FolderName><FileName>File00000000093</FileName><FolderName>Folder00000000051</FolderName><FileName>File00000000094</FileName><FolderName>Folder00000000052</FolderName><FileName>File00000000095</FileName><FolderName>Folder00000000052</FolderName><FileName>File00000000096</FileName><FolderName>Folder00000000053</FolderName><FileName>File00000000097</FileName><FolderName>Folder00000000053</FolderName><FileName>File00000000098</FileName><FolderName>Folder00000000053</FolderName><FileName>File00000000099</FileName><FolderName>Folder00000000054</FolderName><FileName>File00000000100</FileName>", false, nil)}},
 		{Name: "ReturnExpr012", XPath: "for $file in (//Folder)[1]/File return $file return $file", DocPath: "prod/ForClause/fsx.xml", ExpectError: true},
 		{Name: "ReturnExpr013", XPath: "for $file in (//Folder)[1]/File", DocPath: "prod/ForClause/fsx.xml", ExpectError: true},
 		{Name: "ReturnExpr014", XPath: "for $file in (//Folder)[1]/File return $undefined", DocPath: "prod/ForClause/fsx.xml", ExpectError: true},
-		{Name: "ReturnExpr015", XPath: "for $file in for $folder in (//Folder)[1] return $folder/File return $file/FileName", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertSkip()}},
+		{Name: "ReturnExpr015", XPath: "for $file in for $folder in (//Folder)[1] return $folder/File return $file/FileName", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertXML("<FileName>File00000000000</FileName><FileName>File00000000001</FileName><FileName>File00000000002</FileName><FileName>File00000000003</FileName><FileName>File00000000004</FileName><FileName>File00000000005</FileName><FileName>File00000000006</FileName><FileName>File00000000007</FileName><FileName>File00000000008</FileName><FileName>File00000000009</FileName><FileName>File00000000010</FileName><FileName>File00000000011</FileName><FileName>File00000000012</FileName><FileName>File00000000013</FileName><FileName>File00000000014</FileName><FileName>File00000000015</FileName><FileName>File00000000016</FileName><FileName>File00000000017</FileName><FileName>File00000000018</FileName><FileName>File00000000019</FileName><FileName>File00000000020</FileName><FileName>File00000000021</FileName><FileName>File00000000022</FileName><FileName>File00000000023</FileName><FileName>File00000000024</FileName><FileName>File00000000025</FileName><FileName>File00000000026</FileName><FileName>File00000000027</FileName><FileName>File00000000028</FileName><FileName>File00000000029</FileName><FileName>File00000000030</FileName>", false, nil)}},
 		{Name: "ReturnExpr017", XPath: "for $file in (//Folder)[1]/File return ($file/Stream/StreamSize)[1] + 1", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertStringValue("1002.33 1003.33 1004.33 1005.33 1006.33 1007.33 1008.33 1009.33 1010.33 1011.33 1012.33 1013.33 1014.33 1015.33 1016.33 1017.33 1018.33 1019.33 1020.33 1021.33 1022.33 1023.33 1024.33 1025.33 1026.33 1027.33 1028.33 1029.33 1030.33 1031.33 1032.33")}},
 		{Name: "ReturnExpr018", XPath: "for $file in (//Folder)[1]/File return ($file/Stream/StreamSize)[1] > 1004", DocPath: "prod/ForClause/fsx.xml", Assertions: []qt3Assertion{qt3AssertStringValue("false false false true true true true true true true true true true true true true true true true true true true true true true true true true true true true")}},
 		{Name: "ReturnExpr019", XPath: "for $file in (//Folder)[1]/File return return $file/FileName", DocPath: "prod/ForClause/fsx.xml", ExpectError: true},

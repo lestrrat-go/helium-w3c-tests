@@ -2,8 +2,9 @@
   "suite": "qt3",
   "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
   "total_cases": 22469,
-  "expected_fail": 12,
+  "expected_fail": 27,
   "skipped": 141,
+  "false_pass_risk": 0,
   "by_class": {
     "not-wired": 5,
     "out-of-scope": 136

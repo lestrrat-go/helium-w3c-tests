@@ -165,12 +165,18 @@ type qt3SkipLedger struct {
 // are expected to diverge), so adding or removing one forces an auditable
 // regeneration.
 type qt3SkipCounts struct {
-	Suite               string         `json:"suite"`
-	UpstreamSuiteCommit string         `json:"upstream_suite_commit"`
-	TotalCases          int            `json:"total_cases"`
-	ExpectedFail        int            `json:"expected_fail"`
-	Skipped             int            `json:"skipped"`
-	ByClass             map[string]int `json:"by_class"`
+	Suite               string `json:"suite"`
+	UpstreamSuiteCommit string `json:"upstream_suite_commit"`
+	TotalCases          int    `json:"total_cases"`
+	ExpectedFail        int    `json:"expected_fail"`
+	Skipped             int    `json:"skipped"`
+	// FalsePassRisk is the number of RUN (non-skipped) cases that carry no real
+	// assertion and expect no error — green no-ops that verify only "evaluation
+	// did not error". Locked in the committed contract so un-skipping a weak-only
+	// case (or regressing a real assertion to a no-op) forces an auditable
+	// regeneration. See TestQT3WeakNoOpGuard.
+	FalsePassRisk int            `json:"false_pass_risk"`
+	ByClass       map[string]int `json:"by_class"`
 }
 
 // qt3BuildSkipLedger builds the ledger rows (sorted by test id) and the count
@@ -183,9 +189,13 @@ func qt3BuildSkipLedger(t *testing.T) (qt3SkipLedger, qt3SkipCounts) {
 	byClass := map[string]int{}
 	seen := map[string]struct{}{}
 	skipped := 0
+	falsePassRisk := 0
 
 	for _, tc := range qt3AllCases {
 		if tc.Skip == "" {
+			if tc.FalsePassRisk {
+				falsePassRisk++
+			}
 			continue
 		}
 		if _, dup := seen[tc.Name]; dup {
@@ -220,6 +230,7 @@ func qt3BuildSkipLedger(t *testing.T) (qt3SkipLedger, qt3SkipCounts) {
 		TotalCases:          len(qt3AllCases),
 		ExpectedFail:        len(qt3LoadExpectations().XFail),
 		Skipped:             skipped,
+		FalsePassRisk:       falsePassRisk,
 		ByClass:             byClass,
 	}
 	return ledger, counts
@@ -329,6 +340,11 @@ func TestQT3SkipLedger(t *testing.T) {
 	if counts.ExpectedFail != committedCounts.ExpectedFail {
 		t.Errorf("drift (d) expected-fail (xfail) count changed: committed %d, now %d", committedCounts.ExpectedFail, counts.ExpectedFail)
 	}
+	if counts.FalsePassRisk != committedCounts.FalsePassRisk {
+		t.Errorf("drift (d) false-pass-risk (weak-only RUN) count changed: committed %d, now %d; "+
+			"un-skipping a weak-only case or regressing a real assertion to a no-op requires -update-ledger and review",
+			committedCounts.FalsePassRisk, counts.FalsePassRisk)
+	}
 	qt3DiffClassCounts(t, committedCounts.ByClass, counts.ByClass)
 
 	// (e) byte-identical catch-all.
@@ -337,6 +353,37 @@ func TestQT3SkipLedger(t *testing.T) {
 	}
 	if committed := qt3ReadFile(t, qt3SkipCountsPath); string(committed) != string(countsJSON) {
 		t.Errorf("drift (e) %s is not byte-identical to a regeneration; run: go test ./xpath3 -run TestQT3SkipLedger -update-ledger", qt3SkipCountsPath)
+	}
+}
+
+// TestQT3WeakNoOpGuard is the dedicated un-skip guard: it counts RUN
+// (non-skipped) cases that carry no real assertion and expect no error — green
+// no-ops that verify only "evaluation did not error" — and fails if that count
+// drifts from the committed contract (expectations/qt3-skip-counts.json).
+//
+// This catches the specific regression the phase-3 assert-xml/permutation work
+// guards against: un-skipping a case whose assertions are ALL weak/no-op
+// (assert-serialization, an unimplemented form, a weak any-of branch) silently
+// turns it into a passing test that can never fail on a wrong result. Removing
+// such a case from the skip set increments the weak-only count and fails here,
+// forcing the author to either add a real assertion (or expected error) or keep
+// the case skipped. An intentional change is recorded with -update-ledger.
+func TestQT3WeakNoOpGuard(t *testing.T) {
+	weak := 0
+	for _, tc := range qt3AllCases {
+		if tc.Skip != "" {
+			continue
+		}
+		if tc.FalsePassRisk {
+			weak++
+		}
+	}
+	committed := qt3ReadCounts(t).FalsePassRisk
+	if weak != committed {
+		t.Errorf("weak-only RUN (green no-op) count is %d, committed %d: a RUN case verifies only "+
+			"that evaluation did not error (no real assertion, no expected error). If a weak-only case "+
+			"was un-skipped, add a real assertion / expected error or keep it skipped; if the change is "+
+			"intended, regenerate: go test ./xpath3 -run TestQT3SkipLedger -update-ledger", weak, committed)
 	}
 }
 

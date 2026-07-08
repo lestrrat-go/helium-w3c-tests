@@ -14,6 +14,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"strings"
 	"sync"
@@ -232,6 +233,7 @@ type qt3Test struct {
 	Skip                string
 	ExpectError         bool
 	AcceptError         bool // error is acceptable but not required (any-of with error + non-error)
+	FalsePassRisk       bool // RUN case with no real assertion and no expected error (a green no-op); locked by TestQT3WeakNoOpGuard
 	Assertions          []qt3Assertion
 }
 
@@ -1204,9 +1206,21 @@ func qt3AssertSkip() qt3Assertion {
 // compile error, evaluation error, or an EBV that raises (e.g. FORG0006 on a
 // multi-item non-node sequence) is returned as the error — the assertion fails.
 func qt3EvalAssert(expr string, ns map[string]string, seq xpath3.Sequence) (bool, error) {
-	compiled, err := xpath3.NewCompiler().Compile(expr)
+	got, err := qt3EvalExprSeq(expr, ns, seq)
 	if err != nil {
 		return false, err
+	}
+	return qt3EBV(got)
+}
+
+// qt3EvalExprSeq compiles expr, evaluates it with $result bound to seq and the
+// case's in-scope namespaces (ns), and returns the result sequence. It is the
+// shared plumbing behind the generic <assert>, assert-type, assert-xml (via
+// fn:serialize) and assert-permutation checks.
+func qt3EvalExprSeq(expr string, ns map[string]string, seq xpath3.Sequence) (xpath3.Sequence, error) {
+	compiled, err := xpath3.NewCompiler().Compile(expr)
+	if err != nil {
+		return nil, err
 	}
 	eval := xpath3.NewEvaluator(xpath3.DefaultEvaluatorOptions)
 	if len(ns) > 0 {
@@ -1218,9 +1232,9 @@ func qt3EvalAssert(expr string, ns map[string]string, seq xpath3.Sequence) (bool
 	eval = eval.Variables(map[string]xpath3.Sequence{"result": seq})
 	result, err := eval.Evaluate(context.Background(), compiled, nil)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
-	return qt3EBV(result.Sequence())
+	return result.Sequence(), nil
 }
 
 // qt3Assert evaluates a generic FOTS <assert>EXPR</assert>: EXPR is a boolean
@@ -1232,6 +1246,235 @@ func qt3Assert(expr string, ns map[string]string) qt3Assertion {
 		require.NoError(t, err, "assert: %s", expr)
 		require.True(t, ebv, "assert: %s (got %s)", expr, qt3StringValue(seq))
 	}
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// assert-xml: serialize $result and compare against the expected fragment
+// ──────────────────────────────────────────────────────────────────────
+
+const (
+	qt3AssertXMLWrapOpen  = "<qt3-assert-xml-wrap>"
+	qt3AssertXMLWrapClose = "</qt3-assert-xml-wrap>"
+)
+
+// qt3SerializeResult serializes $result as XML (method="xml",
+// omit-xml-declaration="yes") via fn:serialize, exactly the serialization FOTS
+// assert-xml compares against. A serialization error (e.g. SENR0001 for a bare
+// attribute/namespace node) is returned rather than silently swallowed.
+func qt3SerializeResult(seq xpath3.Sequence, ns map[string]string) (string, error) {
+	const expr = `serialize($result, map{'method':'xml','omit-xml-declaration':true()})`
+	out, err := qt3EvalExprSeq(expr, ns, seq)
+	if err != nil {
+		return "", err
+	}
+	return qt3StringValue(out), nil
+}
+
+// qt3AssertXML evaluates FOTS <assert-xml>: $result serialized as XML must equal
+// the expected fragment. The comparison is canonical (attribute-order- and
+// namespace-prefix-insensitive, both infoset-insignificant) so a correct result
+// is not flagged over serialization order; content, structure, names and values
+// must match. A serialization failure is a hard assertion failure, never a
+// silent pass.
+func qt3AssertXML(expected string, normalizeSpace bool, ns map[string]string) qt3Assertion {
+	return func(t qt3TB, seq xpath3.Sequence) {
+		t.Helper()
+		got, err := qt3SerializeResult(seq, ns)
+		require.NoError(t, err, "assert-xml: serialize $result")
+		require.True(t, qt3XMLResultMatches(got, expected, normalizeSpace),
+			"assert-xml mismatch\n want: %s\n  got: %s", expected, got)
+	}
+}
+
+// qt3CheckXML is the any-of form of qt3AssertXML.
+func qt3CheckXML(expected string, normalizeSpace bool, ns map[string]string) qt3Check {
+	return func(seq xpath3.Sequence) bool {
+		got, err := qt3SerializeResult(seq, ns)
+		if err != nil {
+			return false
+		}
+		return qt3XMLResultMatches(got, expected, normalizeSpace)
+	}
+}
+
+func qt3XMLResultMatches(got, expected string, normalizeSpace bool) bool {
+	if normalizeSpace {
+		return qt3CollapseWS(got) == qt3CollapseWS(expected)
+	}
+	if got == expected {
+		return true
+	}
+	return qt3CanonicalXMLEqual(got, expected)
+}
+
+func qt3CollapseWS(s string) string {
+	return strings.Join(strings.Fields(s), " ")
+}
+
+// qt3CanonicalXMLEqual reports whether two XML fragments are equal ignoring
+// attribute order and namespace-prefix choice. Each fragment is wrapped in a
+// synthetic root, parsed, and reduced to a canonical node tree compared with
+// reflect.DeepEqual. A fragment that fails to parse compares unequal (so the
+// assertion fails and is triaged, never silently passes).
+func qt3CanonicalXMLEqual(got, expected string) bool {
+	gotNodes, err := qt3ParseFragmentChildren(got)
+	if err != nil {
+		return false
+	}
+	expNodes, err := qt3ParseFragmentChildren(expected)
+	if err != nil {
+		return false
+	}
+	return reflect.DeepEqual(qt3CanonList(gotNodes), qt3CanonList(expNodes))
+}
+
+func qt3ParseFragmentChildren(frag string) ([]helium.Node, error) {
+	document, err := helium.NewParser().Parse(context.Background(), []byte(qt3AssertXMLWrapOpen+frag+qt3AssertXMLWrapClose))
+	if err != nil {
+		return nil, err
+	}
+	root := document.DocumentElement()
+	if root == nil {
+		return nil, fmt.Errorf("parsed fragment has no root element")
+	}
+	return qt3ChildNodes(root), nil
+}
+
+func qt3ChildNodes(n helium.Node) []helium.Node {
+	var out []helium.Node
+	for c := n.FirstChild(); c != nil; c = c.NextSibling() {
+		out = append(out, c)
+	}
+	return out
+}
+
+const (
+	qt3CanonText = iota
+	qt3CanonComment
+	qt3CanonPI
+	qt3CanonElem
+)
+
+// qt3CanonNode is the order-normalized shape of a node used for canonical XML
+// comparison: element identity is (uri, local) with attributes as an unordered
+// (uri, local)->value map, so namespace-prefix and attribute-order differences
+// are absorbed; text/comment/PI carry their content verbatim.
+type qt3CanonNode struct {
+	Kind     int
+	Text     string
+	URI      string
+	Local    string
+	Attrs    map[[2]string]string
+	Children []qt3CanonNode
+}
+
+// qt3CanonList reduces a node list to canonical nodes, merging consecutive
+// text/CDATA/entity-ref runs into one text node (so a CDATA-vs-text or split-text
+// serialization difference does not spuriously mismatch).
+func qt3CanonList(nodes []helium.Node) []qt3CanonNode {
+	var out []qt3CanonNode
+	var textBuf strings.Builder
+	hasText := false
+	flush := func() {
+		if hasText {
+			out = append(out, qt3CanonNode{Kind: qt3CanonText, Text: textBuf.String()})
+			textBuf.Reset()
+			hasText = false
+		}
+	}
+	for _, n := range nodes {
+		switch n.Type() {
+		case helium.TextNode, helium.CDATASectionNode, helium.EntityRefNode:
+			textBuf.Write(n.Content())
+			hasText = true
+		case helium.CommentNode:
+			flush()
+			out = append(out, qt3CanonNode{Kind: qt3CanonComment, Text: string(n.Content())})
+		case helium.ProcessingInstructionNode:
+			flush()
+			out = append(out, qt3CanonNode{Kind: qt3CanonPI, Local: n.Name(), Text: string(n.Content())})
+		case helium.ElementNode:
+			flush()
+			out = append(out, qt3CanonElement(n))
+		}
+	}
+	flush()
+	return out
+}
+
+func qt3CanonElement(n helium.Node) qt3CanonNode {
+	attrs := map[[2]string]string{}
+	uri, local := "", n.Name()
+	if elem, ok := n.(*helium.Element); ok {
+		uri, local = elem.URI(), elem.LocalName()
+		for _, a := range elem.Attributes() {
+			attrs[[2]string{a.URI(), a.LocalName()}] = a.Value()
+		}
+	}
+	return qt3CanonNode{
+		Kind:     qt3CanonElem,
+		URI:      uri,
+		Local:    local,
+		Attrs:    attrs,
+		Children: qt3CanonList(qt3ChildNodes(n)),
+	}
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// assert-permutation: $result is an unordered multiset match of EXPR
+// ──────────────────────────────────────────────────────────────────────
+
+// qt3AssertPermutation evaluates FOTS <assert-permutation>EXPR</assert-permutation>:
+// $result and the sequence EXPR produces must contain the same items (deep-equal,
+// per item) in any order. A compile/eval failure of EXPR is a hard failure.
+func qt3AssertPermutation(expr string, ns map[string]string) qt3Assertion {
+	return func(t qt3TB, seq xpath3.Sequence) {
+		t.Helper()
+		expected, err := qt3EvalExprSeq(expr, ns, seq)
+		require.NoError(t, err, "assert-permutation: eval %s", expr)
+		require.True(t, qt3IsPermutation(seq, expected),
+			"assert-permutation: %s\n want (any order): %s\n  got: %s", expr, qt3FormatSeq(expected), qt3FormatSeq(seq))
+	}
+}
+
+// qt3CheckPermutation is the any-of form of qt3AssertPermutation.
+func qt3CheckPermutation(expr string, ns map[string]string) qt3Check {
+	return func(seq xpath3.Sequence) bool {
+		expected, err := qt3EvalExprSeq(expr, ns, seq)
+		if err != nil {
+			return false
+		}
+		return qt3IsPermutation(seq, expected)
+	}
+}
+
+// qt3IsPermutation reports whether got and want are the same multiset of items
+// under qt3DeepEqualItem (order-independent). It greedily matches each got item
+// to an as-yet-unmatched want item.
+func qt3IsPermutation(got, want xpath3.Sequence) bool {
+	if qt3SeqLen(got) != qt3SeqLen(want) {
+		return false
+	}
+	n := qt3SeqLen(got)
+	used := make([]bool, n)
+	for i := 0; i < n; i++ {
+		gi := got.Get(i)
+		matched := false
+		for j := 0; j < n; j++ {
+			if used[j] {
+				continue
+			}
+			if qt3DeepEqualItem(gi, want.Get(j)) {
+				used[j] = true
+				matched = true
+				break
+			}
+		}
+		if !matched {
+			return false
+		}
+	}
+	return true
 }
 
 // ──────────────────────────────────────────────────────────────────────
@@ -1419,25 +1662,71 @@ func qt3DeepEqualItem(a, b xpath3.Item) bool {
 		if !ok {
 			return false
 		}
-		// Compare node string values
-		aStr, _ := xpath3.AtomizeItem(av)
-		bStr, _ := xpath3.AtomizeItem(bn)
-		return qt3DeepEqualAtomic(aStr, bStr)
+		// Real node deep-equal (NOT string-value): two nodes are deep-equal only if
+		// same kind, same expanded name, same attribute set, and deep-equal children,
+		// so <a>x</a> is not equal to <b>x</b> and nodes differing only in an
+		// attribute value are not equal.
+		return qt3NodesDeepEqual(av.Node, bn.Node)
 	default:
 		return false
 	}
 }
 
-func qt3DeepEqualAtomic(a, b xpath3.AtomicValue) bool {
-	// Numeric comparison with promotion
-	if a.IsNumeric() && b.IsNumeric() {
-		return a.ToFloat64() == b.ToFloat64()
+// qt3NodesDeepEqual reports whether two nodes are deep-equal per fn:deep-equal by
+// reusing helium's fn:deep-equal implementation (registered on the evaluator):
+// same node kind, same expanded-QName name, order-independent attribute set, and
+// deep-equal children (comments/PIs ignored, adjacent text merged) — not a mere
+// string-value comparison. An evaluation error yields false (a different item),
+// never a hard failure.
+func qt3NodesDeepEqual(a, b helium.Node) bool {
+	compiled, err := xpath3.NewCompiler().Compile("deep-equal($qt3a, $qt3b)")
+	if err != nil {
+		return false
 	}
-	// String-based comparison for same types
+	eval := xpath3.NewEvaluator(xpath3.DefaultEvaluatorOptions).Variables(map[string]xpath3.Sequence{
+		"qt3a": xpath3.ItemSlice{xpath3.NodeItem{Node: a}},
+		"qt3b": xpath3.ItemSlice{xpath3.NodeItem{Node: b}},
+	})
+	result, err := eval.Evaluate(context.Background(), compiled, nil)
+	if err != nil {
+		return false
+	}
+	ebv, err := qt3EBV(result.Sequence())
+	return err == nil && ebv
+}
+
+func qt3DeepEqualAtomic(a, b xpath3.AtomicValue) bool {
+	// fn:deep-equal (and assert-permutation) compare two atomic values TYPE-AWARELY:
+	// equal only if they compare equal under the eq operator AND their types are
+	// eq-comparable. xs:string("1993-03-31") is NOT deep-equal to
+	// xs:date("1993-03-31") despite the shared lexical form. Use helium's ValueCompare
+	// (the eq operator) for every atomic kind — strings, dates, times, booleans,
+	// QNames, and numerics (with single/double promotion, so xs:float(1.01) equals
+	// xs:decimal(1.01)) — never a lexical string compare, which would false-pass a
+	// wrong-typed value. NaN is special-cased equal to NaN (the eq operator says
+	// NaN ne NaN).
+	if a.IsNumeric() && b.IsNumeric() {
+		af, bf := a.ToFloat64(), b.ToFloat64()
+		if math.IsNaN(af) || math.IsNaN(bf) {
+			return math.IsNaN(af) && math.IsNaN(bf)
+		}
+	}
+	eq, err := xpath3.ValueCompare(xpath3.TokenEq, a, b)
+	if err == nil {
+		return eq
+	}
+	// The eq operator is undefined for a few SAME-type pairs (notably xs:duration,
+	// which fn:deep-equal compares component-wise). Fall back to a lexical compare
+	// ONLY when the dynamic types match, so a cross-type pair with the same lexical
+	// form (xs:string vs xs:date) is still not deep-equal — an incomparable-type
+	// pair is a different item, not a hard error.
+	if a.TypeName != b.TypeName {
+		return false
+	}
 	sa, err1 := xpath3.AtomicToString(a)
 	sb, err2 := xpath3.AtomicToString(b)
 	if err1 != nil || err2 != nil {
-		return fmt.Sprintf("%v", a.Value) == fmt.Sprintf("%v", b.Value)
+		return false
 	}
 	return sa == sb
 }
