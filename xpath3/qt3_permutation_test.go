@@ -45,3 +45,39 @@ func TestQT3PermutationTypeAware(t *testing.T) {
 	require.False(t, qt3IsPermutation(mixed, mixedWrong),
 		"a string item must not substitute for the xs:date item")
 }
+
+// TestQT3PermutationNodeDeepEqual locks the NODE half: qt3IsPermutation must
+// compare nodes by fn:deep-equal (kind + expanded name + attribute set +
+// deep-equal children), NOT by string value, so structurally different nodes with
+// the same string value are not accepted.
+func TestQT3PermutationNodeDeepEqual(t *testing.T) {
+	eval := func(expr string) xpath3.Sequence {
+		s, err := qt3EvalExprSeq(expr, nil, nil)
+		require.NoError(t, err, "eval %s", expr)
+		return s
+	}
+
+	// Different element NAME, same text value: not a permutation.
+	aX := eval(`(parse-xml("<a>x</a>")/*, parse-xml("<c/>")/*)`)
+	bX := eval(`(parse-xml("<b>x</b>")/*, parse-xml("<c/>")/*)`)
+	require.False(t, qt3IsPermutation(aX, bX),
+		"<a>x</a> and <b>x</b> have the same string value but different names — not deep-equal")
+
+	// Different ATTRIBUTE value: not a permutation.
+	e1 := eval(`parse-xml('<e a="1"/>')/*`)
+	e2 := eval(`parse-xml('<e a="2"/>')/*`)
+	require.False(t, qt3IsPermutation(e1, e2),
+		"elements differing only in an attribute value are not deep-equal")
+
+	// A genuinely reordered sequence of deep-equal nodes IS a permutation.
+	seq := eval(`(parse-xml("<a>x</a>")/*, parse-xml("<c/>")/*)`)
+	seqPerm := eval(`(parse-xml("<c/>")/*, parse-xml("<a>x</a>")/*)`)
+	require.True(t, qt3IsPermutation(seq, seqPerm),
+		"a reordered sequence of deep-equal nodes must be a permutation")
+
+	// An atomic must not match a node with the same string value.
+	nodeSeq := eval(`parse-xml("<a>x</a>")/*`)
+	atomSeq := eval(`"x"`)
+	require.False(t, qt3IsPermutation(nodeSeq, atomSeq),
+		"an atomic value must not be a permutation member of a node")
+}

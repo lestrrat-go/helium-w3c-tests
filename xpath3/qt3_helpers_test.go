@@ -1662,13 +1662,37 @@ func qt3DeepEqualItem(a, b xpath3.Item) bool {
 		if !ok {
 			return false
 		}
-		// Compare node string values
-		aStr, _ := xpath3.AtomizeItem(av)
-		bStr, _ := xpath3.AtomizeItem(bn)
-		return qt3DeepEqualAtomic(aStr, bStr)
+		// Real node deep-equal (NOT string-value): two nodes are deep-equal only if
+		// same kind, same expanded name, same attribute set, and deep-equal children,
+		// so <a>x</a> is not equal to <b>x</b> and nodes differing only in an
+		// attribute value are not equal.
+		return qt3NodesDeepEqual(av.Node, bn.Node)
 	default:
 		return false
 	}
+}
+
+// qt3NodesDeepEqual reports whether two nodes are deep-equal per fn:deep-equal by
+// reusing helium's fn:deep-equal implementation (registered on the evaluator):
+// same node kind, same expanded-QName name, order-independent attribute set, and
+// deep-equal children (comments/PIs ignored, adjacent text merged) — not a mere
+// string-value comparison. An evaluation error yields false (a different item),
+// never a hard failure.
+func qt3NodesDeepEqual(a, b helium.Node) bool {
+	compiled, err := xpath3.NewCompiler().Compile("deep-equal($qt3a, $qt3b)")
+	if err != nil {
+		return false
+	}
+	eval := xpath3.NewEvaluator(xpath3.DefaultEvaluatorOptions).Variables(map[string]xpath3.Sequence{
+		"qt3a": xpath3.ItemSlice{xpath3.NodeItem{Node: a}},
+		"qt3b": xpath3.ItemSlice{xpath3.NodeItem{Node: b}},
+	})
+	result, err := eval.Evaluate(context.Background(), compiled, nil)
+	if err != nil {
+		return false
+	}
+	ebv, err := qt3EBV(result.Sequence())
+	return err == nil && ebv
 }
 
 func qt3DeepEqualAtomic(a, b xpath3.AtomicValue) bool {
