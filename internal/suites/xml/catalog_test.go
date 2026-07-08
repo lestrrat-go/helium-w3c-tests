@@ -87,6 +87,50 @@ func TestReadCases(t *testing.T) {
 	}
 }
 
+// TestReadCasesCorruptCatalog checks that a corrupt/tampered source — where a
+// referenced entity is undeclared, or a referenced collection catalog is missing
+// — is a hard error rather than a silently smaller generated suite.
+func TestReadCasesCorruptCatalog(t *testing.T) {
+	t.Parallel()
+
+	t.Run("undeclared entity reference", func(t *testing.T) {
+		t.Parallel()
+		root := t.TempDir()
+		// jclark is declared; ghost is referenced but never declared.
+		write(t, filepath.Join(root, "xmlconf.xml"), `<?xml version="1.0"?>
+<!DOCTYPE TESTSUITE SYSTEM "testcases.dtd" [
+  <!ENTITY jclark SYSTEM "xmltest/xmltest.xml">
+]>
+<TESTSUITE>
+<TESTCASES xml:base="xmltest/">&jclark;</TESTCASES>
+<TESTCASES xml:base="ghost/">&ghost;</TESTCASES>
+</TESTSUITE>`)
+		write(t, filepath.Join(root, "xmltest", "xmltest.xml"),
+			`<TESTCASES><TEST TYPE="valid" ID="v-1" URI="001.xml"/></TESTCASES>`)
+		write(t, filepath.Join(root, "xmltest", "001.xml"), `<doc/>`)
+
+		if _, _, _, err := readCases(root); err == nil {
+			t.Fatal("expected an error for an undeclared entity reference, got nil")
+		}
+	})
+
+	t.Run("missing collection catalog", func(t *testing.T) {
+		t.Parallel()
+		root := t.TempDir()
+		write(t, filepath.Join(root, "xmlconf.xml"), `<?xml version="1.0"?>
+<!DOCTYPE TESTSUITE SYSTEM "testcases.dtd" [
+  <!ENTITY jclark SYSTEM "xmltest/xmltest.xml">
+]>
+<TESTSUITE>
+<TESTCASES xml:base="xmltest/">&jclark;</TESTCASES>
+</TESTSUITE>`)
+		// The declared xmltest/xmltest.xml is deliberately absent on disk.
+		if _, _, _, err := readCases(root); err == nil {
+			t.Fatal("expected an error for a missing referenced catalog, got nil")
+		}
+	})
+}
+
 func write(t *testing.T, path, contents string) {
 	t.Helper()
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {

@@ -365,9 +365,15 @@ func parseTopCatalog(xmlconfRoot string) ([]collectionRef, error) {
 			base = string(bm[1])
 		}
 		for _, em := range entityRefRe.FindAllSubmatch(block[2], -1) {
-			if sys := entities[string(em[1])]; sys != "" {
-				refs = append(refs, collectionRef{Base: base, CatalogFile: path.Clean(sys)})
+			name := string(em[1])
+			sys, ok := entities[name]
+			if !ok {
+				// A referenced entity with no matching <!ENTITY> declaration means
+				// a corrupt/tampered top catalog. Failing (rather than skipping the
+				// block) prevents silently generating a smaller suite.
+				return nil, fmt.Errorf("xmlconf.xml references undeclared entity &%s;", name)
 			}
+			refs = append(refs, collectionRef{Base: base, CatalogFile: path.Clean(sys)})
 		}
 	}
 	if len(refs) == 0 {
