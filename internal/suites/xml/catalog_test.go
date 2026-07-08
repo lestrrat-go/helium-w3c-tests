@@ -43,9 +43,14 @@ func TestReadCases(t *testing.T) {
 <TEST URI="valid/pe01.xml" ID="pe01" ENTITIES="parameter" TYPE="valid"/>
 <TEST URI="valid/dtd00.xml" ID="dtd00" TYPE="valid" OUTPUT="valid/out/dtd00.xml"/>`)
 
-	// A couple of referenced fixtures so the closure walk finds them.
+	// Every referenced primary document and OUTPUT must exist; resolveFixture is
+	// strict about missing fixtures.
 	write(t, filepath.Join(root, "xmltest", "not-wf", "001.xml"), `<doc/>`)
 	write(t, filepath.Join(root, "xmltest", "valid", "001.xml"), `<doc/>`)
+	write(t, filepath.Join(root, "xmltest", "valid", "out", "001.xml"), `<doc></doc>`)
+	write(t, filepath.Join(root, "sun", "valid", "pe01.xml"), `<doc/>`)
+	write(t, filepath.Join(root, "sun", "valid", "dtd00.xml"), `<doc/>`)
+	write(t, filepath.Join(root, "sun", "valid", "out", "dtd00.xml"), `<doc></doc>`)
 
 	byCollection, collections, total, err := readCases(root)
 	if err != nil {

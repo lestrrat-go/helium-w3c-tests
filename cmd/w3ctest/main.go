@@ -203,8 +203,18 @@ func writeSummary(path, root string, prov provenance, suiteKey string, suite sui
 	}
 	if lock, lerr := generator.LoadLock(root); lerr == nil {
 		if sl, ok := lock.Suite(suiteKey); ok {
-			meta.UpstreamRepo = strings.TrimSuffix(sl.Repo, ".git")
-			meta.UpstreamCommit = sl.Commit
+			switch {
+			case sl.Repo != "":
+				meta.UpstreamRepo = strings.TrimSuffix(sl.Repo, ".git")
+				meta.UpstreamCommit = sl.Commit
+			case sl.URL != "":
+				// Zip-pinned suite (the W3C xmlts archive): record the download
+				// URL and the pinned sha256 as provenance in place of repo+commit.
+				meta.UpstreamRepo = sl.URL
+				if sl.Sha256 != "" {
+					meta.UpstreamCommit = "sha256:" + sl.Sha256
+				}
+			}
 		}
 	}
 

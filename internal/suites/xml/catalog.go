@@ -225,8 +225,9 @@ func collectCases(xmlconfRoot, base, catalogDir string, tc catTestcases, seen ma
 
 // appendTest resolves and appends a single TEST, skipping ones without a URI/ID
 // and de-duplicating by ID (a handful of IDs recur across catalogs). A TEST whose
-// resolved URI escapes the suite root is a corrupt/tampered catalog and is a hard
-// error, not a silent drop, so a smaller passing suite cannot slip through.
+// URI is absolute, escapes the suite root, or names no existing fixture is a
+// corrupt/tampered catalog and is a hard error, not a silent drop, so a smaller
+// passing suite cannot slip through.
 func appendTest(xmlconfRoot, base, catalogDir string, t catTest, seen map[string]bool, out *[]genCase) error {
 	if t.URI == "" || t.ID == "" {
 		return nil
@@ -234,9 +235,9 @@ func appendTest(xmlconfRoot, base, catalogDir string, t catTest, seen map[string
 	if seen[t.ID] {
 		return nil
 	}
-	uriRel := resolveFixture(xmlconfRoot, base, catalogDir, t.URI)
-	if _, err := generator.ContainedPath(xmlconfRoot, uriRel); err != nil {
-		return fmt.Errorf("test %s: URI %q escapes suite root: %w", t.ID, t.URI, err)
+	uriRel, err := resolveFixture(xmlconfRoot, base, catalogDir, t.URI)
+	if err != nil {
+		return fmt.Errorf("test %s URI: %w", t.ID, err)
 	}
 	seen[t.ID] = true
 	gc, err := buildCase(xmlconfRoot, uriRel, base, catalogDir, t)
@@ -261,9 +262,9 @@ func buildCase(xmlconfRoot, uriRel, base, catalogDir string, t catTest) (genCase
 		Namespace:      t.Namespace,
 	}
 	if t.Output != "" {
-		out := resolveFixture(xmlconfRoot, base, catalogDir, t.Output)
-		if _, err := generator.ContainedPath(xmlconfRoot, out); err != nil {
-			return genCase{}, fmt.Errorf("test %s: OUTPUT %q escapes suite root: %w", t.ID, t.Output, err)
+		out, err := resolveFixture(xmlconfRoot, base, catalogDir, t.Output)
+		if err != nil {
+			return genCase{}, fmt.Errorf("test %s OUTPUT: %w", t.ID, err)
 		}
 		gc.Output = out
 	}
@@ -382,23 +383,29 @@ func parseTopCatalog(xmlconfRoot string) ([]collectionRef, error) {
 	return refs, nil
 }
 
-// resolveFixture resolves a TEST @URI/@OUTPUT to a suite-root-relative path.
-// It resolves against the inherited xml:base first, but falls back to the
-// catalog file's own directory when the xml:base result is absent on disk and
-// the catalog-relative one exists — the eduni "misc" block in xmlconf.xml carries
-// an xml:base (eduni/namespaces/misc/) that does not match where its fixtures
-// actually live (eduni/misc/, next to the catalog), and the files are only
-// reachable relative to the catalog.
-func resolveFixture(xmlconfRoot, base, catalogDir, ref string) string {
+// resolveFixture resolves a TEST @URI/@OUTPUT to an existing, root-contained,
+// suite-root-relative path. It resolves against the inherited xml:base first, but
+// falls back to the catalog file's own directory when the xml:base result is
+// absent on disk and the catalog-relative one exists — the eduni "misc" block in
+// xmlconf.xml carries an xml:base (eduni/namespaces/misc/) that does not match
+// where its fixtures actually live (eduni/misc/, next to the catalog).
+//
+// An absolute or URI-scheme ref, or one that resolves to no existing fixture, is
+// treated as corrupt catalog data and returned as an error rather than folded
+// under the base or emitted as a case whose fixture the runtime silently skips.
+func resolveFixture(xmlconfRoot, base, catalogDir, ref string) (string, error) {
+	if generator.IsAbsoluteAnyOS(ref) || isAbsoluteURL(ref) {
+		return "", fmt.Errorf("reference %q is absolute or a URI, not a suite-relative path", ref)
+	}
 	primary := path.Clean(joinBase(base, ref))
 	if fileExists(xmlconfRoot, primary) {
-		return primary
+		return primary, nil
 	}
 	alt := path.Clean(joinBase(catalogDir+"/", ref))
 	if alt != primary && fileExists(xmlconfRoot, alt) {
-		return alt
+		return alt, nil
 	}
-	return primary
+	return "", fmt.Errorf("reference %q resolves to no existing fixture (tried %q, %q)", ref, primary, alt)
 }
 
 func fileExists(xmlconfRoot, rel string) bool {
