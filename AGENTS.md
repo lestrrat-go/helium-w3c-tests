@@ -25,20 +25,22 @@ Agent-consumed guidance. Keep terse. Update when repo workflow or suite policy c
 | `internal/suites/qt3/` | QT3/XPath 3.1 generator policy |
 | `internal/suites/xslt30/` | XSLT 3.0 generator policy |
 | `internal/suites/xsd11/` | XSD 1.1 generator policy |
+| `internal/suites/xml/` | XML conformance (parser) generator policy |
 | `expectations/` | skip/expected-failure metadata |
 | `sources/` | upstream W3C checkouts; gitignored |
 | `testdata/` | generated/pruned fixtures |
 | `xpath3/` | generated QT3 tests |
 | `xslt3/` | generated XSLT 3.0 tests |
 | `xsd/` | generated XSD 1.1 tests |
+| `xml/` | generated XML conformance tests |
 
 ## Commands
 
-- Fetch pinned suites: `go run ./cmd/w3cgen fetch qt3 xslt30 xsd11`
+- Fetch pinned suites: `go run ./cmd/w3cgen fetch qt3 xslt30 xsd11 xml`
 - Generate tests: `go run ./cmd/w3cgen generate all`
 - Verify generated files: `go run ./cmd/w3cgen verify all`
 - Run tests: `go test ./...`
-- Run a suite's conformance with JUnit XML: `go run ./cmd/w3ctest xsd11` / `go run ./cmd/w3ctest xslt30`
+- Run a suite's conformance with JUnit XML: `go run ./cmd/w3ctest xsd11` / `go run ./cmd/w3ctest xslt30` / `go run ./cmd/w3ctest xml`
 - Default outputs: JUnit `test-results/<suite>-junit.xml` (override `-out FILE`) and summary markdown `test-results/<suite>-summary.md` (override `-summary FILE`). Point them at the helium repo to refresh its committed conformance evidence.
 - Summary rolls up pass/skip/fail + skip-reason breakdown, stamped with the pinned upstream commit + date (point-in-time snapshot; regenerate to refresh).
 - JUnit report contains conformance subtests only (`TestXSD11W3C/<case ID>`, `TestXSLT30W3C/<case name>`); manifest checks are excluded; skipped cases carry reason in `<skipped message>`.
@@ -68,6 +70,7 @@ Agent-consumed guidance. Keep terse. Update when repo workflow or suite policy c
 - The `spec="XSLT20"`-only tests stay out of scope (`specSupported` whitelists `XSLT20+`/`XSLT30`, not bare `XSLT20`); those are 2.0-specific expected outputs, not a runnable bucket for a 3.0 processor.
 - XSD suite is pinned to w3c/xsdtests (git). `fetch xsd11` clones `sources/xsd11` and copies the XSD-1.1 fixtures into `testdata/xsd11` (gitignored); generated tests skip when fixtures are absent.
 - XSLT suite is pinned to w3c/xslt30-test (git). `fetch xslt30` clones `sources/xslt30` and copies catalog-referenced fixtures (stylesheets + xsl:include/import closure, sources, packages, schemas, collections) into `testdata/xslt30` (gitignored), then overlays the committed `fixtures/xslt30` tree on top.
+- XML suite is the W3C XML Conformance Test Suite, pinned to the `xmlts` zip (sha256 in `suites.lock.json`, `type: "zip"` — a download+verify+extract source kind in `internal/generator/fetch.go`). `fetch xml` extracts into `sources/xml/xmlconf` and copies each TEST document, its OUTPUT, and the transitive external DTD/entity closure into `testdata/xml` (gitignored). Targets **XML 1.0 + Namespaces 1.0**; the runner drives helium's `helium.Parser` as a validating processor (external DTD + entities loaded, `ValidateDTD` on for valid/invalid) and asserts each TEST's TYPE (valid → parses clean; invalid → validity error; not-wf → fatal error; error → optional, never fails). XML 1.1 / Namespaces 1.1 cases are gated off (`xml11Supported = false` in `xml/xml_harness_test.go`) until 1.1 parser support lands. Current helium gaps (incomplete DTD-internal WF checking, partial DTD validation) are recorded as categorized xfails in `expectations/xml.json`; the harness errors on an unexpected pass so fixes are caught.
 - `fixtures/xslt30` (committed) holds the small curated fixture set the catalog scan cannot reproduce from the raw clone: files referenced only at run time (doc()/unparsed-text(), dynamic fn:transform stylesheets, collection members) and fixtures whose content was hand-edited (e.g. a DTD with its XML declaration stripped). Regenerate it only from a known-good fixture tree; never delete a file here without confirming no case needs it.
 
 ## Expectations

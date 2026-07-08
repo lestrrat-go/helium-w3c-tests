@@ -64,6 +64,15 @@ var suites = map[string]suiteConfig{
 		defaultOut:     "test-results/xslt30-junit.xml",
 		defaultSummary: "test-results/xslt30-summary.md",
 	},
+	"xml": {
+		pkg:            "./xml",
+		rootTest:       "TestXMLW3C",
+		runPattern:     "^TestXMLW3C$",
+		junitSuite:     "xml-conformance",
+		displayName:    "XML 1.0/1.1",
+		defaultOut:     "test-results/xml-junit.xml",
+		defaultSummary: "test-results/xml-summary.md",
+	},
 }
 
 func main() {
@@ -88,7 +97,7 @@ func run(ctx context.Context, args []string) (int, error) {
 	fs.Usage = func() {
 		fmt.Fprintln(fs.Output(), "usage: w3ctest [-out FILE] [-summary FILE] [-root DIR] <suite> [go test flags...]")
 		fmt.Fprintln(fs.Output(), "")
-		fmt.Fprintln(fs.Output(), "suites: qt3 xsd10 xsd11 xslt30")
+		fmt.Fprintln(fs.Output(), "suites: qt3 xsd10 xsd11 xslt30 xml")
 	}
 	if err := fs.Parse(args); err != nil {
 		return 2, err
