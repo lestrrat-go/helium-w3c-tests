@@ -13,6 +13,19 @@ import (
 	"github.com/lestrrat-go/helium-w3c-tests/internal/harness"
 )
 
+// containedPath joins root and a testdata-relative slash path, rejecting an
+// absolute or escaping rel. Catalog @URI values are upstream-controlled data, so
+// the runner refuses to read a fixture outside the testdata root even though the
+// pinned suite contains none.
+func containedPath(root, rel string) (string, bool) {
+	clean := filepath.Clean(filepath.Join(root, filepath.FromSlash(rel)))
+	r, err := filepath.Rel(root, clean)
+	if err != nil || r == ".." || strings.HasPrefix(r, ".."+string(filepath.Separator)) {
+		return "", false
+	}
+	return clean, true
+}
+
 // xmlCase is a single W3C XML Conformance Test Suite (xmlconf) test, restricted
 // to the attributes the runner consults. URI (and Output) are testdata/xml-
 // relative slash paths; the fixture bytes live under testdata/xml (gitignored,
@@ -173,7 +186,10 @@ func runXMLCase(t *testing.T, o *caseOutcome, testdataRoot string, c xmlCase) {
 		}
 	}()
 
-	docPath := filepath.Join(testdataRoot, filepath.FromSlash(c.URI))
+	docPath, ok := containedPath(testdataRoot, c.URI)
+	if !ok {
+		t.Skipf("%s: URI %q escapes the testdata root", c.ID, c.URI)
+	}
 	src, err := os.ReadFile(docPath)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -199,6 +215,16 @@ func runXMLCase(t *testing.T, o *caseOutcome, testdataRoot string, c xmlCase) {
 			o.errorf("%s: expected valid document to parse, got error: %v", c.ID, perr)
 		}
 	case "invalid":
+		// A validating processor must report an error on a well-formed-but-invalid
+		// document. Any non-nil error counts: helium reports DTD validity
+		// constraints through varied messages, NOT a single sentinel —
+		// post-parse validateDocument failures wrap helium.ErrDTDValidationFailed,
+		// but DTD-parse-time VCs (Attribute Default Value Syntactically Correct,
+		// No Duplicate Tokens, Unique Element Type Declaration) surface with their
+		// own messages and are genuine validity detections. Requiring the sentinel
+		// would mislabel those correct rejections as failures. (Verified against
+		// the W3C corpus: the sentinel-only check wrongly fails ~25 cases helium
+		// correctly rejects.)
 		if perr == nil {
 			o.errorf("%s: expected a validity error, but the document parsed cleanly", c.ID)
 		}

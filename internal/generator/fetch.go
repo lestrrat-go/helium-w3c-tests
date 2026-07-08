@@ -74,11 +74,34 @@ func fetchZip(ctx context.Context, root string, suiteName string, suiteLock Suit
 	if err != nil {
 		return fmt.Errorf("open %s zip: %w", suiteName, err)
 	}
+
+	// Extract into a sibling temp directory and atomically rename it into place,
+	// so a failed or interrupted extraction never leaves a half-populated
+	// sourcePath that the completeness check above would mistake for a full
+	// checkout and refuse to repair.
+	parent := filepath.Dir(sourcePath)
+	if err := os.MkdirAll(parent, 0o755); err != nil {
+		return fmt.Errorf("create source parent: %w", err)
+	}
+	tmpDir, err := os.MkdirTemp(parent, ".fetch-"+suiteName+"-*")
+	if err != nil {
+		return fmt.Errorf("create temp extract dir: %w", err)
+	}
+	extracted := false
+	defer func() {
+		if !extracted {
+			os.RemoveAll(tmpDir)
+		}
+	}()
 	for _, entry := range reader.File {
-		if err := extractZipEntry(sourcePath, entry); err != nil {
+		if err := extractZipEntry(tmpDir, entry); err != nil {
 			return err
 		}
 	}
+	if err := os.Rename(tmpDir, sourcePath); err != nil {
+		return fmt.Errorf("finalize %s: %w", suiteLock.SourceDir, err)
+	}
+	extracted = true
 	fmt.Printf("%s: extracted %d entries into %s\n", suiteName, len(reader.File), suiteLock.SourceDir)
 	return nil
 }

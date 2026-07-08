@@ -3,6 +3,7 @@ package xml
 import (
 	"bytes"
 	stdxml "encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -167,8 +168,11 @@ func parseCollectionCatalog(xmlconfRoot, base, catalogDir string, data []byte, s
 	var out []genCase
 	for {
 		tok, err := dec.Token()
-		if err != nil {
+		if errors.Is(err, io.EOF) {
 			break
+		}
+		if err != nil {
+			return nil, fmt.Errorf("tokenize catalog: %w", err)
 		}
 		se, ok := tok.(stdxml.StartElement)
 		if !ok {
@@ -207,7 +211,8 @@ func collectCases(xmlconfRoot, base, catalogDir string, tc catTestcases, seen ma
 }
 
 // appendTest resolves and appends a single TEST, skipping ones without a URI/ID
-// and de-duplicating by ID (a handful of IDs recur across catalogs).
+// and de-duplicating by ID (a handful of IDs recur across catalogs). A TEST whose
+// resolved URI escapes the suite root (untrusted catalog data) is dropped.
 func appendTest(xmlconfRoot, base, catalogDir string, t catTest, seen map[string]bool, out *[]genCase) {
 	if t.URI == "" || t.ID == "" {
 		return
@@ -215,14 +220,17 @@ func appendTest(xmlconfRoot, base, catalogDir string, t catTest, seen map[string
 	if seen[t.ID] {
 		return
 	}
+	uriRel := resolveFixture(xmlconfRoot, base, catalogDir, t.URI)
+	if _, err := generator.ContainedPath(xmlconfRoot, uriRel); err != nil {
+		return
+	}
 	seen[t.ID] = true
-	*out = append(*out, buildCase(xmlconfRoot, base, catalogDir, t))
+	*out = append(*out, buildCase(xmlconfRoot, uriRel, base, catalogDir, t))
 }
 
-// buildCase resolves a TEST's fixture paths and gathers the external-reference
-// closure of its document.
-func buildCase(xmlconfRoot, base, catalogDir string, t catTest) genCase {
-	uriRel := resolveFixture(xmlconfRoot, base, catalogDir, t.URI)
+// buildCase assembles a genCase from an already-resolved, root-contained uriRel
+// and gathers the external-reference closure of its document.
+func buildCase(xmlconfRoot, uriRel, base, catalogDir string, t catTest) genCase {
 	gc := genCase{
 		ID:             t.ID,
 		Type:           t.Type,
@@ -234,7 +242,10 @@ func buildCase(xmlconfRoot, base, catalogDir string, t catTest) genCase {
 		Namespace:      t.Namespace,
 	}
 	if t.Output != "" {
-		gc.Output = resolveFixture(xmlconfRoot, base, catalogDir, t.Output)
+		out := resolveFixture(xmlconfRoot, base, catalogDir, t.Output)
+		if _, err := generator.ContainedPath(xmlconfRoot, out); err == nil {
+			gc.Output = out
+		}
 	}
 
 	fixtures := map[string]bool{}
