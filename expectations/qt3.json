@@ -2,6 +2,7 @@
   "skip": {},
   "xfail": {
     "analyzeString-020": "requires schema-validated PSVI type annotation: the built-in fn:analyze-string-result schema types @nr as xs:positiveInteger, but helium leaves the constructed attribute untyped without a compiled schema",
-    "analyzeString-021": "requires schema-validated PSVI type annotation: the built-in fn:analyze-string-result schema gives the result element a named complex type, but helium leaves it xs:untyped without a compiled schema"
+    "analyzeString-021": "requires schema-validated PSVI type annotation: the built-in fn:analyze-string-result schema gives the result element a named complex type, but helium leaves it xs:untyped without a compiled schema",
+    "json-to-xml-016": "requires schemaImport/PSVI type annotation: fn:json-to-xml(...,map{'validate':true()}) should validate against the built-in schema so j:number is typed xs:double, but helium leaves it untyped, so data(...) instance of xs:double is false"
   }
 }

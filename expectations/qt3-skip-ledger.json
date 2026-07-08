@@ -236,7 +236,7 @@
       "test_id": "fn-function-lookup-766a",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "fn:transform/function-lookup assertions degrade to no-op (generic \u003cassert\u003e); pending generic-\u003cassert\u003e harness support"
+      "reason": "fn:transform source-node doc('function-lookup/collection-1.xml') is an embedded relative doc() unmapped in the harness resource set (FODC0002)"
     },
     {
       "test_id": "fn-function-name-010",
@@ -710,7 +710,7 @@
       "test_id": "fn-transform-22",
       "upstream_suite_commit": "83993587711dbd5c18ed846385ec37d079d6e492",
       "skip_class": "not-wired",
-      "reason": "fn:transform/function-lookup assertions degrade to no-op (generic \u003cassert\u003e); pending generic-\u003cassert\u003e harness support"
+      "reason": "fn:transform stylesheet-base-uri=static-base-uri() resolves the relative xsl:include to an unmapped catalog URL (HTTP 404); same fixture-base-uri gap as fn-transform-23"
     },
     {
       "test_id": "fn-transform-23",
