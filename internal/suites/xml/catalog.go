@@ -13,6 +13,9 @@ import (
 	"strings"
 
 	"github.com/lestrrat-go/helium-w3c-tests/internal/generator"
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/encoding/unicode"
+	"golang.org/x/text/encoding/unicode/utf32"
 )
 
 func bytesReader(data []byte) io.Reader { return bytes.NewReader(data) }
@@ -330,6 +333,12 @@ func collectClosure(xmlconfRoot, startRel string, fixtures map[string]bool) {
 }
 
 func externalRefs(data []byte) []string {
+	// A fixed-width Unicode document (UTF-16/UCS-4) carries its DTD/entity SYSTEM
+	// references in the same encoding, so the byte-oriented regexes below cannot
+	// see them. Decode to UTF-8 first when the content is fixed-width Unicode
+	// (detected via BOM or the fixed-width `<`/`<?xml` shape); ASCII/UTF-8 passes
+	// through untouched.
+	data = decodeFixedWidthUnicode(data)
 	var refs []string
 	for _, m := range systemRefRe.FindAllSubmatch(data, -1) {
 		refs = append(refs, firstNonEmpty(m[1], m[2]))
@@ -345,6 +354,49 @@ func firstNonEmpty(a, b []byte) string {
 		return string(a)
 	}
 	return string(b)
+}
+
+// decodeFixedWidthUnicode returns data transcoded to UTF-8 when it is a
+// fixed-width Unicode encoding (UTF-16 or UTF-32/UCS-4, either byte order),
+// detected via a leading BOM or, absent a BOM, the fixed-width byte pattern of a
+// leading `<` (a well-formed XML document or external subset always begins with
+// `<`). ASCII/UTF-8 content — which has no such shape — is returned unchanged, so
+// the byte-oriented reference regexes keep working on it. A decode error falls
+// back to the original bytes.
+func decodeFixedWidthUnicode(data []byte) []byte {
+	enc := detectFixedWidthEncoding(data)
+	if enc == nil {
+		return data
+	}
+	out, err := enc.NewDecoder().Bytes(data)
+	if err != nil {
+		return data
+	}
+	return out
+}
+
+func detectFixedWidthEncoding(data []byte) encoding.Encoding {
+	switch {
+	case len(data) >= 4 && data[0] == 0x00 && data[1] == 0x00 && data[2] == 0xFE && data[3] == 0xFF:
+		return utf32.UTF32(utf32.BigEndian, utf32.ExpectBOM)
+	case len(data) >= 4 && data[0] == 0xFF && data[1] == 0xFE && data[2] == 0x00 && data[3] == 0x00:
+		return utf32.UTF32(utf32.LittleEndian, utf32.ExpectBOM)
+	case len(data) >= 2 && data[0] == 0xFE && data[1] == 0xFF:
+		return unicode.UTF16(unicode.BigEndian, unicode.ExpectBOM)
+	case len(data) >= 2 && data[0] == 0xFF && data[1] == 0xFE:
+		return unicode.UTF16(unicode.LittleEndian, unicode.ExpectBOM)
+	// BOM-less: recognize the fixed-width shape of a leading '<' (0x3C).
+	case len(data) >= 4 && data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x3C:
+		return utf32.UTF32(utf32.BigEndian, utf32.IgnoreBOM)
+	case len(data) >= 4 && data[0] == 0x3C && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x00:
+		return utf32.UTF32(utf32.LittleEndian, utf32.IgnoreBOM)
+	case len(data) >= 2 && data[0] == 0x00 && data[1] == 0x3C:
+		return unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM)
+	case len(data) >= 4 && data[0] == 0x3C && data[1] == 0x00 && data[2] != 0x00:
+		return unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM)
+	default:
+		return nil
+	}
 }
 
 // parseTopCatalog reads xmlconf.xml, mapping each TESTCASES block's xml:base to
