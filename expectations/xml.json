@@ -1,8 +1,6 @@
 {
   "skip": {},
   "xfail": {
-    "attlist10": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
-    "attlist11": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
     "attr08": "helium does not report this validity error: DTD validation incomplete (helium gap)",
     "empty": "helium does not report this validity error: DTD validation incomplete (helium gap)",
     "hst-bh-005": "helium does not report this validity error: DTD validation incomplete (helium gap)",
@@ -24,10 +22,7 @@
     "not-wf-sa-074": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
     "not-wf-sa-160": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
     "not-wf-sa-162": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
-    "not-wf-sa-186": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
     "not-wf-sa03": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
-    "o-p40fail1": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
-    "o-p44fail4": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
     "o-p73fail4": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
     "rmt-e2e-15a": "helium does not report this validity error: DTD validation incomplete (helium gap)",
     "rmt-e2e-15g": "helium does not report this validity error: DTD validation incomplete (helium gap)",
