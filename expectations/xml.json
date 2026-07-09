@@ -4,8 +4,6 @@
     "empty": "helium does not report this validity error: DTD validation incomplete (helium gap)",
     "hst-bh-005": "helium does not report this validity error: DTD validation incomplete (helium gap)",
     "hst-bh-006": "helium does not report this validity error: DTD validation incomplete (helium gap)",
-    "ibm-not-wf-P62-ibm62n07.xml": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
-    "not-wf-not-sa-004": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
     "rmt-e2e-15a": "helium does not report this validity error: DTD validation incomplete (helium gap)",
     "rmt-e2e-15g": "helium does not report this validity error: DTD validation incomplete (helium gap)",
     "rmt-e2e-15h": "helium does not report this validity error: DTD validation incomplete (helium gap)",
