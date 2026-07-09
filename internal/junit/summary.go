@@ -17,8 +17,14 @@ type Summary struct {
 	Passed  int
 	Skipped int
 	Failed  int
+	// XFailed counts cases the harness expected to fail (a known, documented gap):
+	// the subtest passes because the case fails as its expectations predict, so a
+	// plain pass/fail rollup would otherwise hide it inside Passed.
+	XFailed int
 	// SkipReasons counts skipped cases by their skip message.
 	SkipReasons map[string]int
+	// XFailReasons counts expected-failure cases by their xfail reason.
+	XFailReasons map[string]int
 }
 
 // Summarize reads `go test -json` output and rolls up the subtests of
@@ -29,7 +35,7 @@ func Summarize(r io.Reader, opt Options) (Summary, error) {
 	if opt.RootTest == "" {
 		return Summary{}, fmt.Errorf("root test is required")
 	}
-	s := Summary{Suite: opt.SuiteName, SkipReasons: map[string]int{}}
+	s := Summary{Suite: opt.SuiteName, SkipReasons: map[string]int{}, XFailReasons: map[string]int{}}
 
 	type rec struct {
 		status string
@@ -85,6 +91,11 @@ func Summarize(r io.Reader, opt Options) (Summary, error) {
 		rc := records[name]
 		switch rc.status {
 		case "pass":
+			if reason, ok := xfailReason(rc.output); ok {
+				s.XFailed++
+				s.XFailReasons[reason]++
+				break
+			}
 			s.Passed++
 		case "fail":
 			s.Failed++
@@ -155,6 +166,9 @@ func WriteSummaryMarkdown(w io.Writer, s Summary, meta SummaryMeta) error {
 	b.WriteString("\n| Outcome | Count |\n|---------|------:|\n")
 	fmt.Fprintf(&b, "| Pass | %d |\n", s.Passed)
 	fmt.Fprintf(&b, "| Skip | %d |\n", s.Skipped)
+	if s.XFailed > 0 {
+		fmt.Fprintf(&b, "| XFail (documented gap) | %d |\n", s.XFailed)
+	}
 	fmt.Fprintf(&b, "| Fail | %d |\n", s.Failed)
 	fmt.Fprintf(&b, "| **Total** | **%d** |\n", s.Total)
 
@@ -179,8 +193,52 @@ func WriteSummaryMarkdown(w io.Writer, s Summary, meta SummaryMeta) error {
 		}
 	}
 
+	if len(s.XFailReasons) > 0 {
+		b.WriteString("\n## Expected failures by reason\n\nDocumented known gaps: the harness expects these to fail and treats an unexpected pass as an error.\n\n| Reason | Count |\n|--------|------:|\n")
+		type kv struct {
+			reason string
+			count  int
+		}
+		rows := make([]kv, 0, len(s.XFailReasons))
+		for r, c := range s.XFailReasons {
+			rows = append(rows, kv{r, c})
+		}
+		sort.Slice(rows, func(i, j int) bool {
+			if rows[i].count != rows[j].count {
+				return rows[i].count > rows[j].count
+			}
+			return rows[i].reason < rows[j].reason
+		})
+		for _, row := range rows {
+			fmt.Fprintf(&b, "| %s | %d |\n", escapeMarkdownCell(row.reason), row.count)
+		}
+	}
+
 	_, err := io.WriteString(w, b.String())
 	return err
+}
+
+// xfailReason reports whether a passing subtest is a harness-recorded expected
+// failure (a documented known gap) and returns its reason. The suite logs
+// `xfail (<reason>): <details>` via t.Logf on such a case; the subtest passes
+// because it failed as expected, so this signal distinguishes an expected
+// failure from a genuine pass.
+func xfailReason(output []string) (string, bool) {
+	const marker = "xfail ("
+	for _, line := range output {
+		i := strings.Index(line, marker)
+		if i < 0 {
+			continue
+		}
+		rest := line[i+len(marker):]
+		// The reason itself may contain parentheses; it is terminated by the
+		// "): " that precedes the logged details.
+		if j := strings.Index(rest, "): "); j >= 0 {
+			return strings.TrimSpace(rest[:j]), true
+		}
+		return strings.TrimSpace(strings.TrimRight(rest, ")\n")), true
+	}
+	return "", false
 }
 
 func escapeMarkdownCell(s string) string {
