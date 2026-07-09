@@ -1,13 +1,11 @@
 {
   "skip": {},
   "xfail": {
-    "attr08": "helium does not report this validity error: DTD validation incomplete (helium gap)",
     "empty": "helium does not report this validity error: DTD validation incomplete (helium gap)",
     "hst-bh-005": "helium does not report this validity error: DTD validation incomplete (helium gap)",
     "hst-bh-006": "helium does not report this validity error: DTD validation incomplete (helium gap)",
     "hst-lhs-007": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
     "hst-lhs-008": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
-    "ibm-invalid-P41-ibm41i01.xml": "helium does not report this validity error: DTD validation incomplete (helium gap)",
     "ibm-not-wf-P29-ibm29n04.xml": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
     "ibm-not-wf-P32-ibm32n09.xml": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
     "ibm-not-wf-P62-ibm62n07.xml": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
@@ -16,8 +14,6 @@
     "ibm-not-wf-P69-ibm69n07.xml": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
     "ibm-not-wf-P80-ibm80n03.xml": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
     "ibm-not-wf-P82-ibm82n03.xml": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
-    "inv-required01": "helium does not report this validity error: DTD validation incomplete (helium gap)",
-    "inv-required02": "helium does not report this validity error: DTD validation incomplete (helium gap)",
     "not-wf-not-sa-004": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
     "not-wf-sa-074": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
     "not-wf-sa-160": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
