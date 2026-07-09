@@ -1,13 +1,11 @@
 {
   "skip": {},
   "xfail": {
-    "empty": "helium does not report this validity error: DTD validation incomplete (helium gap)",
     "hst-bh-005": "helium does not report this validity error: DTD validation incomplete (helium gap)",
     "hst-bh-006": "helium does not report this validity error: DTD validation incomplete (helium gap)",
     "rmt-e2e-15a": "helium does not report this validity error: DTD validation incomplete (helium gap)",
     "rmt-e2e-15g": "helium does not report this validity error: DTD validation incomplete (helium gap)",
     "rmt-e2e-15h": "helium does not report this validity error: DTD validation incomplete (helium gap)",
-    "rmt-e2e-20": "helium does not report this validity error: DTD validation incomplete (helium gap)",
     "rmt-ns10-044": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
     "valid-sa-012": "helium rejects a valid document (helium gap)",
     "x-ibm-1-0.5-valid-P04-ibm04v01.xml": "helium rejects a valid document (helium gap)",
