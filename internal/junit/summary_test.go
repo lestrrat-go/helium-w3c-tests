@@ -54,6 +54,37 @@ func TestSummarize(t *testing.T) {
 	}
 }
 
+// A passing subtest whose output carries the harness `xfail (<reason>): …` log
+// line is a documented expected failure, counted as XFail (not Pass).
+const xfailJSON = `
+{"Action":"run","Test":"TestSuite"}
+{"Action":"run","Test":"TestSuite/case-pass"}
+{"Action":"pass","Test":"TestSuite/case-pass","Elapsed":0.01}
+{"Action":"run","Test":"TestSuite/case-xfail"}
+{"Action":"output","Test":"TestSuite/case-xfail","Output":"    harness_test.go:9: xfail (helium rejects a valid document (helium gap)): some details\n"}
+{"Action":"pass","Test":"TestSuite/case-xfail","Elapsed":0.01}
+{"Action":"pass","Test":"TestSuite","Elapsed":0.1}
+`
+
+func TestSummarizeXFail(t *testing.T) {
+	s, err := Summarize(strings.NewReader(xfailJSON), Options{SuiteName: "demo", RootTest: "TestSuite"})
+	if err != nil {
+		t.Fatalf("Summarize: %v", err)
+	}
+	if s.Total != 2 {
+		t.Errorf("Total = %d, want 2", s.Total)
+	}
+	if s.Passed != 1 {
+		t.Errorf("Passed = %d, want 1 (xfail must not count as pass)", s.Passed)
+	}
+	if s.XFailed != 1 {
+		t.Errorf("XFailed = %d, want 1", s.XFailed)
+	}
+	if got := s.XFailReasons["helium rejects a valid document (helium gap)"]; got != 1 {
+		t.Errorf("XFailReasons = %v, want the parenthesized reason counted once", s.XFailReasons)
+	}
+}
+
 func TestSummarizeRequiresRootTest(t *testing.T) {
 	if _, err := Summarize(strings.NewReader(""), Options{}); err == nil {
 		t.Fatal("expected error when RootTest is empty")
