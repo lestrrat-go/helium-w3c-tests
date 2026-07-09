@@ -1,17 +1,13 @@
 {
   "skip": {},
   "xfail": {
-    "hst-bh-005": "helium does not report this validity error: DTD validation incomplete (helium gap)",
-    "hst-bh-006": "helium does not report this validity error: DTD validation incomplete (helium gap)",
-    "rmt-e2e-15a": "helium does not report this validity error: DTD validation incomplete (helium gap)",
-    "rmt-e2e-15g": "helium does not report this validity error: DTD validation incomplete (helium gap)",
-    "rmt-e2e-15h": "helium does not report this validity error: DTD validation incomplete (helium gap)",
-    "rmt-ns10-044": "helium does not report this well-formedness error: DTD/entity/namespace WF checking incomplete (helium gap)",
-    "valid-sa-012": "helium rejects a valid document (helium gap)",
-    "x-ibm-1-0.5-valid-P04-ibm04v01.xml": "helium rejects a valid document (helium gap)",
-    "x-ibm-1-0.5-valid-P05-ibm05v01.xml": "helium rejects a valid document (helium gap)",
-    "x-ibm-1-0.5-valid-P05-ibm05v02.xml": "helium rejects a valid document (helium gap)",
-    "x-ibm-1-0.5-valid-P05-ibm05v03.xml": "helium rejects a valid document (helium gap)",
-    "x-ibm-1-0.5-valid-P05-ibm05v05.xml": "helium rejects a valid document (helium gap)"
+    "hst-bh-005": "intentional divergence: helium is namespace-aware and exempts xmlns:* declarations from the Attribute Value Type (must-be-declared) VC; libxml2 also accepts undeclared xmlns:xml, so a namespace-unaware validator's rejection is out of scope",
+    "hst-bh-006": "intentional divergence: helium is namespace-aware and exempts xmlns:* declarations from the Attribute Value Type (must-be-declared) VC so a namespaced document validates against a namespace-agnostic DTD; enforcing it over-rejects that case, out of scope for a namespace-aware validator",
+    "valid-sa-012": "intentional divergence: colon in a Name that is a valid XML 1.0 Name but an invalid QName; helium is namespace-aware and correctly rejects it, matching the paired Namespaces 1.0 not-wf test. Not a helium gap",
+    "x-ibm-1-0.5-valid-P04-ibm04v01.xml": "intentional divergence: colon in a Name that is a valid XML 1.0 Name but an invalid QName; helium is namespace-aware and correctly rejects it, matching the paired Namespaces 1.0 not-wf test. Not a helium gap",
+    "x-ibm-1-0.5-valid-P05-ibm05v01.xml": "intentional divergence: colon in a Name that is a valid XML 1.0 Name but an invalid QName; helium is namespace-aware and correctly rejects it, matching the paired Namespaces 1.0 not-wf test. Not a helium gap",
+    "x-ibm-1-0.5-valid-P05-ibm05v02.xml": "intentional divergence: colon in a Name that is a valid XML 1.0 Name but an invalid QName; helium is namespace-aware and correctly rejects it, matching the paired Namespaces 1.0 not-wf test. Not a helium gap",
+    "x-ibm-1-0.5-valid-P05-ibm05v03.xml": "intentional divergence: colon in a Name that is a valid XML 1.0 Name but an invalid QName; helium is namespace-aware and correctly rejects it, matching the paired Namespaces 1.0 not-wf test. Not a helium gap",
+    "x-ibm-1-0.5-valid-P05-ibm05v05.xml": "intentional divergence: colon in a Name that is a valid XML 1.0 Name but an invalid QName; helium is namespace-aware and correctly rejects it, matching the paired Namespaces 1.0 not-wf test. Not a helium gap"
   }
 }
