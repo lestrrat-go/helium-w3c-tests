@@ -1,9 +1,4 @@
 {
   "skip": {},
-  "xfail": {
-    "signature-keyname": "ds:KeyName is not parsed by helium, so no key is surfaced to the KeySource. The external Reference now resolves via the harness resolver, so KeyName is the sole blocker (no supported key material in KeyInfo)",
-    "signature-x509-ski": "ds:X509SKI (SubjectKeyIdentifier) is not parsed by helium, so no key is surfaced to the KeySource. The external Reference now resolves via the harness resolver, so X509SKI is the sole blocker (no supported key material in KeyInfo)",
-    "signature-retrievalmethod-rawx509crt": "ds:RetrievalMethod is not parsed by helium, so no key is surfaced to the KeySource. The external Reference now resolves via the harness resolver, so RetrievalMethod is the sole blocker (no supported key material in KeyInfo)",
-    "signature": "the large composite signature: KeyInfo supplies the key via ds:RetrievalMethod (not parsed by helium), so no key is surfaced (no supported key material in KeyInfo) and verification stops before its References, which also require base64, XPointer, XSLT, here() XPath, and Manifest support xmldsig1 does not implement"
-  }
+  "xfail": {}
 }

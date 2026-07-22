@@ -136,13 +136,15 @@ type keyResolver struct {
 	certs []*x509.Certificate
 }
 
-func (k keyResolver) ResolveKey(_ context.Context, keyInfo *xmldsig1.KeyInfoData, alg string) (any, error) {
+func (k keyResolver) ResolveKey(ctx context.Context, keyInfo *xmldsig1.KeyInfoData, alg string) (any, error) {
 	if strings.Contains(alg, "hmac") {
 		return k.secret, nil
 	}
 	if keyInfo == nil {
 		return nil, fmt.Errorf("no KeyInfo to resolve key for %s", alg)
 	}
+	// A certificate resolved out of band by a ds:RetrievalMethod is merged into
+	// X509Certificates by helium before this runs, so it is picked up here too.
 	if len(keyInfo.X509Certificates) > 0 {
 		return keyInfo.X509Certificates[0].PublicKey, nil
 	}
@@ -162,7 +164,33 @@ func (k keyResolver) ResolveKey(_ context.Context, keyInfo *xmldsig1.KeyInfoData
 	if cert := k.matchIssuerSerialCert(keyInfo); cert != nil {
 		return cert.PublicKey, nil
 	}
+	// A ds:X509SKI or a ds:KeyName selects a certificate from the out-of-band
+	// pool using helium's own key sources: X509CertPoolKeySource matches the
+	// parsed X509SKIs against each cert's SubjectKeyId, and KeyByNameSource maps a
+	// KeyName label (e.g. "Lugh") to the cert whose CommonName it names. The
+	// careful DName/IssuerSerial matchers above run first so their escaping-exact
+	// selection is preserved; these cover only the SKI and KeyName forms.
+	if len(k.certs) > 0 {
+		if key, err := xmldsig1.X509CertPoolKeySource(k.certs...).ResolveKey(ctx, keyInfo, alg); err == nil {
+			return key, nil
+		}
+		if key, err := xmldsig1.KeyByNameSource(k.nameKeys()).ResolveKey(ctx, keyInfo, alg); err == nil {
+			return key, nil
+		}
+	}
 	return nil, fmt.Errorf("no supported key material in KeyInfo for %s", alg)
+}
+
+// nameKeys maps each pool certificate's Subject CommonName to its public key, so
+// a ds:KeyName label selects the certificate it names.
+func (k keyResolver) nameKeys() map[string]any {
+	m := make(map[string]any, len(k.certs))
+	for _, cert := range k.certs {
+		if cn := cert.Subject.CommonName; cn != "" {
+			m[cn] = cert.PublicKey
+		}
+	}
+	return m
 }
 
 // matchDNameCert resolves a DName-only KeyInfo (X509SubjectName, the form the

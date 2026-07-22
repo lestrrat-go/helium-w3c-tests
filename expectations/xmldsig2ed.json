@@ -1,7 +1,7 @@
 {
   "skip": {},
   "xfail": {
-    "sig-defCan-2-signature": "the Reference chains an XSLT transform (REC-xslt-19991116) after canonicalization, which xmldsig1 deliberately does not support (ErrUnsupportedTransform: unsupported Transform parameter stylesheet)",
-    "sig-defCan-3-signature": "the Reference chains an XSLT transform (REC-xslt-19991116) after canonicalization, which xmldsig1 deliberately does not support (ErrUnsupportedTransform: unsupported Transform parameter stylesheet)"
+    "sig-defCan-2-signature": "the Reference chains a multi-phase transform pipeline (XPath filter -> c14n -> XSLT -> XPath filter -> c14n) that oscillates between node-set and octet representations, re-parsing the XSLT octet output back into a node-set for the following XPath filter; helium models a single node-set phase followed by a single octet phase and cannot represent this multi-round-trip chain (a full transform-pipeline redesign, not just XSLT support)",
+    "sig-defCan-3-signature": "the Reference chains a multi-phase transform pipeline (XPath filter -> c14n -> XSLT -> XPath filter -> c14n) that oscillates between node-set and octet representations, re-parsing the XSLT octet output back into a node-set for the following XPath filter; helium models a single node-set phase followed by a single octet phase and cannot represent this multi-round-trip chain (a full transform-pipeline redesign, not just XSLT support)"
   }
 }
