@@ -3,6 +3,7 @@ package xmldsig_test
 import (
 	"bytes"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -46,6 +47,11 @@ func TestXMLDSig2EdW3C(t *testing.T) {
 	exp := loadExpectations(t, "XMLDSIG2ED_EXPECTATIONS", "xmldsig2ed.json")
 	testdataRoot := harness.SourceDir(t, "testdata/xmldsig2ed")
 
+	// The dname cases carry only an X509 Distinguished Name in KeyInfo, so the
+	// resolver selects the signing cert from the vendored certs pool out of band.
+	certs := loadCerts(t, filepath.Join(testdataRoot, "xmldsig", "dname", "certs"))
+	sigKeySource := keySourceWithCerts(hmacSecretXMLDSig2Ed, certs)
+
 	for _, c := range xmldsig2edC14NCases {
 		c := c
 		t.Run(c.ID, func(t *testing.T) {
@@ -58,7 +64,7 @@ func TestXMLDSig2EdW3C(t *testing.T) {
 		c := c
 		t.Run(c.ID, func(t *testing.T) {
 			runCase(t, exp, c.ID, func(o *outcome) {
-				runSigCase(t, o, testdataRoot, c.ID, c.Input, hmacSecretXMLDSig2Ed)
+				runSigCase(t, o, testdataRoot, c.ID, c.Input, sigKeySource)
 			})
 		})
 	}
@@ -116,7 +122,7 @@ func runC14NCase(t *testing.T, o *outcome, root string, c dsig2edC14NCase) {
 	}
 }
 
-func runSigCase(t *testing.T, o *outcome, root, id, input string, secret []byte) {
+func runSigCase(t *testing.T, o *outcome, root, id, input string, ks xmldsig1.KeySource) {
 	t.Helper()
 	defer recoverAsFailure(o, id)
 
@@ -128,7 +134,7 @@ func runSigCase(t *testing.T, o *outcome, root, id, input string, secret []byte)
 		o.errorf("%s: parse signed document: %v", id, err)
 		return
 	}
-	if _, err := xmldsig1.NewVerifier(keySource(secret)).AllowSHA1(true).Verify(t.Context(), doc); err != nil {
+	if _, err := xmldsig1.NewVerifier(ks).AllowSHA1(true).Verify(t.Context(), doc); err != nil {
 		o.errorf("%s: verification failed: %v", id, err)
 	}
 }

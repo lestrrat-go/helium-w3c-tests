@@ -22,11 +22,15 @@ func TestXMLDSig11W3C(t *testing.T) {
 	exp := loadExpectations(t, "XMLDSIG11_EXPECTATIONS", "xmldsig11.json")
 	testdataRoot := harness.SourceDir(t, "testdata/xmldsig11")
 
+	// Every vector carries its verification key inline in KeyInfo (RSAKeyValue,
+	// ECKeyValue) or uses the shared HMAC secret; no out-of-band certs are needed.
+	sigKeySource := keySource(hmacSecretXMLDSig11)
+
 	for _, c := range xmldsig11Cases {
 		c := c
 		t.Run(c.ID, func(t *testing.T) {
 			runCase(t, exp, c.ID, func(o *outcome) {
-				runSigCase(t, o, testdataRoot, c.ID, c.File, hmacSecretXMLDSig11)
+				runSigCase(t, o, testdataRoot, c.ID, c.File, sigKeySource)
 			})
 		})
 	}
