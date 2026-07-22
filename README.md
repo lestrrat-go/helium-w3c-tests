@@ -56,20 +56,22 @@ harness-consumed vectors are vendored (committed) under `fixtures/xmldsig2ed`
 (provenance and sha256 in that directory's README); its `manual` fetch overlays
 them into the gitignored `testdata/xmldsig2ed`. It exercises helium's `c14n`,
 `xpath1`, and `xmldsig1` packages: 20 pure Canonical XML 1.1 node-set cases plus
-17 signature-verification cases (34 pass; 3 defCan cases are expected-failures
-for an external-reference and an XSLT-transform gap). The dname cases carry only
-an X509 Distinguished Name in KeyInfo, so the harness selects the signing cert
-from vendored certs by decoded-DName match. The `xmldsig11` suite is the W3C
-"XML Signature 1.1 Interop" enveloping-signature vectors, pinned to an Apache
+17 signature-verification cases (35 pass; 2 defCan cases are expected-failures
+for an XSLT-transform gap). External-document References resolve through
+`xmldsig1.FSReferenceResolver` (its target is vendored); the dname cases carry
+only an X509 Distinguished Name in KeyInfo, so the harness selects the signing
+cert from vendored certs by decoded-DName match. The `xmldsig11` suite is the
+W3C "XML Signature 1.1 Interop" enveloping-signature vectors, pinned to an Apache
 Santuario release (the public Apache-2.0 mirror of the member-gated w3.org
 directory) and scoped to the oracle vendor set: 33 verify-only cases, all
 passing. The `merlinxmldsig` suite is the 2002 Baltimore/Merlin
 "merlin-xmldsig-twenty-three" baseline collection, which ships inside the same
 Santuario checkout (so its lock entry reuses that clone): 16 verify-only signed
-documents, 5 passing (basic DSA/RSA/HMAC-SHA1, and a deliberately-invalid
-truncated-HMAC vector that helium correctly rejects) and 11 expected-failures for
-external references, base64/XSLT transforms, and KeyInfo forms helium does not
-parse. Any known gaps are recorded as categorized xfails in
+documents, 12 passing (basic DSA/RSA/HMAC-SHA1, base64/external-reference cases
+resolved through a harness URL-to-file resolver, and a deliberately-invalid
+truncated-HMAC vector that helium correctly rejects) and 4 expected-failures for
+KeyInfo forms helium does not parse (KeyName, X509SKI, RetrievalMethod) and the
+big composite `signature.xml`. Any known gaps are recorded as categorized xfails in
 `expectations/xmldsig2ed.json`, `expectations/xmldsig11.json`, and
 `expectations/merlinxmldsig.json`.
 
