@@ -33,15 +33,18 @@ report tree (the upstream `-IAIK`/`-IBM`/`-SUN`/`-UPC`/`-ORCL` reference outputs
   WithComments transforms).
 - `xmldsig/dname/{diffRFCs-1..5,dnString-4,6,8}-SUN.xml` — X.509 Distinguished
   Name encoding cases (DSA-SHA1 signatures).
+- `xmldsig/dname/certs/{Control,Equals,Escaped,John,Null,Number,Spacey,Trailing}.crt`
+  and `keystore.p12` — the DName cases' certificate material. Their KeyInfo carries
+  only an X509SubjectName (a DName string, the thing under test), so the harness
+  selects the signing cert from these vendored certs by decoded-DName match.
+  `keystore.p12` (PKCS#12, password `secret`) is the upstream private-key store;
+  it is vendored for provenance only — verification needs only the public certs.
 
-## Not vendored (and why)
+## Key material for the HMAC cases
 
-`xmldsig/dname/certs/` (`*.crt`, `keystore.p12`) is intentionally NOT vendored.
-Every dname case is a DSA-SHA1 signature, which helium's xmldsig1 rejects at the
-unsupported-algorithm check before any key material is consulted, so the certs
-and keystore are never used by the harness. The HMAC cases (defCan, xpointer)
-use the literal secret `secret` (the ASCII bytes of the word), supplied directly
-in harness code, so no key material needs vendoring for them either.
+The HMAC cases (defCan, xpointer) use the literal secret `secret` (the ASCII
+bytes of the word), supplied directly in harness code, so no key material is
+vendored for them.
 
 ## sha256
 
@@ -98,6 +101,15 @@ bb446531182e6f5aac3235264b58fbd056697c1dfdcbe95a8e16c38864e4e730  c14n11/xmlspac
 5892fdd7472cc906741e87eef05439566baa58664d45ef57aa5689c58b709087  xmldsig/defCan-1-signature.xml
 e8044ff374c21ae5987ebfcceeb4f0a35584ac49d5db958c441e0748d5f7dc58  xmldsig/defCan-2-signature.xml
 7f360649ceca6e12e360d21a648a496f37400e0e62ccb74bab55dcb745b99941  xmldsig/defCan-3-signature.xml
+e7aee28ca753af06e2c61a2d6e75b081e017bce91c733a911ba70f7c147ea89a  xmldsig/dname/certs/Control.crt
+4006145319f5f8ea87db6e2c431895171aa254d39c6849667c92ccbf1d26ad31  xmldsig/dname/certs/Equals.crt
+15564f4d3ba1e4c9299e172c556156f4edc98a06ad102dbb548082c75585bcac  xmldsig/dname/certs/Escaped.crt
+4d504d11f9797ebebfa7ffae60758048f5f4dea43c4807828a616bbf7c34965d  xmldsig/dname/certs/John.crt
+65ea300ff59413e1233f79cfc5058655051890c89b3a4d070957157de86b0ae1  xmldsig/dname/certs/Null.crt
+4a81358204b316243485809f2569f1d2eb403713d72be6a56b1bd96455311166  xmldsig/dname/certs/Number.crt
+110636250b2e191d31b70c9e2eefed0768e4577cadc83ba7a83c20e91a809b0a  xmldsig/dname/certs/Spacey.crt
+dd1402fbca0efd20af8a4554cc58fd7e9730f8765d83f073ae5e07cebee67db7  xmldsig/dname/certs/Trailing.crt
+b056b464784825e467c21291febf375e8561b67847cdb0ea433049aad282dcfd  xmldsig/dname/certs/keystore.p12
 f9c23e308fab3de0b8887b85f8ebe645ce78ef1c3f6b6ffe071c54ba17c9d78f  xmldsig/dname/diffRFCs-1-SUN.xml
 77f578419019ccd9938068feaf7fad09909ebf59128a6f65e5546e0053b589de  xmldsig/dname/diffRFCs-2-SUN.xml
 5100c4a30324f3d99094e971deb1fb332c0a1ef49fee351502e9f868e6f70f1e  xmldsig/dname/diffRFCs-3-SUN.xml
