@@ -28,6 +28,10 @@ report tree (the upstream `-IAIK`/`-IBM`/`-SUN`/`-UPC`/`-ORCL` reference outputs
   suite, so these drive no test cases here.
 - `xmldsig/defCan-{1,2,3}-signature.xml` — signed documents using C14N 1.1 as the
   canonicalization method (HMAC-SHA1, an XPath transform on the reference).
+- `xmldsig/c14n11/xml-base-input.xml` — the external document that defCan-1's
+  Reference (`c14n11/xml-base-input.xml`) points at. Vendored so the harness's
+  FSReferenceResolver can serve it locally; the Reference URI joins against the
+  signed doc's base to `xmldsig/c14n11/xml-base-input.xml` under the testdata root.
 - `xmldsig/xpointer/xpointer-{1..6}-SUN.xml` (+ `input.xml`) — signed documents
   whose references use the XPointer framework (HMAC-SHA1, enveloped + C14N 1.1
   WithComments transforms).
@@ -99,6 +103,7 @@ bb446531182e6f5aac3235264b58fbd056697c1dfdcbe95a8e16c38864e4e730  c14n11/xmlspac
 1fd910df12ea8e920f3cf903a9c33f4c0d4ad3d9fbc7d72a21415a0caf6c496f  c14n11/xmlspace-4.xpath
 7ff19e389d7b9101a0920ce8bd081aac3bcfa6097fec54fa8a1ec6b1a6c62ab3  c14n11/xmlspace-input.xml
 5892fdd7472cc906741e87eef05439566baa58664d45ef57aa5689c58b709087  xmldsig/defCan-1-signature.xml
+3afd91003897fdd5b0b7027fca405ad44831f61376615b807485df59c8850c67  xmldsig/c14n11/xml-base-input.xml
 e8044ff374c21ae5987ebfcceeb4f0a35584ac49d5db958c441e0748d5f7dc58  xmldsig/defCan-2-signature.xml
 7f360649ceca6e12e360d21a648a496f37400e0e62ccb74bab55dcb745b99941  xmldsig/defCan-3-signature.xml
 e7aee28ca753af06e2c61a2d6e75b081e017bce91c733a911ba70f7c147ea89a  xmldsig/dname/certs/Control.crt
