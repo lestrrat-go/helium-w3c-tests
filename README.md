@@ -20,7 +20,7 @@ xpath3/              QT3 generated tests
 xslt3/               XSLT 3.0 generated tests
 xsd/                 XSD 1.1 generated tests
 xml/                 XML conformance (parser) generated tests
-xmldsig/             XMLDSig2Ed + XMLDSig 1.1 interop generated tests
+xmldsig/             XMLDSig2Ed + XMLDSig 1.1 + Merlin baseline interop tests
 fixtures/xmldsig2ed/ vendored C14N 1.1 + XMLDSig interop vectors
 ```
 
@@ -47,6 +47,7 @@ go run ./cmd/w3cgen fetch xsd11
 go run ./cmd/w3cgen fetch xml
 go run ./cmd/w3cgen fetch xmldsig2ed
 go run ./cmd/w3cgen fetch xmldsig11
+go run ./cmd/w3cgen fetch merlinxmldsig
 ```
 
 The `xmldsig2ed` suite is the W3C Note "Test Cases for C14N 1.1 and XMLDSig
@@ -62,8 +63,15 @@ from vendored certs by decoded-DName match. The `xmldsig11` suite is the W3C
 "XML Signature 1.1 Interop" enveloping-signature vectors, pinned to an Apache
 Santuario release (the public Apache-2.0 mirror of the member-gated w3.org
 directory) and scoped to the oracle vendor set: 33 verify-only cases, all
-passing. Any known gaps are recorded as categorized xfails in
-`expectations/xmldsig2ed.json` and `expectations/xmldsig11.json`.
+passing. The `merlinxmldsig` suite is the 2002 Baltimore/Merlin
+"merlin-xmldsig-twenty-three" baseline collection, which ships inside the same
+Santuario checkout (so its lock entry reuses that clone): 16 verify-only signed
+documents, 5 passing (basic DSA/RSA/HMAC-SHA1, and a deliberately-invalid
+truncated-HMAC vector that helium correctly rejects) and 11 expected-failures for
+external references, base64/XSLT transforms, and KeyInfo forms helium does not
+parse. Any known gaps are recorded as categorized xfails in
+`expectations/xmldsig2ed.json`, `expectations/xmldsig11.json`, and
+`expectations/merlinxmldsig.json`.
 
 The `xml` suite is the W3C XML Conformance Test Suite (parser well-formedness
 and DTD validity). Unlike the git-pinned suites it is pinned to the W3C `xmlts`
@@ -98,6 +106,7 @@ go run ./cmd/w3ctest xslt30
 go run ./cmd/w3ctest xml
 go run ./cmd/w3ctest xmldsig2ed
 go run ./cmd/w3ctest xmldsig11
+go run ./cmd/w3ctest merlinxmldsig
 ```
 
 Each run writes two files, both defaulting under `test-results/`: the JUnit XML
