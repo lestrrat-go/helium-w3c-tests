@@ -91,6 +91,15 @@ var suites = map[string]suiteConfig{
 		defaultOut:     "test-results/xmldsig11-junit.xml",
 		defaultSummary: "test-results/xmldsig11-summary.md",
 	},
+	"merlinxmldsig": {
+		pkg:            "./xmldsig",
+		rootTest:       "TestMerlinXMLDSigW3C",
+		runPattern:     "^TestMerlinXMLDSigW3C$",
+		junitSuite:     "merlinxmldsig-conformance",
+		displayName:    "Merlin XMLDSig baseline",
+		defaultOut:     "test-results/merlinxmldsig-junit.xml",
+		defaultSummary: "test-results/merlinxmldsig-summary.md",
+	},
 }
 
 func main() {
@@ -115,7 +124,7 @@ func run(ctx context.Context, args []string) (int, error) {
 	fs.Usage = func() {
 		fmt.Fprintln(fs.Output(), "usage: w3ctest [-out FILE] [-summary FILE] [-root DIR] <suite> [go test flags...]")
 		fmt.Fprintln(fs.Output(), "")
-		fmt.Fprintln(fs.Output(), "suites: qt3 xsd10 xsd11 xslt30 xml xmldsig2ed xmldsig11")
+		fmt.Fprintln(fs.Output(), "suites: qt3 xsd10 xsd11 xslt30 xml xmldsig2ed xmldsig11 merlinxmldsig")
 	}
 	if err := fs.Parse(args); err != nil {
 		return 2, err

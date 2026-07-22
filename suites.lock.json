@@ -40,6 +40,12 @@
       "repo": "https://github.com/apache/santuario-xml-security-java.git",
       "commit": "bec6484bbb170c163d572742c3781cecb2232fea",
       "sourceDir": "sources/xmldsig11"
+    },
+    "merlinxmldsig": {
+      "type": "git",
+      "repo": "https://github.com/apache/santuario-xml-security-java.git",
+      "commit": "bec6484bbb170c163d572742c3781cecb2232fea",
+      "sourceDir": "sources/xmldsig11"
     }
   }
 }
