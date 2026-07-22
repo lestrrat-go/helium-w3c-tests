@@ -29,6 +29,17 @@
       "url": "https://www.w3.org/XML/Test/xmlts20130923.zip",
       "sha256": "f9510b3532926e1b4c2e54855b021e4b8a66ec98a5337dcf4ff07e8a41968deb",
       "sourceDir": "sources/xml"
+    },
+    "xmldsig2ed": {
+      "type": "manual",
+      "url": "https://www.w3.org/TR/2008/NOTE-xmldsig2ed-tests-20080610/",
+      "sourceDir": "testdata/xmldsig2ed"
+    },
+    "xmldsig11": {
+      "type": "git",
+      "repo": "https://github.com/apache/santuario-xml-security-java.git",
+      "commit": "bec6484bbb170c163d572742c3781cecb2232fea",
+      "sourceDir": "sources/xmldsig11"
     }
   }
 }

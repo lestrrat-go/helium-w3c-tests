@@ -20,6 +20,8 @@ xpath3/              QT3 generated tests
 xslt3/               XSLT 3.0 generated tests
 xsd/                 XSD 1.1 generated tests
 xml/                 XML conformance (parser) generated tests
+xmldsig/             XMLDSig2Ed + XMLDSig 1.1 interop generated tests
+fixtures/xmldsig2ed/ vendored C14N 1.1 + XMLDSig interop vectors
 ```
 
 ## Local Development
@@ -43,7 +45,25 @@ go run ./cmd/w3cgen fetch qt3
 go run ./cmd/w3cgen fetch xslt30
 go run ./cmd/w3cgen fetch xsd11
 go run ./cmd/w3cgen fetch xml
+go run ./cmd/w3cgen fetch xmldsig2ed
+go run ./cmd/w3cgen fetch xmldsig11
 ```
+
+The `xmldsig2ed` suite is the W3C Note "Test Cases for C14N 1.1 and XMLDSig
+Interoperability" (10 June 2008). It has no upstream archive, so the
+harness-consumed vectors are vendored (committed) under `fixtures/xmldsig2ed`
+(provenance and sha256 in that directory's README); its `manual` fetch overlays
+them into the gitignored `testdata/xmldsig2ed`. It exercises helium's `c14n`,
+`xpath1`, and `xmldsig1` packages: 20 pure Canonical XML 1.1 node-set cases plus
+17 signature-verification cases (34 pass; 3 defCan cases are expected-failures
+for an external-reference and an XSLT-transform gap). The dname cases carry only
+an X509 Distinguished Name in KeyInfo, so the harness selects the signing cert
+from vendored certs by decoded-DName match. The `xmldsig11` suite is the W3C
+"XML Signature 1.1 Interop" enveloping-signature vectors, pinned to an Apache
+Santuario release (the public Apache-2.0 mirror of the member-gated w3.org
+directory) and scoped to the oracle vendor set: 33 verify-only cases, all
+passing. Any known gaps are recorded as categorized xfails in
+`expectations/xmldsig2ed.json` and `expectations/xmldsig11.json`.
 
 The `xml` suite is the W3C XML Conformance Test Suite (parser well-formedness
 and DTD validity). Unlike the git-pinned suites it is pinned to the W3C `xmlts`
@@ -76,6 +96,8 @@ Run a suite's conformance tests and write JUnit XML results:
 go run ./cmd/w3ctest xsd11
 go run ./cmd/w3ctest xslt30
 go run ./cmd/w3ctest xml
+go run ./cmd/w3ctest xmldsig2ed
+go run ./cmd/w3ctest xmldsig11
 ```
 
 Each run writes two files, both defaulting under `test-results/`: the JUnit XML

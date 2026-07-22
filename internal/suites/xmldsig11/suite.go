@@ -1,0 +1,166 @@
+// Package xmldsig11 generates the conformance case tables for the W3C "XML
+// Signature 1.1 Interop" enveloping-signature vectors, pinned to a release tag
+// of the Apache Santuario Java project (Apache-2.0), which mirrors the W3C
+// member-only vector directory.
+//
+// The suite is scoped to the "oracle" vendor set — the only vendor the santuario
+// driver (InteropXMLDSig11Test.java) exercises. Fetch clones the pinned repo and
+// copies oracle/signature-enveloping-*.xml into the gitignored
+// testdata/xmldsig11/oracle. Generate enumerates the same files (sorted,
+// deterministic); when the clone is absent it emits a skip-only manifest.
+package xmldsig11
+
+import (
+	"context"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"sort"
+	"strconv"
+	"strings"
+
+	"github.com/lestrrat-go/helium-w3c-tests/internal/generator"
+)
+
+// vectorSubdir is the xmldsig11 vector tree inside the santuario checkout.
+const vectorSubdir = "src/test/resources/org/w3c/www/interop/xmldsig11"
+
+// vendor is the single vendor set in scope (matches the santuario driver).
+const vendor = "oracle"
+
+type Suite struct{}
+
+func New() Suite {
+	return Suite{}
+}
+
+func (Suite) Name() string {
+	return "xmldsig11"
+}
+
+// Fetch clones the pinned santuario repo, then copies the oracle enveloping
+// signature vectors into testdata/xmldsig11/oracle.
+func (s Suite) Fetch(ctx context.Context, genCtx generator.Context, suiteLock generator.SuiteLock) error {
+	if err := generator.FetchSource(ctx, genCtx.Root, s.Name(), suiteLock); err != nil {
+		return err
+	}
+	vectorRoot := s.vectorRoot(genCtx.Root, suiteLock)
+	files, err := vectorFiles(vectorRoot)
+	if err != nil {
+		return err
+	}
+	destRoot := filepath.Join(genCtx.Root, "testdata", "xmldsig11")
+	for _, rel := range files {
+		src, err := generator.ContainedPath(vectorRoot, rel)
+		if err != nil {
+			return fmt.Errorf("resolve vector %q: %w", rel, err)
+		}
+		dst, err := generator.ContainedPath(destRoot, rel)
+		if err != nil {
+			return fmt.Errorf("resolve vector dest %q: %w", rel, err)
+		}
+		if err := copyFile(src, dst); err != nil {
+			return err
+		}
+	}
+	fmt.Printf("xmldsig11: copied %d vectors into testdata/xmldsig11\n", len(files))
+	return nil
+}
+
+func (s Suite) vectorRoot(root string, suiteLock generator.SuiteLock) string {
+	return filepath.Join(root, filepath.FromSlash(suiteLock.SourceDir), filepath.FromSlash(vectorSubdir))
+}
+
+// vectorFiles returns the oracle enveloping-signature vector files as slash
+// paths relative to the vector root (vendor-prefixed), sorted.
+func vectorFiles(vectorRoot string) ([]string, error) {
+	dir := filepath.Join(vectorRoot, vendor)
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return nil, fmt.Errorf("read %s vectors: %w", vendor, err)
+	}
+	var files []string
+	for _, e := range entries {
+		name := e.Name()
+		if !strings.HasPrefix(name, "signature-enveloping-") || !strings.HasSuffix(name, ".xml") {
+			continue
+		}
+		files = append(files, vendor+"/"+name)
+	}
+	sort.Strings(files)
+	return files, nil
+}
+
+func copyFile(src, dst string) error {
+	if err := os.MkdirAll(filepath.Dir(dst), 0o755); err != nil {
+		return fmt.Errorf("create vector dir for %s: %w", dst, err)
+	}
+	in, err := os.Open(src) //nolint:gosec // src is contained under the santuario checkout
+	if err != nil {
+		return fmt.Errorf("open vector %s: %w", src, err)
+	}
+	defer in.Close()
+	out, err := os.Create(dst) //nolint:gosec // dst is contained under testdata/xmldsig11
+	if err != nil {
+		return fmt.Errorf("create vector %s: %w", dst, err)
+	}
+	if _, err := io.Copy(out, in); err != nil {
+		out.Close()
+		return fmt.Errorf("copy vector %s: %w", dst, err)
+	}
+	if err := out.Close(); err != nil {
+		return fmt.Errorf("close vector %s: %w", dst, err)
+	}
+	return nil
+}
+
+func (s Suite) Generate(ctx context.Context, genCtx generator.Context, suiteLock generator.SuiteLock, mode generator.GenerateMode) error {
+	_ = ctx
+	sourceDir := filepath.Join(genCtx.Root, filepath.FromSlash(suiteLock.SourceDir))
+
+	var cases []genCase
+	if _, err := os.Stat(sourceDir); err != nil {
+		if !os.IsNotExist(err) {
+			return fmt.Errorf("stat %s: %w", suiteLock.SourceDir, err)
+		}
+	} else {
+		files, err := vectorFiles(s.vectorRoot(genCtx.Root, suiteLock))
+		if err != nil {
+			return err
+		}
+		for _, rel := range files {
+			cases = append(cases, genCase{
+				ID:   strings.TrimSuffix(filepath.Base(rel), ".xml"),
+				File: rel,
+			})
+		}
+	}
+
+	// No suite-level manifest test is emitted (see the xmldsig2ed generator):
+	// the two xmldsig suites share the xmldsig_test package and the manifest's
+	// fixed-named consts would collide.
+	source := casesSource(cases)
+	out := filepath.Join(genCtx.Root, "xmldsig", "xmldsig11_cases_gen_test.go")
+	return generator.WriteGoFile(out, source, mode)
+}
+
+type genCase struct {
+	ID   string
+	File string
+}
+
+func casesSource(cases []genCase) string {
+	var b strings.Builder
+	b.WriteString("// Code generated by w3cgen; DO NOT EDIT.\n\n")
+	b.WriteString("package xmldsig_test\n\n")
+	b.WriteString("var xmldsig11Cases = []dsig11Case{\n")
+	for _, c := range cases {
+		b.WriteString("\t{\n")
+		fmt.Fprintf(&b, "\t\tID: %s,\n", strconv.Quote(c.ID))
+		fmt.Fprintf(&b, "\t\tFile: %s,\n", strconv.Quote(c.File))
+		b.WriteString("\t},\n")
+	}
+	b.WriteString("}\n")
+	return b.String()
+}

@@ -26,6 +26,8 @@ Agent-consumed guidance. Keep terse. Update when repo workflow or suite policy c
 | `internal/suites/xslt30/` | XSLT 3.0 generator policy |
 | `internal/suites/xsd11/` | XSD 1.1 generator policy |
 | `internal/suites/xml/` | XML conformance (parser) generator policy |
+| `internal/suites/xmldsig2ed/` | C14N 1.1 + XMLDSig interop generator policy |
+| `internal/suites/xmldsig11/` | XML Signature 1.1 interop generator policy |
 | `expectations/` | skip/expected-failure metadata |
 | `sources/` | upstream W3C checkouts; gitignored |
 | `testdata/` | generated/pruned fixtures |
@@ -33,14 +35,16 @@ Agent-consumed guidance. Keep terse. Update when repo workflow or suite policy c
 | `xslt3/` | generated XSLT 3.0 tests |
 | `xsd/` | generated XSD 1.1 tests |
 | `xml/` | generated XML conformance tests |
+| `xmldsig/` | generated XMLDSig2Ed + XMLDSig 1.1 interop tests |
+| `fixtures/xmldsig2ed/` | vendored C14N 1.1 + XMLDSig interop vectors (committed) |
 
 ## Commands
 
-- Fetch pinned suites: `go run ./cmd/w3cgen fetch qt3 xslt30 xsd11 xml`
+- Fetch pinned suites: `go run ./cmd/w3cgen fetch qt3 xslt30 xsd11 xml xmldsig2ed xmldsig11`
 - Generate tests: `go run ./cmd/w3cgen generate all`
 - Verify generated files: `go run ./cmd/w3cgen verify all`
 - Run tests: `go test ./...`
-- Run a suite's conformance with JUnit XML: `go run ./cmd/w3ctest xsd11` / `go run ./cmd/w3ctest xslt30` / `go run ./cmd/w3ctest xml`
+- Run a suite's conformance with JUnit XML: `go run ./cmd/w3ctest xsd11` / `go run ./cmd/w3ctest xslt30` / `go run ./cmd/w3ctest xml` / `go run ./cmd/w3ctest xmldsig2ed` / `go run ./cmd/w3ctest xmldsig11`
 - Default outputs: JUnit `test-results/<suite>-junit.xml` (override `-out FILE`) and summary markdown `test-results/<suite>-summary.md` (override `-summary FILE`). Point them at the helium repo to refresh its committed conformance evidence.
 - Summary rolls up pass/skip/fail + skip-reason breakdown, stamped with the pinned upstream commit + date (point-in-time snapshot; regenerate to refresh).
 - JUnit report contains conformance subtests only (`TestXSD11W3C/<case ID>`, `TestXSLT30W3C/<case name>`); manifest checks are excluded; skipped cases carry reason in `<skipped message>`.
@@ -71,6 +75,10 @@ Agent-consumed guidance. Keep terse. Update when repo workflow or suite policy c
 - XSD suite is pinned to w3c/xsdtests (git). `fetch xsd11` clones `sources/xsd11` and copies the XSD-1.1 fixtures into `testdata/xsd11` (gitignored); generated tests skip when fixtures are absent.
 - XSLT suite is pinned to w3c/xslt30-test (git). `fetch xslt30` clones `sources/xslt30` and copies catalog-referenced fixtures (stylesheets + xsl:include/import closure, sources, packages, schemas, collections) into `testdata/xslt30` (gitignored), then overlays the committed `fixtures/xslt30` tree on top.
 - XML suite is the W3C XML Conformance Test Suite, pinned to the `xmlts` zip (sha256 in `suites.lock.json`, `type: "zip"` — a download+verify+extract source kind in `internal/generator/fetch.go`). `fetch xml` extracts into `sources/xml/xmlconf` and copies each TEST document, its OUTPUT, and the transitive external DTD/entity closure into `testdata/xml` (gitignored). Targets **XML 1.0 + Namespaces 1.0**; the runner drives helium's `helium.Parser` as a validating processor (external DTD + entities loaded, `ValidateDTD` on for valid/invalid) and asserts each TEST's TYPE (valid → parses clean; invalid → validity error; not-wf → fatal error; error → optional, never fails). XML 1.1 / Namespaces 1.1 cases are gated off (`xml11Supported = false` in `xml/xml_harness_test.go`) until 1.1 parser support lands. Tests tagged for XML 1.0 editions that exclude the one helium implements — `EDITION="1 2 3 4"`, i.e. the 4th-edition enumerated name character classes (productions [85]–[89]) that the 5th edition replaced with broad NameStartChar/NameChar ranges — are gated too (`targetEdition = "5"`); every such case is accepted by libxml2, confirming the divergence is edition, not a helium defect. Current helium gaps (partial DTD validation, some DTD-internal WF checks) are recorded as categorized xfails in `expectations/xml.json`; the harness errors on an unexpected pass so fixes are caught.
+- `xmldsig2ed` is the W3C Note "Test Cases for C14N 1.1 and XMLDSig Interoperability" (10 June 2008). No upstream archive, so the harness-consumed subset is **vendored** in `fixtures/xmldsig2ed` (provenance + sha256 in its README). Lock kind is `manual`: `fetch xmldsig2ed` overlays the fixtures into gitignored `testdata/xmldsig2ed` (no network; it does NOT call `FetchSource`, which errors on `manual`). Two case kinds share the `xmldsig/` leaf package (`TestXMLDSig2EdW3C`): 20 pure Canonical XML 1.1 node-set cases (XPath-1.0 node-set via `xpath1`, canonicalize `C14N11` via `c14n`, byte-compare) and 17 signature-verification cases. 34 pass; 3 are xfails (`sig-defCan-1` uses an external-document Reference URI, which xmldsig1 fail-closes on; `sig-defCan-2/3` chain an XSLT transform after canonicalization, which xmldsig1 does not support). The `c14n11/appendixa` RFC 3986 dot-segment pairs are vendored for provenance only (helium's URI join is covered elsewhere); they drive no cases.
+  - The 8 `dname` cases carry only an X509 Distinguished Name (`ds:X509SubjectName`) in KeyInfo. Helium surfaces that string VERBATIM (no DName canonicalization); the harness (`keyResolver.matchDNameCert` in `xmldsig/harness_test.go`) decodes the RFC 2253/4514 escapes to attribute VALUES and selects the vendored cert whose `crypto/x509` Subject matches. Matching on decoded values (not the escaped string) is what makes the escaping-divergence cases (e.g. `dnString-4`, `Trailing\20\20` vs `Trailing \ `) pass. The certs live in `fixtures/xmldsig2ed/xmldsig/dname/certs` (`*.crt` + `keystore.p12`, password `secret`; the p12 is vendored for provenance only — verify needs only the public certs).
+- `xmldsig11` is the W3C "XML Signature 1.1 Interop" enveloping-signature vectors. The canonical w3.org directory is member-gated, so the suite is pinned (git) to an Apache Santuario release tag (Apache-2.0 mirror) and scoped to the **oracle** vendor set — the only vendor the santuario driver exercises. `fetch xmldsig11` clones `sources/xmldsig11` and copies `oracle/signature-enveloping-*.xml` into gitignored `testdata/xmldsig11`. All 33 cases are verify-only (`TestXMLDSig11W3C`, HMAC key `testkey`, public keys built from inline KeyInfo) and pass (RSA/ECDSA/HMAC SHA-1..512, P-256/384/521, and RFC 4050 ECDSAKeyValue KeyInfo). No `HMACOutputLength`-truncation vectors exist in the oracle tree.
+- The two xmldsig suites emit **no suite-level manifest test**: they share one leaf package and `generator.ManifestTestSource`'s fixed-named consts would collide. Per-case skips point at the fetch command when testdata is absent.
 - `fixtures/xslt30` (committed) holds the small curated fixture set the catalog scan cannot reproduce from the raw clone: files referenced only at run time (doc()/unparsed-text(), dynamic fn:transform stylesheets, collection members) and fixtures whose content was hand-edited (e.g. a DTD with its XML declaration stripped). Regenerate it only from a known-good fixture tree; never delete a file here without confirming no case needs it.
 
 ## Expectations

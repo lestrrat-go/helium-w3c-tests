@@ -1,0 +1,8 @@
+{
+  "skip": {},
+  "xfail": {
+    "sig-defCan-1-signature": "the Reference URI is an EXTERNAL document reference (c14n11/xml-base-input.xml); xmldsig1 is fail-closed and does not dereference external references (ErrReferenceNotFound: unsupported reference URI)",
+    "sig-defCan-2-signature": "the Reference chains an XSLT transform (REC-xslt-19991116) after canonicalization, which xmldsig1 deliberately does not support (ErrUnsupportedTransform: unsupported Transform parameter stylesheet)",
+    "sig-defCan-3-signature": "the Reference chains an XSLT transform (REC-xslt-19991116) after canonicalization, which xmldsig1 deliberately does not support (ErrUnsupportedTransform: unsupported Transform parameter stylesheet)"
+  }
+}
