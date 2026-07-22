@@ -1,17 +1,4 @@
 {
   "skip": {},
-  "xfail": {
-    "signature-enveloping-p256_sha1_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved",
-    "signature-enveloping-p256_sha256_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved",
-    "signature-enveloping-p256_sha384_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved",
-    "signature-enveloping-p256_sha512_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved",
-    "signature-enveloping-p384_sha1_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved",
-    "signature-enveloping-p384_sha256_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved",
-    "signature-enveloping-p384_sha384_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved",
-    "signature-enveloping-p384_sha512_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved",
-    "signature-enveloping-p521_sha1_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved (also P-521)",
-    "signature-enveloping-p521_sha256_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved (also P-521)",
-    "signature-enveloping-p521_sha384_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved (also P-521)",
-    "signature-enveloping-p521_sha512_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved (also P-521)"
-  }
+  "xfail": {}
 }
