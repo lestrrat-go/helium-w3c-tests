@@ -1,0 +1,16 @@
+{
+  "skip": {},
+  "xfail": {
+    "signature-enveloping-b64-dsa": "the Reference chains a base64 Transform (xmldsig#base64), which xmldsig1 does not support: ErrUnsupportedTransform",
+    "signature-external-dsa": "the Reference is an EXTERNAL resource (http://www.w3.org/TR/xml-stylesheet); xmldsig1 is fail-closed and does not dereference external references (ErrReferenceNotFound: unsupported reference URI)",
+    "signature-external-b64-dsa": "the Reference is an EXTERNAL resource (xml-stylesheet.b64); xmldsig1 fail-closes on external references (it also chains an unsupported base64 Transform)",
+    "signature-x509-crt": "the Reference is an EXTERNAL resource (xml-stylesheet); xmldsig1 fail-closes on external references. The inline X509Certificate resolves the key fine, so the external reference is the sole blocker",
+    "signature-x509-crt-crl": "the Reference is an EXTERNAL resource (xml-stylesheet); xmldsig1 fail-closes on external references. The signing cert resolves; the X509CRL revocation is a trust-layer concern helium does not evaluate",
+    "signature-x509-sn": "the Reference is an EXTERNAL resource (xml-stylesheet); xmldsig1 fail-closes on external references. The X509SubjectName resolves the cert via harness decoded-DName match, so the external reference is the sole blocker",
+    "signature-x509-is": "the Reference is an EXTERNAL resource (xml-stylesheet); xmldsig1 fail-closes on external references. The X509IssuerSerial resolves the cert (harness match by serial), so the external reference is the sole blocker",
+    "signature-keyname": "ds:KeyName is not parsed by helium, so no key is surfaced to the KeySource; the Reference is also an external resource that xmldsig1 fail-closes on",
+    "signature-x509-ski": "ds:X509SKI (SubjectKeyIdentifier) is not parsed by helium, so no key is surfaced to the KeySource; the Reference is also an external resource that xmldsig1 fail-closes on",
+    "signature-retrievalmethod-rawx509crt": "ds:RetrievalMethod is not parsed by helium, so no key is surfaced to the KeySource; the Reference is also an external resource that xmldsig1 fail-closes on",
+    "signature": "the large composite signature: KeyInfo supplies the key via ds:RetrievalMethod (not parsed by helium) and its References require base64, XPointer, XSLT, here() XPath, Manifest, and external-resource support that xmldsig1 does not implement"
+  }
+}
