@@ -52,6 +52,11 @@ func TestXMLDSig2EdW3C(t *testing.T) {
 	certs := loadCerts(t, filepath.Join(testdataRoot, "xmldsig", "dname", "certs"))
 	sigKeySource := keySourceWithCerts(hmacSecretXMLDSig2Ed, certs)
 
+	// defCan-1's Reference is a relative external document (c14n11/xml-base-input.xml).
+	// FSReferenceResolver serves it from the testdata root; xmldsig1 joins the
+	// relative URI against each doc's BaseURI (its testdata-relative path) first.
+	refResolver := xmldsig1.FSReferenceResolver(os.DirFS(testdataRoot))
+
 	for _, c := range xmldsig2edC14NCases {
 		c := c
 		t.Run(c.ID, func(t *testing.T) {
@@ -64,7 +69,7 @@ func TestXMLDSig2EdW3C(t *testing.T) {
 		c := c
 		t.Run(c.ID, func(t *testing.T) {
 			runCase(t, exp, c.ID, func(o *outcome) {
-				runSigCase(t, o, testdataRoot, c.ID, c.Input, sigKeySource)
+				runSigCase(t, o, testdataRoot, c.ID, c.Input, sigKeySource, refResolver)
 			})
 		})
 	}
@@ -122,7 +127,7 @@ func runC14NCase(t *testing.T, o *outcome, root string, c dsig2edC14NCase) {
 	}
 }
 
-func runSigCase(t *testing.T, o *outcome, root, id, input string, ks xmldsig1.KeySource) {
+func runSigCase(t *testing.T, o *outcome, root, id, input string, ks xmldsig1.KeySource, resolver xmldsig1.ReferenceResolver) {
 	t.Helper()
 	defer recoverAsFailure(o, id)
 
@@ -134,7 +139,11 @@ func runSigCase(t *testing.T, o *outcome, root, id, input string, ks xmldsig1.Ke
 		o.errorf("%s: parse signed document: %v", id, err)
 		return
 	}
-	if _, err := xmldsig1.NewVerifier(ks).AllowSHA1(true).Verify(t.Context(), doc); err != nil {
+	verifier := xmldsig1.NewVerifier(ks).AllowSHA1(true)
+	if resolver != nil {
+		verifier = verifier.ReferenceResolver(resolver)
+	}
+	if _, err := verifier.Verify(t.Context(), doc); err != nil {
 		o.errorf("%s: verification failed: %v", id, err)
 	}
 }

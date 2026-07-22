@@ -30,6 +30,14 @@ const collectionSubdir = "src/test/resources/ie/baltimore/merlin-examples/merlin
 // invalid (a 40-bit-truncated HMACOutputLength): verification MUST fail.
 const truncatedHMACCase = "signature-enveloping-hmac-sha1-40"
 
+// externalStylesheet is Santuario's local copy of the resource the merlin
+// external-reference cases sign against (http://www.w3.org/TR/xml-stylesheet). It
+// lives OUTSIDE the merlin collection (in the apache test resources), so it is
+// copied separately from the collection files. Its base64 sibling
+// (xml-stylesheet.b64, for http://www.w3.org/Signature/2002/04/xml-stylesheet.b64)
+// ships inside the collection and is copied with the other collection files.
+const externalStylesheet = "src/test/resources/org/apache/xml/security/test/javax/xml/crypto/dsig/xml-stylesheet"
+
 type Suite struct{}
 
 func New() Suite {
@@ -65,7 +73,15 @@ func (s Suite) Fetch(ctx context.Context, genCtx generator.Context, suiteLock ge
 			return err
 		}
 	}
-	fmt.Printf("merlinxmldsig: copied %d files into testdata/merlinxmldsig\n", len(rels))
+
+	// Copy the external xml-stylesheet target, which lives outside the collection.
+	extSrc := filepath.Join(genCtx.Root, filepath.FromSlash(suiteLock.SourceDir), filepath.FromSlash(externalStylesheet))
+	extDst := filepath.Join(destRoot, "xml-stylesheet")
+	if err := copyFile(extSrc, extDst); err != nil {
+		return err
+	}
+
+	fmt.Printf("merlinxmldsig: copied %d files (plus xml-stylesheet) into testdata/merlinxmldsig\n", len(rels))
 	return nil
 }
 
@@ -92,14 +108,16 @@ func signedDocs(collectionRoot string) ([]string, error) {
 	return docs, nil
 }
 
-// copyRels returns every file the harness needs: the signed documents plus the
-// certs directory (cert material for the KeyName/X509 cases).
+// copyRels returns every file the harness needs: the signed documents, the
+// base64 external-reference target that ships in the collection, plus the certs
+// directory (cert material for the KeyName/X509 cases).
 func copyRels(collectionRoot string) ([]string, error) {
 	docs, err := signedDocs(collectionRoot)
 	if err != nil {
 		return nil, err
 	}
 	rels := append([]string{}, docs...)
+	rels = append(rels, "xml-stylesheet.b64")
 
 	certsDir := filepath.Join(collectionRoot, "certs")
 	certEntries, err := os.ReadDir(certsDir)

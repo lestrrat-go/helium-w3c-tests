@@ -30,7 +30,7 @@ func TestXMLDSig11W3C(t *testing.T) {
 		c := c
 		t.Run(c.ID, func(t *testing.T) {
 			runCase(t, exp, c.ID, func(o *outcome) {
-				runSigCase(t, o, testdataRoot, c.ID, c.File, sigKeySource)
+				runSigCase(t, o, testdataRoot, c.ID, c.File, sigKeySource, nil)
 			})
 		})
 	}
