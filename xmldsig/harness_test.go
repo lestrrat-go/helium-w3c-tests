@@ -2,6 +2,7 @@ package xmldsig_test
 
 import (
 	"context"
+	"crypto/dsa" //nolint:staticcheck // DSA is required to verify the 2002 baseline DSA-SHA1 interop vectors
 	"crypto/ecdsa"
 	"crypto/rsa"
 	"crypto/x509"
@@ -151,7 +152,14 @@ func (k keyResolver) ResolveKey(_ context.Context, keyInfo *xmldsig1.KeyInfoData
 	if keyInfo.ECKeyValue != nil {
 		return &ecdsa.PublicKey{Curve: keyInfo.ECKeyValue.Curve, X: keyInfo.ECKeyValue.X, Y: keyInfo.ECKeyValue.Y}, nil
 	}
+	if keyInfo.DSAKeyValue != nil {
+		v := keyInfo.DSAKeyValue
+		return &dsa.PublicKey{Parameters: dsa.Parameters{P: v.P, Q: v.Q, G: v.G}, Y: v.Y}, nil
+	}
 	if cert := k.matchDNameCert(keyInfo); cert != nil {
+		return cert.PublicKey, nil
+	}
+	if cert := k.matchIssuerSerialCert(keyInfo); cert != nil {
 		return cert.PublicKey, nil
 	}
 	return nil, fmt.Errorf("no supported key material in KeyInfo for %s", alg)
@@ -176,6 +184,29 @@ func (k keyResolver) matchDNameCert(keyInfo *xmldsig1.KeyInfoData) *x509.Certifi
 		}
 		for _, cert := range k.certs {
 			if cert.Subject.CommonName == want {
+				return cert
+			}
+		}
+	}
+	return nil
+}
+
+// matchIssuerSerialCert resolves an X509IssuerSerial-only KeyInfo (the merlin
+// signature-x509-is case) to a vendored certificate. Helium surfaces the issuer
+// DName and serial VERBATIM (no matching); the harness selects the cert by
+// serial number, then confirms the issuer CN matches after decoding, so a stray
+// serial collision cannot pick the wrong cert.
+func (k keyResolver) matchIssuerSerialCert(keyInfo *xmldsig1.KeyInfoData) *x509.Certificate {
+	for _, is := range keyInfo.X509IssuerSerials {
+		if is.SerialNumber == nil {
+			continue
+		}
+		wantIssuerCN := decodeDNameCN(is.IssuerName)
+		for _, cert := range k.certs {
+			if cert.SerialNumber == nil || cert.SerialNumber.Cmp(is.SerialNumber) != 0 {
+				continue
+			}
+			if wantIssuerCN == "" || cert.Issuer.CommonName == wantIssuerCN {
 				return cert
 			}
 		}
