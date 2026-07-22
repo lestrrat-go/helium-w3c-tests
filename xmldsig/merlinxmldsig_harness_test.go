@@ -1,6 +1,9 @@
 package xmldsig_test
 
 import (
+	"context"
+	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -34,18 +37,46 @@ func TestMerlinXMLDSigW3C(t *testing.T) {
 	// shared HMAC secret).
 	certs := loadCerts(t, filepath.Join(testdataRoot, "certs"))
 	sigKeySource := keySourceWithCerts(hmacSecretMerlin, certs)
+	resolver := merlinReferenceResolver{root: testdataRoot}
 
 	for _, c := range merlinXMLDSigCases {
 		c := c
 		t.Run(c.ID, func(t *testing.T) {
 			runCase(t, exp, c.ID, func(o *outcome) {
-				runMerlinCase(t, o, testdataRoot, c, sigKeySource)
+				runMerlinCase(t, o, testdataRoot, c, sigKeySource, resolver)
 			})
 		})
 	}
 }
 
-func runMerlinCase(t *testing.T, o *outcome, root string, c merlinCase, ks xmldsig1.KeySource) {
+// merlinReferenceResolver maps the two absolute external-reference URLs the
+// merlin vectors sign against to their vendored local copies; everything else
+// stays fail-closed. This mirrors the interop setup: the vectors were signed
+// against these two W3C documents, which Santuario vendors locally so
+// verification needs no network. helium's FSReferenceResolver cannot serve them
+// because it refuses scheme URIs (these are absolute http URLs), so the harness
+// supplies an explicit URL-to-file map.
+type merlinReferenceResolver struct {
+	root string
+}
+
+func (r merlinReferenceResolver) ResolveReference(ctx context.Context, uri string) ([]byte, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	var name string
+	switch uri {
+	case "http://www.w3.org/TR/xml-stylesheet":
+		name = "xml-stylesheet"
+	case "http://www.w3.org/Signature/2002/04/xml-stylesheet.b64":
+		name = "xml-stylesheet.b64"
+	default:
+		return nil, fmt.Errorf("%w: merlin resolver has no mapping for %q", xmldsig1.ErrReferenceNotFound, uri)
+	}
+	return os.ReadFile(filepath.Join(r.root, name))
+}
+
+func runMerlinCase(t *testing.T, o *outcome, root string, c merlinCase, ks xmldsig1.KeySource, resolver xmldsig1.ReferenceResolver) {
 	t.Helper()
 	defer recoverAsFailure(o, c.ID)
 
@@ -57,7 +88,7 @@ func runMerlinCase(t *testing.T, o *outcome, root string, c merlinCase, ks xmlds
 		o.errorf("%s: parse signed document: %v", c.ID, err)
 		return
 	}
-	_, verr := xmldsig1.NewVerifier(ks).AllowSHA1(true).Verify(t.Context(), doc)
+	_, verr := xmldsig1.NewVerifier(ks).AllowSHA1(true).ReferenceResolver(resolver).Verify(t.Context(), doc)
 
 	if !c.MustFail {
 		if verr != nil {
