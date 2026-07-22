@@ -73,6 +73,24 @@ var suites = map[string]suiteConfig{
 		defaultOut:     "test-results/xml-junit.xml",
 		defaultSummary: "test-results/xml-summary.md",
 	},
+	"xmldsig2ed": {
+		pkg:            "./xmldsig",
+		rootTest:       "TestXMLDSig2EdW3C",
+		runPattern:     "^TestXMLDSig2EdW3C$",
+		junitSuite:     "xmldsig2ed-conformance",
+		displayName:    "XMLDSig2Ed (C14N 1.1 interop)",
+		defaultOut:     "test-results/xmldsig2ed-junit.xml",
+		defaultSummary: "test-results/xmldsig2ed-summary.md",
+	},
+	"xmldsig11": {
+		pkg:            "./xmldsig",
+		rootTest:       "TestXMLDSig11W3C",
+		runPattern:     "^TestXMLDSig11W3C$",
+		junitSuite:     "xmldsig11-conformance",
+		displayName:    "XMLDSig 1.1 interop",
+		defaultOut:     "test-results/xmldsig11-junit.xml",
+		defaultSummary: "test-results/xmldsig11-summary.md",
+	},
 }
 
 func main() {
@@ -97,7 +115,7 @@ func run(ctx context.Context, args []string) (int, error) {
 	fs.Usage = func() {
 		fmt.Fprintln(fs.Output(), "usage: w3ctest [-out FILE] [-summary FILE] [-root DIR] <suite> [go test flags...]")
 		fmt.Fprintln(fs.Output(), "")
-		fmt.Fprintln(fs.Output(), "suites: qt3 xsd10 xsd11 xslt30 xml")
+		fmt.Fprintln(fs.Output(), "suites: qt3 xsd10 xsd11 xslt30 xml xmldsig2ed xmldsig11")
 	}
 	if err := fs.Parse(args); err != nil {
 		return 2, err
