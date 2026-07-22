@@ -1,0 +1,22 @@
+{
+  "skip": {},
+  "xfail": {
+    "sig-defCan-1-signature": "xmldsig1 does not honor the XPath transform (REC-xpath-19991116): ErrUnsupportedTransform (unsupported Transform parameter XPath)",
+    "sig-defCan-2-signature": "xmldsig1 does not honor the XPath transform (REC-xpath-19991116): ErrUnsupportedTransform (unsupported Transform parameter XPath)",
+    "sig-defCan-3-signature": "xmldsig1 does not honor the XPath transform (REC-xpath-19991116): ErrUnsupportedTransform (unsupported Transform parameter XPath)",
+    "sig-diffRFCs-1-SUN": "KeyInfo carries only an X509 Distinguished Name reference (X509IssuerSerial/X509SubjectName), which helium's keyinfo parser does not handle, and the signature is DSA-SHA1, which xmldsig1 does not support",
+    "sig-diffRFCs-2-SUN": "KeyInfo carries only an X509 Distinguished Name reference (X509IssuerSerial/X509SubjectName), which helium's keyinfo parser does not handle, and the signature is DSA-SHA1, which xmldsig1 does not support",
+    "sig-diffRFCs-3-SUN": "KeyInfo carries only an X509 Distinguished Name reference (X509IssuerSerial/X509SubjectName), which helium's keyinfo parser does not handle, and the signature is DSA-SHA1, which xmldsig1 does not support",
+    "sig-diffRFCs-4-SUN": "KeyInfo carries only an X509 Distinguished Name reference (X509IssuerSerial/X509SubjectName), which helium's keyinfo parser does not handle, and the signature is DSA-SHA1, which xmldsig1 does not support",
+    "sig-diffRFCs-5-SUN": "KeyInfo carries only an X509 Distinguished Name reference (X509IssuerSerial/X509SubjectName), which helium's keyinfo parser does not handle, and the signature is DSA-SHA1, which xmldsig1 does not support",
+    "sig-dnString-4-SUN": "KeyInfo carries only an X509 Distinguished Name reference (X509IssuerSerial/X509SubjectName), which helium's keyinfo parser does not handle, and the signature is DSA-SHA1, which xmldsig1 does not support",
+    "sig-dnString-6-SUN": "KeyInfo carries only an X509 Distinguished Name reference (X509IssuerSerial/X509SubjectName), which helium's keyinfo parser does not handle, and the signature is DSA-SHA1, which xmldsig1 does not support",
+    "sig-dnString-8-SUN": "KeyInfo carries only an X509 Distinguished Name reference (X509IssuerSerial/X509SubjectName), which helium's keyinfo parser does not handle, and the signature is DSA-SHA1, which xmldsig1 does not support",
+    "sig-xpointer-1-SUN": "reference URI uses the XPointer framework (#xpointer(/)), which xmldsig1 does not resolve: ErrReferenceNotFound",
+    "sig-xpointer-2-SUN": "reference URI uses the XPointer framework (#xpointer(id('e1ID'))), which xmldsig1 does not resolve: ErrReferenceNotFound",
+    "sig-xpointer-3-SUN": "digest mismatch: the whole-document reference resolves but the enveloped-signature + C14N 1.1 WithComments transform output diverges from the signer's",
+    "sig-xpointer-4-SUN": "digest mismatch: the bare #e1ID reference resolves but the enveloped-signature + C14N 1.1 WithComments transform output diverges from the signer's",
+    "sig-xpointer-5-SUN": "reference URI uses the XPointer framework (#xpointer(id('e1ID'))), which xmldsig1 does not resolve: ErrReferenceNotFound",
+    "sig-xpointer-6-SUN": "digest mismatch: the bare #e1ID reference resolves but the enveloped-signature + C14N 1.1 WithComments transform output diverges from the signer's"
+  }
+}

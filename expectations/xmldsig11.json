@@ -1,0 +1,29 @@
+{
+  "skip": {},
+  "xfail": {
+    "signature-enveloping-hmac-sha384": "HMAC-SHA384 signature algorithm unsupported by xmldsig1: ErrUnsupportedAlgorithm",
+    "signature-enveloping-hmac-sha512": "HMAC-SHA512 signature algorithm unsupported by xmldsig1: ErrUnsupportedAlgorithm",
+    "signature-enveloping-p256_sha1": "ECDSA-SHA1 signature algorithm unsupported by xmldsig1: ErrUnsupportedAlgorithm",
+    "signature-enveloping-p256_sha1_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved",
+    "signature-enveloping-p256_sha256_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved",
+    "signature-enveloping-p256_sha384_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved",
+    "signature-enveloping-p256_sha512": "ECDSA-SHA512 signature algorithm unsupported by xmldsig1: ErrUnsupportedAlgorithm",
+    "signature-enveloping-p256_sha512_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved",
+    "signature-enveloping-p384_sha1": "ECDSA-SHA1 signature algorithm unsupported by xmldsig1: ErrUnsupportedAlgorithm",
+    "signature-enveloping-p384_sha1_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved",
+    "signature-enveloping-p384_sha256_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved",
+    "signature-enveloping-p384_sha384_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved",
+    "signature-enveloping-p384_sha512": "ECDSA-SHA512 signature algorithm unsupported by xmldsig1: ErrUnsupportedAlgorithm",
+    "signature-enveloping-p384_sha512_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved",
+    "signature-enveloping-p521_sha1": "EC curve P-521 (urn:oid:1.3.132.0.35) unsupported by helium keyinfo: ErrInvalidKeyInfo",
+    "signature-enveloping-p521_sha1_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved (also P-521)",
+    "signature-enveloping-p521_sha256": "EC curve P-521 (urn:oid:1.3.132.0.35) unsupported by helium keyinfo: ErrInvalidKeyInfo",
+    "signature-enveloping-p521_sha256_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved (also P-521)",
+    "signature-enveloping-p521_sha384": "EC curve P-521 (urn:oid:1.3.132.0.35) unsupported by helium keyinfo: ErrInvalidKeyInfo",
+    "signature-enveloping-p521_sha384_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved (also P-521)",
+    "signature-enveloping-p521_sha512": "EC curve P-521 (urn:oid:1.3.132.0.35) unsupported by helium keyinfo: ErrInvalidKeyInfo",
+    "signature-enveloping-p521_sha512_4050": "RFC 4050 ECDSAKeyValue KeyInfo encoding not parsed by helium; no key material resolved (also P-521)",
+    "signature-enveloping-rsa_sha384": "RSA-SHA384 signature algorithm unsupported by xmldsig1: ErrUnsupportedAlgorithm",
+    "signature-enveloping-rsa_sha512": "RSA-SHA512 signature algorithm unsupported by xmldsig1: ErrUnsupportedAlgorithm"
+  }
+}
