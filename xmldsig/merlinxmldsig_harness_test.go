@@ -10,6 +10,7 @@ import (
 
 	"github.com/lestrrat-go/helium-w3c-tests/internal/harness"
 	"github.com/lestrrat-go/helium/xmldsig1"
+	"github.com/lestrrat-go/helium/xmldsig1/transform"
 )
 
 // merlinCase is one document from the 2002 merlin-xmldsig-twenty-three baseline
@@ -64,16 +65,20 @@ func (r merlinReferenceResolver) ResolveReference(ctx context.Context, uri strin
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	var name string
 	switch uri {
 	case "http://www.w3.org/TR/xml-stylesheet":
-		name = "xml-stylesheet"
+		return os.ReadFile(filepath.Join(r.root, "xml-stylesheet"))
 	case "http://www.w3.org/Signature/2002/04/xml-stylesheet.b64":
-		name = "xml-stylesheet.b64"
-	default:
+		return os.ReadFile(filepath.Join(r.root, "xml-stylesheet.b64"))
+	}
+	// A ds:RetrievalMethod points at a certificate by a relative path (e.g.
+	// "certs/balor.crt"); serve it from the collection root, confined there. A
+	// scheme URI with no explicit mapping above stays fail-closed.
+	p, ok := containedPath(r.root, uri)
+	if !ok {
 		return nil, fmt.Errorf("%w: merlin resolver has no mapping for %q", xmldsig1.ErrReferenceNotFound, uri)
 	}
-	return os.ReadFile(filepath.Join(r.root, name))
+	return os.ReadFile(p)
 }
 
 func runMerlinCase(t *testing.T, o *outcome, root string, c merlinCase, ks xmldsig1.KeySource, resolver xmldsig1.ReferenceResolver) {
@@ -88,7 +93,17 @@ func runMerlinCase(t *testing.T, o *outcome, root string, c merlinCase, ks xmlds
 		o.errorf("%s: parse signed document: %v", c.ID, err)
 		return
 	}
-	_, verr := xmldsig1.NewVerifier(ks).AllowSHA1(true).ReferenceResolver(resolver).Verify(t.Context(), doc)
+	// The composite signature-* vectors exercise the full profile: a general
+	// XPointer Reference, an XSLT transform, here() in an XPath transform, and a
+	// Manifest. Enable each opt-in (they no-op on vectors that don't use them) so
+	// the whole collection can verify with one verifier.
+	_, verr := xmldsig1.NewVerifier(ks).
+		AllowSHA1(true).
+		AllowXPointer(true).
+		ValidateManifests(true).
+		XSLTTransformer(transform.XSLT{}).
+		ReferenceResolver(resolver).
+		Verify(t.Context(), doc)
 
 	if !c.MustFail {
 		if verr != nil {
