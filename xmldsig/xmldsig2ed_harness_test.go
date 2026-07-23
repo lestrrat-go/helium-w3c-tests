@@ -11,6 +11,7 @@ import (
 	"github.com/lestrrat-go/helium-w3c-tests/internal/harness"
 	"github.com/lestrrat-go/helium/c14n"
 	"github.com/lestrrat-go/helium/xmldsig1"
+	"github.com/lestrrat-go/helium/xmldsig1/transform"
 	"github.com/lestrrat-go/helium/xpath1"
 )
 
@@ -139,7 +140,11 @@ func runSigCase(t *testing.T, o *outcome, root, id, input string, ks xmldsig1.Ke
 		o.errorf("%s: parse signed document: %v", id, err)
 		return
 	}
-	verifier := xmldsig1.NewVerifier(ks).AllowSHA1(true)
+	// XSLT remains an explicit verifier capability. The public adapter supplies
+	// the xslt3-backed implementation needed by the defCan multi-phase vectors.
+	verifier := xmldsig1.NewVerifier(ks).
+		AllowSHA1(true).
+		XSLTTransformer(transform.XSLT{})
 	if resolver != nil {
 		verifier = verifier.ReferenceResolver(resolver)
 	}
