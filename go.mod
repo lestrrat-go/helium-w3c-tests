@@ -7,6 +7,7 @@ require (
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/net v0.56.0
 	golang.org/x/text v0.39.0
+	software.sslmate.com/src/go-pkcs12 v0.7.3
 )
 
 require (

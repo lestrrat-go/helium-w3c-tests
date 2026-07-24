@@ -47,6 +47,7 @@ go run ./cmd/w3cgen fetch xsd11
 go run ./cmd/w3cgen fetch xml
 go run ./cmd/w3cgen fetch xmldsig2ed
 go run ./cmd/w3cgen fetch xmldsig11
+go run ./cmd/w3cgen fetch xmlenc11
 go run ./cmd/w3cgen fetch merlinxmldsig
 ```
 
@@ -74,6 +75,11 @@ KeyInfo forms helium does not parse (KeyName, X509SKI, RetrievalMethod) and the
 big composite `signature.xml`. Any known gaps are recorded as categorized xfails in
 `expectations/xmldsig2ed.json`, `expectations/xmldsig11.json`, and
 `expectations/merlinxmldsig.json`.
+
+The `xmlenc11` suite runs the ten XML Encryption 1.1 core vectors copied from
+the pinned Apache Santuario checkout. Four RSA key-transport cases are tracked
+as expected gaps in the current `xmlenc1` implementation, and six ECDH-ES key
+agreement cases are skipped because that API is not implemented.
 
 The `xml` suite is the W3C XML Conformance Test Suite (parser well-formedness
 and DTD validity). Unlike the git-pinned suites it is pinned to the W3C `xmlts`
@@ -108,6 +114,7 @@ go run ./cmd/w3ctest xslt30
 go run ./cmd/w3ctest xml
 go run ./cmd/w3ctest xmldsig2ed
 go run ./cmd/w3ctest xmldsig11
+go run ./cmd/w3ctest xmlenc11
 go run ./cmd/w3ctest merlinxmldsig
 ```
 
