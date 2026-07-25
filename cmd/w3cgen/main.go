@@ -13,6 +13,7 @@ import (
 	xmlsuite "github.com/lestrrat-go/helium-w3c-tests/internal/suites/xml"
 	"github.com/lestrrat-go/helium-w3c-tests/internal/suites/xmldsig11"
 	"github.com/lestrrat-go/helium-w3c-tests/internal/suites/xmldsig2ed"
+	"github.com/lestrrat-go/helium-w3c-tests/internal/suites/xmlenc11"
 	"github.com/lestrrat-go/helium-w3c-tests/internal/suites/xsd11"
 	"github.com/lestrrat-go/helium-w3c-tests/internal/suites/xslt30"
 )
@@ -31,7 +32,7 @@ func run(ctx context.Context, args []string) error {
 	fs.Usage = func() {
 		fmt.Fprintln(fs.Output(), "usage: w3cgen [-root DIR] <list|fetch|generate|verify> [all|suite...]")
 		fmt.Fprintln(fs.Output(), "")
-		fmt.Fprintln(fs.Output(), "suites: qt3 xslt30 xsd11 xml xmldsig2ed xmldsig11 merlinxmldsig")
+		fmt.Fprintln(fs.Output(), "suites: qt3 xslt30 xsd11 xml xmldsig2ed xmldsig11 xmlenc11 merlinxmldsig")
 	}
 	if err := fs.Parse(args); err != nil {
 		return err
@@ -52,7 +53,7 @@ func run(ctx context.Context, args []string) error {
 		return err
 	}
 
-	registry := generator.NewRegistry(qt3.New(), xslt30.New(), xsd11.New(), xmlsuite.New(), xmldsig2ed.New(), xmldsig11.New(), merlinxmldsig.New())
+	registry := generator.NewRegistry(qt3.New(), xslt30.New(), xsd11.New(), xmlsuite.New(), xmldsig2ed.New(), xmldsig11.New(), xmlenc11.New(), merlinxmldsig.New())
 	genCtx := generator.Context{
 		Root: root,
 		Lock: lock,
