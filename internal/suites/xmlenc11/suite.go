@@ -119,7 +119,13 @@ func (s Suite) Generate(ctx context.Context, genCtx generator.Context, suiteLock
 		}
 		for _, rel := range files {
 			name := strings.TrimSuffix(filepath.Base(rel), ".xml")
-			cases = append(cases, genCase{ID: name, File: rel, KeyFile: rsaKeyFile(name)})
+			cases = append(cases, genCase{
+				ID:          name,
+				File:        rel,
+				KeyFile:     keyFile(name),
+				KeyPassword: keyPassword(name),
+				Binary:      binaryVector(name),
+			})
 		}
 	}
 
@@ -147,23 +153,51 @@ func vectorFiles(root string) ([]string, error) {
 	return files, nil
 }
 
-func rsaKeyFile(id string) string {
-	var suffix string
+func keyFile(id string) string {
 	switch {
 	case strings.HasPrefix(id, "cipherText__RSA-2048__"):
-		suffix = "RSA-2048_SHA256WithRSA.p12"
+		return "RSA-2048_SHA256WithRSA.p12"
 	case strings.HasPrefix(id, "cipherText__RSA-3072__"):
-		suffix = "RSA-3072_SHA256WithRSA.p12"
+		return "RSA-3072_SHA256WithRSA.p12"
 	case strings.HasPrefix(id, "cipherText__RSA-4096__"):
-		suffix = "RSA-4096_SHA256WithRSA.p12"
+		return "RSA-4096_SHA256WithRSA.p12"
+	case strings.HasPrefix(id, "cipherText__EC-P256__") && strings.HasSuffix(id, "__ConcatKDF-1"):
+		return "EC-P256_SHA256WithECDSA-v02.p12"
+	case strings.HasPrefix(id, "cipherText__EC-P384__") && strings.HasSuffix(id, "__ConcatKDF-2"):
+		return "EC-P384_SHA256WithECDSA-v02.p12"
+	case strings.HasPrefix(id, "cipherText__EC-P521__") && strings.HasSuffix(id, "__ConcatKDF-3"):
+		return "EC-P521_SHA256WithECDSA-v02.p12"
+	case strings.HasPrefix(id, "cipherText__EC-P256__") && strings.HasSuffix(id, "__ConcatKDF-4"):
+		return "EC-P256.pfx"
+	case strings.HasPrefix(id, "cipherText__EC-P384__") && strings.HasSuffix(id, "__ConcatKDF-5"):
+		return "EC-P384.pfx"
+	case strings.HasPrefix(id, "cipherText__EC-P521__") && strings.HasSuffix(id, "__ConcatKDF-6"):
+		return "EC-P521.pfx"
 	}
-	return suffix
+	return ""
+}
+
+func keyPassword(id string) string {
+	if strings.HasSuffix(id, "__ConcatKDF-4") ||
+		strings.HasSuffix(id, "__ConcatKDF-5") ||
+		strings.HasSuffix(id, "__ConcatKDF-6") {
+		return "1234"
+	}
+	return "passwd"
+}
+
+func binaryVector(id string) bool {
+	return strings.HasSuffix(id, "__ConcatKDF-4") ||
+		strings.HasSuffix(id, "__ConcatKDF-5") ||
+		strings.HasSuffix(id, "__ConcatKDF-6")
 }
 
 type genCase struct {
-	ID      string
-	File    string
-	KeyFile string
+	ID          string
+	File        string
+	KeyFile     string
+	KeyPassword string
+	Binary      bool
 }
 
 func casesSource(cases []genCase) string {
@@ -177,6 +211,10 @@ func casesSource(cases []genCase) string {
 		fmt.Fprintf(&b, "\t\tFile: %s,\n", strconv.Quote(c.File))
 		if c.KeyFile != "" {
 			fmt.Fprintf(&b, "\t\tKeyFile: %s,\n", strconv.Quote(c.KeyFile))
+			fmt.Fprintf(&b, "\t\tKeyPassword: %s,\n", strconv.Quote(c.KeyPassword))
+		}
+		if c.Binary {
+			b.WriteString("\t\tBinary: true,\n")
 		}
 		b.WriteString("\t},\n")
 	}

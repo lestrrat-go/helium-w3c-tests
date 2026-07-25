@@ -1,11 +1,4 @@
 {
-  "skip": {
-    "cipherText__EC-P256__aes128-gcm__kw-aes128__ECDH-ES__ConcatKDF-1": "XML Encryption 1.1 ECDH-ES key agreement is not implemented by xmlenc1",
-    "cipherText__EC-P256__aes128-gcm__kw-aes128__ECDH-ES__ConcatKDF-4": "XML Encryption 1.1 ECDH-ES key agreement is not implemented by xmlenc1",
-    "cipherText__EC-P384__aes192-gcm__kw-aes192__ECDH-ES__ConcatKDF-2": "XML Encryption 1.1 ECDH-ES key agreement is not implemented by xmlenc1",
-    "cipherText__EC-P384__aes192-gcm__kw-aes192__ECDH-ES__ConcatKDF-5": "XML Encryption 1.1 ECDH-ES key agreement is not implemented by xmlenc1",
-    "cipherText__EC-P521__aes256-gcm__kw-aes256__ECDH-ES__ConcatKDF-3": "XML Encryption 1.1 ECDH-ES key agreement is not implemented by xmlenc1",
-    "cipherText__EC-P521__aes256-gcm__kw-aes256__ECDH-ES__ConcatKDF-6": "XML Encryption 1.1 ECDH-ES key agreement is not implemented by xmlenc1"
-  },
+  "skip": {},
   "xfail": {}
 }
