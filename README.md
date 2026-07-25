@@ -78,9 +78,10 @@ known gaps are recorded as categorized xfails in
 `expectations/merlinxmldsig.json`.
 
 The `xmlenc11` suite runs the ten XML Encryption 1.1 core vectors copied from
-the pinned Apache Santuario checkout. Four RSA key-transport cases are tracked
-as expected gaps in the current `xmlenc1` implementation, and six ECDH-ES key
-agreement cases are skipped because that API is not implemented.
+the pinned Apache Santuario checkout. All ten cases pass: four RSA
+key-transport cases and six ECDH-ES cases. The ECDH cases use the matching
+P-256/P-384/P-521 PKCS#12 fixtures, and the binary cases compare through
+`DecryptBytes` rather than XML parsing.
 
 The `xml` suite is the W3C XML Conformance Test Suite (parser well-formedness
 and DTD validity). Unlike the git-pinned suites it is pinned to the W3C `xmlts`

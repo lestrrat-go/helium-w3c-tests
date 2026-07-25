@@ -1,9 +1,11 @@
 package xmlenc_test
 
 import (
+	"crypto/ecdsa"
 	"crypto/rsa"
-	"fmt"
+	"encoding/hex"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	helium "github.com/lestrrat-go/helium"
@@ -13,9 +15,11 @@ import (
 )
 
 type xmlenc11Case struct {
-	ID      string
-	File    string
-	KeyFile string
+	ID          string
+	File        string
+	KeyFile     string
+	KeyPassword string
+	Binary      bool
 }
 
 func TestXMLEnc11W3C(t *testing.T) {
@@ -49,13 +53,40 @@ func runXMLEncCase(t *testing.T, o *outcome, root string, c xmlenc11Case) {
 
 	keyPath := mustContained(t, root, filepath.Base(c.KeyFile))
 	keyData := readFixture(t, keyPath)
-	privateKey, err := decodeRSAKey(keyData)
+	privateKey, err := decodePrivateKey(keyData, c.KeyPassword)
 	if err != nil {
 		o.errorf("%s: decode PKCS#12 key %s: %v", c.ID, c.KeyFile, err)
 		return
 	}
 
-	nodes, err := xmlenc1.NewDecryptor().PrivateKey(privateKey).Decrypt(t.Context(), doc.DocumentElement())
+	decryptor := xmlenc1.NewDecryptor()
+	switch key := privateKey.(type) {
+	case *rsa.PrivateKey:
+		decryptor = decryptor.PrivateKey(key)
+	case *ecdsa.PrivateKey:
+		decryptor = decryptor.ECPrivateKey(key)
+	default:
+		o.errorf("%s: decoded key has unsupported type %T", c.ID, privateKey)
+		return
+	}
+	if c.Binary {
+		got, err := decryptor.DecryptBytes(t.Context(), doc.DocumentElement())
+		if err != nil {
+			o.errorf("%s: decrypt: %v", c.ID, err)
+			return
+		}
+		want, err := hex.DecodeString(strings.TrimSpace(string(readFixture(t, mustContained(t, root, "binary-data.hex")))))
+		if err != nil {
+			o.errorf("%s: decode binary plaintext: %v", c.ID, err)
+			return
+		}
+		if string(got) != string(want) {
+			o.errorf("%s: decrypted bytes differ from binary-data.hex", c.ID)
+		}
+		return
+	}
+
+	nodes, err := decryptor.Decrypt(t.Context(), doc.DocumentElement())
 	if err != nil {
 		o.errorf("%s: decrypt: %v", c.ID, err)
 		return
@@ -86,14 +117,13 @@ func runXMLEncCase(t *testing.T, o *outcome, root string, c xmlenc11Case) {
 	}
 }
 
-func decodeRSAKey(data []byte) (*rsa.PrivateKey, error) {
-	key, _, err := pkcs12.Decode(data, "passwd")
+func decodePrivateKey(data []byte, password string) (any, error) {
+	if password == "" {
+		password = "passwd"
+	}
+	key, _, err := pkcs12.Decode(data, password)
 	if err != nil {
 		return nil, err
 	}
-	rsaKey, ok := key.(*rsa.PrivateKey)
-	if !ok {
-		return nil, fmt.Errorf("decoded key has type %T, want *rsa.PrivateKey", key)
-	}
-	return rsaKey, nil
+	return key, nil
 }
