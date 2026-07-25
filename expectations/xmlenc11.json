@@ -7,10 +7,5 @@
     "cipherText__EC-P521__aes256-gcm__kw-aes256__ECDH-ES__ConcatKDF-3": "XML Encryption 1.1 ECDH-ES key agreement is not implemented by xmlenc1",
     "cipherText__EC-P521__aes256-gcm__kw-aes256__ECDH-ES__ConcatKDF-6": "XML Encryption 1.1 ECDH-ES key agreement is not implemented by xmlenc1"
   },
-  "xfail": {
-    "cipherText__RSA-2048__aes128-gcm__rsa-oaep-mgf1p": "XML Encryption 1.1 AES-GCM URI is not accepted by xmlenc1",
-    "cipherText__RSA-3072__aes192-gcm__rsa-oaep-mgf1p__Sha256": "XML Encryption 1.1 AES-192-GCM is not implemented by xmlenc1",
-    "cipherText__RSA-3072__aes256-gcm__rsa-oaep__Sha384-MGF_Sha1": "XML Encryption 1.1 RSA-OAEP SHA-384 is not implemented by xmlenc1",
-    "cipherText__RSA-4096__aes256-gcm__rsa-oaep__Sha512-MGF_Sha1_PSource": "XML Encryption 1.1 RSA-OAEP SHA-512 is not implemented by xmlenc1"
-  }
+  "xfail": {}
 }
