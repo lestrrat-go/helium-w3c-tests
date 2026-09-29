@@ -88,7 +88,12 @@ type genInstance struct {
 	Valid bool
 }
 
-var schemaLocationRe = regexp.MustCompile(`schemaLocation\s*=\s*["']([^"']+)["']`)
+// schemaLocationRe matches every schema-location reference a fixture can
+// carry: xs:include/xs:import/xs:redefine/xs:override @schemaLocation (one
+// URI) and, in instance documents, xsi:schemaLocation (namespace/URI pairs)
+// and xsi:noNamespaceSchemaLocation (one URI). The validator loads the
+// instance hints, so their targets are fixtures too.
+var schemaLocationRe = regexp.MustCompile(`(?:schemaLocation|noNamespaceSchemaLocation)\s*=\s*["']([^"']+)["']`)
 
 // readCases parses the suite catalog rooted at sourceRoot and returns the
 // XSD-1.1 cases grouped by contributor (ibm, oracle, saxon, wg, ...). The
@@ -151,6 +156,75 @@ func readCases(sourceRoot string) (byContributor map[string][]genCase, contribut
 	}
 	sort.Strings(contributors)
 	return byContributor, contributors, setsScanned, groupsOut, nil
+}
+
+// readXSD10FixtureRels returns every file the runtime XSD 1.0 reader
+// (TestXSD10W3C, xsd/xsd10_harness_test.go) opens under testdata/xsd11, as
+// clean suite-root-relative slash paths: the catalog itself (suite.xml and each
+// testSet file it references) and, for every testGroup not tagged 1.1 at the
+// group or testSet level, its schema documents with their transitive
+// schemaLocation closure plus its instance documents. That reader has no
+// generated case table; it walks the catalog at test time, so the xsd11 fetch
+// must copy the catalog too, or the XSD 1.0 run finds no suite.xml and skips
+// every case.
+func readXSD10FixtureRels(sourceRoot string) ([]string, error) {
+	suiteBytes, err := os.ReadFile(filepath.Join(sourceRoot, "suite.xml"))
+	if err != nil {
+		return nil, fmt.Errorf("read suite.xml: %w", err)
+	}
+	var suite suiteDoc
+	if err := xml.Unmarshal(suiteBytes, &suite); err != nil {
+		return nil, fmt.Errorf("parse suite.xml: %w", err)
+	}
+
+	rels := map[string]bool{"suite.xml": true}
+	for _, ref := range suite.TestSetRefs {
+		href := ref.Href
+		if href == "" {
+			continue
+		}
+		tsPath, perr := generator.ContainedPath(sourceRoot, href)
+		if perr != nil {
+			return nil, fmt.Errorf("resolve testSet %q: %w", href, perr)
+		}
+		tsBytes, rerr := os.ReadFile(tsPath)
+		if rerr != nil {
+			// Missing testSet file: the reader skips it too.
+			continue
+		}
+		var ts testSet
+		if uerr := xml.Unmarshal(tsBytes, &ts); uerr != nil {
+			return nil, fmt.Errorf("parse %s: %w", href, uerr)
+		}
+		rels[path.Clean(href)] = true
+
+		tsDir := path.Dir(href)
+		for _, g := range ts.TestGroups {
+			if is11(g.Version, ts.Version) {
+				continue
+			}
+			if g.SchemaTest == nil || len(g.SchemaTest.Documents) == 0 {
+				continue
+			}
+			docRels := make([]string, 0, len(g.SchemaTest.Documents)+len(g.InstanceTest))
+			for _, d := range g.SchemaTest.Documents {
+				docRels = append(docRels, resolveRel(tsDir, d.Href))
+			}
+			for _, it := range g.InstanceTest {
+				docRels = append(docRels, resolveRel(tsDir, it.Document.Href))
+			}
+			for rel := range schemaClosure(sourceRoot, docRels) {
+				rels[rel] = true
+			}
+		}
+	}
+
+	sorted := make([]string, 0, len(rels))
+	for rel := range rels {
+		sorted = append(sorted, rel)
+	}
+	sort.Strings(sorted)
+	return sorted, nil
 }
 
 // contributorName maps a testSetRef href's first path segment to a contributor
@@ -257,70 +331,20 @@ func buildCase(sourceRoot, href, tsDir string, g testGroup) (genCase, bool, erro
 
 	primaryRel := resolveRel(tsDir, g.SchemaTest.Documents[0].Href)
 
-	fixtures := map[string]bool{}
-
-	// BFS over schema documents + transitive schemaLocation includes.
-	queue := []string{}
-	enqueued := map[string]bool{}
-	add := func(rel string) {
-		if !enqueued[rel] {
-			enqueued[rel] = true
-			queue = append(queue, rel)
-		}
-	}
+	schemaRels := make([]string, 0, len(g.SchemaTest.Documents))
 	for _, d := range g.SchemaTest.Documents {
-		add(resolveRel(tsDir, d.Href))
+		schemaRels = append(schemaRels, resolveRel(tsDir, d.Href))
 	}
-
-	primaryFound := false
-	for len(queue) > 0 {
-		rel := queue[0]
-		queue = queue[1:]
-		fpath, perr := generator.ContainedPath(sourceRoot, rel)
-		if perr != nil {
-			// Reference escapes the suite root: ignore it (untrusted catalog).
-			continue
-		}
-		data, rerr := os.ReadFile(fpath)
-		if rerr != nil {
-			// Missing include: collect only what exists.
-			continue
-		}
-		if rel == primaryRel {
-			primaryFound = true
-		}
-		fixtures[rel] = true
-
-		// s3_2_3ii05.xsd (and other IBM fixtures) are UTF-16 encoded; the
-		// ASCII schemaLocationRe would find zero matches over the raw bytes
-		// and silently drop the transitive import. Transcode any BOM-marked
-		// UTF-16/UTF-8 content to plain UTF-8 first; ASCII/UTF-8 is unchanged.
-		data = decodeToUTF8(data)
-
-		dir := path.Dir(rel)
-		for _, m := range schemaLocationRe.FindAllSubmatch(data, -1) {
-			loc := string(m[1])
-			if loc == "" || isAbsoluteURL(loc) {
-				continue
-			}
-			add(resolveRel(dir, loc))
-		}
-	}
-
-	if !primaryFound {
+	fixtures := schemaClosure(sourceRoot, schemaRels)
+	if !fixtures[primaryRel] {
 		return genCase{}, false, nil
-	}
-
-	schemaDocs := make([]string, 0, len(g.SchemaTest.Documents))
-	for _, d := range g.SchemaTest.Documents {
-		schemaDocs = append(schemaDocs, resolveRel(tsDir, d.Href))
 	}
 
 	gc := genCase{
 		ID:          href + "/" + g.Name,
 		SchemaRel:   primaryRel,
 		SchemaValid: schemaValid,
-		SchemaDocs:  schemaDocs,
+		SchemaDocs:  schemaRels,
 	}
 
 	for _, it := range g.InstanceTest {
@@ -337,7 +361,9 @@ func buildCase(sourceRoot, href, tsDir string, g testGroup) (genCase, bool, erro
 			// Missing instance: skip it.
 			continue
 		}
-		fixtures[rel] = true
+		for fixture := range schemaClosure(sourceRoot, []string{rel}) {
+			fixtures[fixture] = true
+		}
 		gc.Instances = append(gc.Instances, genInstance{
 			Name:  it.Name,
 			Rel:   rel,
@@ -352,6 +378,76 @@ func buildCase(sourceRoot, href, tsDir string, g testGroup) (genCase, bool, erro
 	sort.Strings(gc.FixtureRels)
 
 	return gc, true, nil
+}
+
+// schemaClosure returns the documents in rels that exist under sourceRoot plus
+// the transitive closure of the schema locations they reference (see
+// schemaLocationRe), as clean suite-root-relative slash paths. rels may hold
+// schema or instance documents. References that escape the suite root or do not
+// exist are dropped.
+func schemaClosure(sourceRoot string, rels []string) map[string]bool {
+	found := map[string]bool{}
+	enqueued := map[string]bool{}
+	queue := make([]string, 0, len(rels))
+	for _, rel := range rels {
+		if !enqueued[rel] {
+			enqueued[rel] = true
+			queue = append(queue, rel)
+		}
+	}
+
+	for len(queue) > 0 {
+		rel := queue[0]
+		queue = queue[1:]
+		fpath, perr := generator.ContainedPath(sourceRoot, rel)
+		if perr != nil {
+			// Reference escapes the suite root: ignore it (untrusted catalog).
+			continue
+		}
+		data, rerr := os.ReadFile(fpath)
+		if rerr != nil {
+			// Missing include: collect only what exists.
+			continue
+		}
+		found[rel] = true
+
+		// s3_2_3ii05.xsd (and other IBM fixtures) are UTF-16 encoded; the
+		// ASCII schemaLocationRe would find zero matches over the raw bytes
+		// and silently drop the transitive import. Transcode any BOM-marked
+		// UTF-16/UTF-8 content to plain UTF-8 first; ASCII/UTF-8 is unchanged.
+		data = decodeToUTF8(data)
+
+		dir := path.Dir(rel)
+		for _, m := range schemaLocationRe.FindAllSubmatch(data, -1) {
+			for _, loc := range locationURIs(string(m[1])) {
+				if isAbsoluteURL(loc) {
+					continue
+				}
+				next := resolveRel(dir, loc)
+				if !enqueued[next] {
+					enqueued[next] = true
+					queue = append(queue, next)
+				}
+			}
+		}
+	}
+	return found
+}
+
+// locationURIs returns the URIs in a schema-location attribute value. A
+// single token is one URI (@schemaLocation on a schema composition element, or
+// xsi:noNamespaceSchemaLocation); several tokens are xsi:schemaLocation
+// namespace/URI pairs, whose URIs are every second token.
+func locationURIs(value string) []string {
+	fields := strings.Fields(value)
+	if len(fields) <= 1 {
+		return fields
+	}
+	uris := make([]string, 0, len(fields)/2)
+	for i := 1; i < len(fields); i += 2 {
+		uris = append(uris, fields[i])
+	}
+	return uris
 }
 
 func isAbsoluteURL(s string) bool {

@@ -23,10 +23,13 @@ func (Suite) Name() string {
 	return "xsd11"
 }
 
-// Fetch clones the upstream suite, then copies the XSD-1.1 fixtures it
-// references (every schemaDocument, its transitive schemaLocation includes, and
-// every instanceDocument) from sources/xsd11 into testdata/xsd11, preserving the
-// suite-root-relative layout so xs:include/import resolve at test time.
+// Fetch clones the upstream suite, then copies the fixtures both XSD suites
+// read from sources/xsd11 into testdata/xsd11, preserving the
+// suite-root-relative layout so xs:include/import resolve at test time: the
+// XSD-1.1 fixtures the generated cases reference (every schemaDocument, its
+// transitive schemaLocation includes, and every instanceDocument), plus the
+// catalog and XSD-1.0 fixtures that the runtime xsd10 reader consumes (the
+// xsd10 suite has no fetch of its own and reuses this one).
 func (s Suite) Fetch(ctx context.Context, genCtx generator.Context, suiteLock generator.SuiteLock) error {
 	if err := generator.FetchSource(ctx, genCtx.Root, s.Name(), suiteLock); err != nil {
 		return err
@@ -48,6 +51,13 @@ func (s Suite) populateFixtures(root string, suiteLock generator.SuiteLock) erro
 				rels[rel] = true
 			}
 		}
+	}
+	xsd10Rels, err := readXSD10FixtureRels(sourceRoot)
+	if err != nil {
+		return err
+	}
+	for _, rel := range xsd10Rels {
+		rels[rel] = true
 	}
 
 	destRoot := filepath.Join(root, "testdata", "xsd11")
