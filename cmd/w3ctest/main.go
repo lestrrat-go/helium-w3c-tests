@@ -193,11 +193,18 @@ func run(ctx context.Context, args []string) (int, error) {
 		goVersion:     *goVersion,
 		mode:          *mode,
 	}
-	if sErr := writeSummary(*summaryOut, *root, prov, suiteKey, suite, stdout.Bytes()); sErr != nil {
+	summary, sErr := writeSummary(*summaryOut, *root, prov, suiteKey, suite, stdout.Bytes())
+	if sErr != nil {
 		return 1, sErr
 	}
 
 	if err == nil {
+		// A suite whose root test skipped (fixtures not fetched) reports zero
+		// cases and exits 0. A conformance run must execute cases, so treat
+		// an empty report as a failure rather than a green run.
+		if summary.Total == 0 {
+			return 1, fmt.Errorf("suite %s ran no test cases; are its fixtures fetched (go run ./cmd/w3cgen fetch)?", suiteKey)
+		}
 		return 0, nil
 	}
 	var exitErr *exec.ExitError
@@ -220,14 +227,15 @@ type provenance struct {
 // writeSummary rolls up the go-test-json output into a committed
 // conformance-evidence markdown report, stamping provenance (pinned upstream
 // commit from suites.lock, helium/harness commits, Go version, run mode,
-// generation date) so the file stands alone.
-func writeSummary(path, root string, prov provenance, suiteKey string, suite suiteConfig, jsonOut []byte) error {
+// generation date) so the file stands alone. It returns the rollup so the
+// caller can check the case count.
+func writeSummary(path, root string, prov provenance, suiteKey string, suite suiteConfig, jsonOut []byte) (junit.Summary, error) {
 	summary, err := junit.Summarize(bytes.NewReader(jsonOut), junit.Options{
 		SuiteName: suiteKey,
 		RootTest:  suite.rootTest,
 	})
 	if err != nil {
-		return err
+		return junit.Summary{}, err
 	}
 	meta := junit.SummaryMeta{
 		DisplayName:   suite.displayName,
@@ -255,19 +263,19 @@ func writeSummary(path, root string, prov provenance, suiteKey string, suite sui
 	}
 
 	if mkErr := os.MkdirAll(filepath.Dir(path), 0o755); mkErr != nil {
-		return mkErr
+		return junit.Summary{}, mkErr
 	}
 	f, err := os.Create(path)
 	if err != nil {
-		return err
+		return junit.Summary{}, err
 	}
 	if werr := junit.WriteSummaryMarkdown(f, summary, meta); werr != nil {
 		_ = f.Close()
-		return werr
+		return junit.Summary{}, werr
 	}
 	if cerr := f.Close(); cerr != nil {
-		return cerr
+		return junit.Summary{}, cerr
 	}
 	fmt.Fprintf(os.Stderr, "wrote conformance summary to %s\n", path)
-	return nil
+	return summary, nil
 }
