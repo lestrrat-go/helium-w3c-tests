@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Local stand-in for http://www.loc.gov/ead/ead.xsd, served by the xslt30
+  harness's local HTTP server (xslt3/w3c_http_test.go). match-035's source
+  document names this schema in xsi:schemaLocation, and helium loads that hint
+  on every transform. The case only checks that xpath-default-namespace does not
+  apply to attribute names in a match pattern, so it needs a schema for the
+  hinted namespace that compiles, not the real EAD schema.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="urn:isbn:1-931666-22-9"
+           elementFormDefault="qualified"/>

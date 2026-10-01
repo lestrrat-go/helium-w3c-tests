@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -152,11 +151,6 @@ var (
 	// filesystem loading is opt-in just like runtime retrieval; production
 	// callers must supply their own tightly scoped resolver instead.
 	w3cTestCompileResolver = w3cCompileFileResolver{w3cTestFileResolver}
-
-	// w3cTestHTTPClient is used for the handful of W3C tests that fetch
-	// real http(s) URLs (e.g. www.w3.org). A bounded Timeout keeps the
-	// suite from hanging when the remote host is slow or unreachable.
-	w3cTestHTTPClient = &http.Client{Timeout: 30 * time.Second}
 )
 
 // w3cCompileFileResolver adapts an xpath3.URIResolver (method ResolveURI) to
@@ -1342,14 +1336,16 @@ func w3cRunOne(t *testing.T, tc w3cTest) {
 
 	// The W3C XSLT 3.0 test suite fixtures live on the local filesystem
 	// and are referenced via absolute file:// URIs. A handful of tests
-	// also fetch real http(s) URLs from www.w3.org. The harness opts in
-	// to both — production callers must NOT replicate this; supply a
-	// tightly scoped URIResolver / scoped HTTPClient instead.
+	// also fetch http(s) URLs (www.w3.org, www.loc.gov); the harness client
+	// serves those from local copies (w3c_http_test.go) and never reaches
+	// the network. The harness opts in to both — production callers must
+	// NOT replicate this; supply a tightly scoped URIResolver / scoped
+	// HTTPClient instead.
 	// The W3C suite includes tests (e.g. base-uri-051) that load documents
 	// containing external SYSTEM entities via doc()/document(). XXE is blocked
 	// by default; the harness runs against trusted local test data and opts in.
 	// Production callers must NOT replicate this for untrusted documents.
-	inv = inv.URIResolver(w3cTestFileResolver).HTTPClient(w3cTestHTTPClient).AllowExternalEntities(true)
+	inv = inv.URIResolver(w3cTestFileResolver).HTTPClient(w3cTestHTTPClient(t)).AllowExternalEntities(true)
 
 	// Set base output URI for current-output-uri(). Use explicit value if
 	// provided, otherwise auto-compute for tests in the known list.
