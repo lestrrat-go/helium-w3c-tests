@@ -45,6 +45,23 @@ var w3cRemoteResources = map[string]w3cRemoteResource{
 		file:        "www.loc.gov/ead/ead.xsd",
 		contentType: "application/xml",
 	},
+	// si-iterate-131..135: the three xsi:schemaLocation hints on citygml.xml.
+	// These are slow tests (HELIUM_SLOW_TESTS=1). The cases only count elements
+	// while streaming, so each is a minimal schema for its hinted namespace. The
+	// real schemas also import the CityGML core, GML 3.1.1, xAL, and XLink
+	// schemas, which the stand-ins do not.
+	"http://schemas.opengis.net/citygml/building/1.0/building.xsd": {
+		file:        "schemas.opengis.net/citygml/building/1.0/building.xsd",
+		contentType: "application/xml",
+	},
+	"http://schemas.opengis.net/citygml/appearance/1.0/appearance.xsd": {
+		file:        "schemas.opengis.net/citygml/appearance/1.0/appearance.xsd",
+		contentType: "application/xml",
+	},
+	"http://schemas.opengis.net/citygml/relief/1.0/relief.xsd": {
+		file:        "schemas.opengis.net/citygml/relief/1.0/relief.xsd",
+		contentType: "application/xml",
+	},
 	// unparsed-text-2002 (https) and unparsed-text-2003 (http). 2002 expects
 	// the page NOT to contain the phrase it searches for, and 2003 only checks
 	// that the page is retrievable, so this is a small UTF-8 stand-in.

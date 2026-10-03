@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Local stand-in for http://schemas.opengis.net/citygml/building/1.0/building.xsd,
+  served by the xslt30 harness's local HTTP server (xslt3/w3c_http_test.go).
+  si-iterate-131..135 read tests/strm/docs/citygml.xml, whose root names this
+  schema in xsi:schemaLocation, and helium loads that hint on every transform.
+  The cases only count elements while streaming, so they need a schema for the
+  hinted namespace that compiles, not the real CityGML schema.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.opengis.net/citygml/building/1.0"
+           elementFormDefault="qualified"/>

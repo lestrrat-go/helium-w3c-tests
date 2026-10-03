@@ -148,13 +148,15 @@ The XSLT 3.0 suite copies catalog-referenced fixtures out of the gitignored
 plus hand-edited fixtures) that a static catalog scan cannot reproduce.
 
 The XSLT 3.0 run makes no network requests. A few cases fetch http(s) URLs
-(`unparsed-text()` on www.w3.org pages, and an `xsi:schemaLocation` hint to
-www.loc.gov that helium loads on every transform). The harness's HTTP client
+(`unparsed-text()` on www.w3.org pages, and `xsi:schemaLocation` hints to
+www.loc.gov and schemas.opengis.net that helium loads on every transform). The
+harness's HTTP client
 sends every such request to a local test server, which serves the local copies
 committed under `fixtures/xslt30/remote/<host>/<path>`. The URL-to-file map is
 `w3cRemoteResources` in `xslt3/w3c_http_test.go`. A URL that is not in the map
 gets a 404 and fails the case that fetched it, so a new network dependency shows
-up as a test failure.
+up as a test failure. Some of these cases are slow tests, so check a change to the
+map with `HELIUM_SLOW_TESTS=1`.
 
 ## Running Against a Helium Worktree
 
